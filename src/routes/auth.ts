@@ -1,6 +1,7 @@
 // src/routes/auth.ts
 import { Router } from 'express';
-import { db } from '../config/firebase'; // Sua conexão com o Firebase
+import { getFirestore } from 'firebase-admin/firestore';
+const db = getFirestore();
 
 const router = Router();
 
