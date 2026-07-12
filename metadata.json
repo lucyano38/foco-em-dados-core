@@ -1,0 +1,6 @@
+{
+  "name": "Foco em Dados",
+  "description": "SaaS tool for automated CSV data analysis, interactive dashboards, and AI-driven insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

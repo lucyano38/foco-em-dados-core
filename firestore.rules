@@ -1,0 +1,150 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Primitive Definition
+    function isValidId(id) { return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+
+    function isValidUser(data) {
+      return data.keys().size() >= 5 && data.keys().size() <= 6
+        && data.keys().hasAll(['uid', 'email', 'currentPlan', 'createdAt', 'updatedAt']) 
+        && data.uid == request.auth.uid
+        && data.email is string && data.email.size() > 0 && data.email.size() <= 256
+        && data.currentPlan in ['free', 'pro', 'enterprise']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && (data.keys().hasAll(['displayName']) ? (data.displayName is string && data.displayName.size() <= 100) : true);
+    }
+
+    function isValidSpreadsheetFile(data, userId) {
+      return data.keys().size() >= 5 && data.keys().size() <= 6
+        && data.keys().hasAll(['userId', 'filename', 'storageUrl', 'processingStatus', 'uploadedAt'])
+        && data.userId == userId
+        && data.filename is string && data.filename.size() > 0 && data.filename.size() <= 256
+        && data.storageUrl is string && data.storageUrl.size() > 0 && data.storageUrl.size() <= 1024
+        && data.processingStatus in ['pending', 'processing', 'completed', 'failed']
+        && (data.keys().hasAll(['sizeBytes']) ? data.sizeBytes is number : true)
+        && data.uploadedAt is timestamp;
+    }
+
+    function isValidSubscription(data, userId) {
+      return data.keys().size() == 4
+        && data.keys().hasAll(['userId', 'status', 'planId', 'currentPeriodEnd'])
+        && data.userId == userId
+        && data.status in ['active', 'past_due', 'canceled', 'unpaid']
+        && data.planId is string && data.planId.size() > 0 && data.planId.size() <= 128
+        && data.currentPeriodEnd is timestamp;
+    }
+
+    function isValidPaymentRecord(data) {
+      return data.keys().size() == 4
+        && data.keys().hasAll(['amount', 'currency', 'status', 'date'])
+        && data.amount is number
+        && data.currency is string && data.currency.size() == 3
+        && data.status in ['succeeded', 'failed', 'pending']
+        && data.date is timestamp;
+    }
+
+    function isValidDashboardConfig(data, userId) {
+      return data.keys().size() == 5
+        && data.keys().hasAll(['userId', 'name', 'layoutConfig', 'createdAt', 'updatedAt'])
+        && data.userId == userId
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 128
+        && data.layoutConfig is string && data.layoutConfig.size() <= 10000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // users
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if false; // Users cannot list other users
+      allow create: if isSignedIn() 
+        && isValidId(userId) 
+        && request.auth.uid == userId 
+        && isValidUser(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn() 
+        && request.auth.uid == userId 
+        && isValidUser(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().uid == existing().uid
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'currentPlan', 'updatedAt']);
+      allow delete: if false;
+
+      // files
+      match /files/{fileId} {
+        allow get: if isSignedIn() && request.auth.uid == userId;
+        allow list: if isSignedIn() && request.auth.uid == userId;
+        allow create: if isSignedIn() 
+          && isValidId(fileId) 
+          && request.auth.uid == userId
+          && isValidSpreadsheetFile(incoming(), userId)
+          && incoming().uploadedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && isValidSpreadsheetFile(incoming(), userId)
+          && incoming().userId == existing().userId
+          && incoming().uploadedAt == existing().uploadedAt
+          && incoming().diff(existing()).affectedKeys().hasOnly(['filename', 'processingStatus']);
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // subscriptions
+      match /subscriptions/{subscriptionId} {
+        allow get: if isSignedIn() && request.auth.uid == userId;
+        allow list: if isSignedIn() && request.auth.uid == userId;
+        allow create: if isSignedIn() 
+          && isValidId(subscriptionId) 
+          && request.auth.uid == userId
+          && isValidSubscription(incoming(), userId)
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && isValidSubscription(incoming(), userId)
+          && incoming().userId == existing().userId
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'planId', 'currentPeriodEnd']);
+        allow delete: if false;
+
+        match /payments/{paymentId} {
+          allow get: if isSignedIn() && request.auth.uid == userId;
+          allow list: if isSignedIn() && request.auth.uid == userId;
+          allow create: if false; // Should only be created by backend server
+          allow update: if false;
+          allow delete: if false;
+        }
+      }
+
+      // dashboards
+      match /dashboards/{dashboardId} {
+        allow get: if isSignedIn() && request.auth.uid == userId;
+        allow list: if isSignedIn() && request.auth.uid == userId;
+        allow create: if isSignedIn() 
+          && isValidId(dashboardId) 
+          && request.auth.uid == userId
+          && isValidDashboardConfig(incoming(), userId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isSignedIn()
+          && request.auth.uid == userId
+          && isValidDashboardConfig(incoming(), userId)
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'layoutConfig', 'updatedAt']);
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+  }
+}

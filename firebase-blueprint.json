@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile information and basic subscription details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's authentication ID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "currentPlan": { "type": "string", "enum": ["free", "pro", "enterprise"] },
+        "createdAt": { "type": "string", "format": "timestamp" },
+        "updatedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["uid", "email", "currentPlan", "createdAt", "updatedAt"]
+    },
+    "SpreadsheetFile": {
+      "title": "Spreadsheet File",
+      "description": "Metadata for an uploaded spreadsheet file",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner of the file" },
+        "filename": { "type": "string" },
+        "storageUrl": { "type": "string", "format": "uri", "description": "Cloud Storage path or link" },
+        "sizeBytes": { "type": "number" },
+        "processingStatus": { "type": "string", "enum": ["pending", "processing", "completed", "failed"] },
+        "uploadedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["userId", "filename", "storageUrl", "processingStatus", "uploadedAt"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Detailed subscription and payment history for a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The user owning this subscription" },
+        "status": { "type": "string", "enum": ["active", "past_due", "canceled", "unpaid"] },
+        "planId": { "type": "string" },
+        "currentPeriodEnd": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["userId", "status", "planId", "currentPeriodEnd"]
+    },
+    "PaymentRecord": {
+      "title": "Payment Record",
+      "description": "A single payment record",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "status": { "type": "string", "enum": ["succeeded", "failed", "pending"] },
+        "date": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["amount", "currency", "status", "date"]
+    },
+    "DashboardConfig": {
+      "title": "Dashboard Configuration",
+      "description": "User's saved dashboard layout and settings",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner of this configuration" },
+        "name": { "type": "string" },
+        "layoutConfig": { "type": "string", "description": "JSON string defining layout" },
+        "createdAt": { "type": "string", "format": "timestamp" },
+        "updatedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["userId", "name", "layoutConfig", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Root collection for user profiles"
+    },
+    "users/{userId}/files/{fileId}": {
+      "schema": { "$ref": "#/entities/SpreadsheetFile" },
+      "description": "Subcollection of files uploaded by the user"
+    },
+    "users/{userId}/subscriptions/{subscriptionId}": {
+      "schema": { "$ref": "#/entities/Subscription" },
+      "description": "Subcollection for user's subscription details"
+    },
+    "users/{userId}/subscriptions/{subscriptionId}/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/PaymentRecord" },
+      "description": "Subcollection for payment history"
+    },
+    "users/{userId}/dashboards/{dashboardId}": {
+      "schema": { "$ref": "#/entities/DashboardConfig" },
+      "description": "Subcollection of saved dashboard configurations"
+    }
+  }
+}
