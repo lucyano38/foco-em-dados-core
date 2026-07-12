@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 /**
  * CONFIGURAÇÃO DO FIREBASE CLIENT
  * 
- * Este arquivo lê as credenciais do Firebase utilizando variáveis de ambiente (process.env).
+ * Este arquivo lê as credenciais do Firebase utilizando variáveis VITE_ (Vite).
  * Garante uma inicialização segura e única para os serviços de autenticação e banco de dados Firestore.
  */
 const firebaseConfig = {
