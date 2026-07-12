@@ -129,7 +129,7 @@ Passo 4: Conduza para uma chamada estratégica rápida de 15 minutos ou fechamen
     setWaQrLoading(true);
     setWaQrError(null);
     try {
-      const response = await fetch('https://bot.focoemdados.com.br/get-qr');
+      const response = await fetch('/get-qr');
       if (!response.ok) {
         throw new Error('Falha ao obter o QR Code. Verifique se o servidor de integração está online.');
       }

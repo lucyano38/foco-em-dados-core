@@ -98,7 +98,7 @@ export default function LandingPage({
     setWaQrLoading(true);
     setWaQrError(null);
     try {
-      const response = await fetch('https://bot.focoemdados.com.br/get-qr');
+      const response = await fetch('/get-qr');
       if (!response.ok) {
         throw new Error('Falha ao obter o QR Code. Tente novamente.');
       }
