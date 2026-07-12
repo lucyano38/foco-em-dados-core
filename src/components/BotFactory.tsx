@@ -477,7 +477,7 @@ export default function BotFactory() {
     '',
     '// 1. Inicialize a API do Gemini com a sua chave secreta com segurança no servidor',
     'const ai = new GoogleGenAI({',
-    '  apiKey: process.env.GEMINI_API_KEY,',
+    '  apiKey: process.env.REACT_APP_GEMINI_API_KEY,',
     '  httpOptions: {',
     '    headers: {',
     '      "User-Agent": "aistudio-build"',
