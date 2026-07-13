@@ -1382,29 +1382,30 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-
-    const firebaseConfig = {
-      apiKey: process.env.VITE_FIREBASE_API_KEY || "",
-      authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-      projectId: process.env.VITE_FIREBASE_PROJECT_ID || "",
-      storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-      messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-      appId: process.env.VITE_FIREBASE_APP_ID || "",
-    };
-
-    app.get("*", (req, res) => {
-      const indexPath = path.join(distPath, "index.html");
-      let html = fs.readFileSync(indexPath, "utf-8");
-      html = html.replace(
-        "</head>",
-        `<script>window.__FIREBASE_CONFIG__=${JSON.stringify(firebaseConfig)}</script></head>`
-      );
-      res.type("html").send(html);
-    });
   }
+
+  // --- CONFIGURAÇÃO PARA SERVIR O FRONTEND ---
+
+  const firebaseConfig = {
+    apiKey: process.env.VITE_FIREBASE_API_KEY || "",
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || "",
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+    appId: process.env.VITE_FIREBASE_APP_ID || "",
+  };
+
+  app.use(express.static(path.join(__dirname, 'dist')));
+
+  app.get('*', (req, res) => {
+    const indexPath = path.join(__dirname, 'dist', 'index.html');
+    let html = fs.readFileSync(indexPath, 'utf-8');
+    html = html.replace(
+      '</head>',
+      `<script>window.__FIREBASE_CONFIG__=${JSON.stringify(firebaseConfig)}</script></head>`
+    );
+    res.type('html').send(html);
+  });
 
   app.listen(port, "0.0.0.0", () => {
     console.log(`Servidor rodando na porta ${port}`);

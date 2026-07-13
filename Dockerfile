@@ -1,5 +1,12 @@
-FROM node:18-slim
+# Estágio de Build
+FROM node:18 AS build
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build
 
+# Estágio de Execução
+FROM node:18
 RUN apt-get update && apt-get install -y \
     chromium \
     libnss3 \
@@ -11,10 +18,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/dist/server.cjs ./server.cjs
+RUN npm install --production
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-RUN npm run build
-CMD ["node", "dist/server.cjs"]
+CMD ["node", "server.cjs"]
