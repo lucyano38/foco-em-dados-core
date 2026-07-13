@@ -7,21 +7,14 @@ RUN npm run build
 
 # Estágio de Execução
 FROM node:18
-RUN apt-get update && apt-get install -y \
-    chromium \
-    libnss3 \
-    libxss1 \
-    libasound2 \
-    fonts-liberation \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
+# Copia o servidor compilado e a pasta dist
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
-COPY --from=build /app/dist/server.cjs ./server.cjs
+# Instala apenas dependências de produção
 RUN npm install --production
-
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-CMD ["node", "server.cjs"]
+# Define a porta (Cloud Run injeta essa variável, mas é bom garantir)
+ENV PORT=8080
+EXPOSE 8080
+# Comando de inicialização correto para o arquivo .cjs
+CMD ["node", "dist/server.cjs"]

@@ -68,7 +68,7 @@ function tryParseNumber(val: any): number | null {
 async function startServer() {
   const app = express();
   app.use(cors());
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+  const PORT = process.env.PORT || 8080;
 
   // Lazy init Gemini
   const getAI = () => {
@@ -1395,10 +1395,10 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     appId: process.env.VITE_FIREBASE_APP_ID || "",
   };
 
-  app.use(express.static(path.join(__dirname, 'dist')));
+  app.use(express.static(path.join(process.cwd(), 'dist')));
 
   app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'dist', 'index.html');
+    const indexPath = path.join(process.cwd(), 'dist', 'index.html');
     let html = fs.readFileSync(indexPath, 'utf-8');
     html = html.replace(
       '</head>',
@@ -1407,8 +1407,8 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     res.type('html').send(html);
   });
 
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`Servidor rodando na porta ${port}`);
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
   });
 }
 
