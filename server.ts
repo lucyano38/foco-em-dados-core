@@ -1407,7 +1407,7 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     res.type('html').send(html);
   });
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(`Servidor rodando na porta ${PORT}`);
   });
 }
