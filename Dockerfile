@@ -1,20 +1,18 @@
-# Estágio de Build
-FROM node:18 AS build
-WORKDIR /app
-COPY . .
-RUN npm install
-RUN npm run build
+FROM node:18-slim
 
-# Estágio de Execução
-FROM node:18
+# Instala apenas o necessário para o Puppeteer (Chromium)
+RUN apt-get update && apt-get install -y \
+    chromium \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-# Copia o servidor compilado e a pasta dist
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package*.json ./
-# Instala apenas dependências de produção
+COPY package*.json ./
 RUN npm install --production
-# Define a porta (Cloud Run injeta essa variável, mas é bom garantir)
+
+# Copia os arquivos já buildados
+COPY dist ./dist
+
 ENV PORT=8080
-EXPOSE 8080
-# Comando de inicialização correto para o arquivo .cjs
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 CMD ["node", "dist/server.cjs"]
