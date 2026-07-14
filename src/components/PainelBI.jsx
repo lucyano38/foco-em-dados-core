@@ -1217,8 +1217,8 @@ export default function PainelBI({ currentUser }) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
                     
                     {/* Faturamento Líquido */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -1235,8 +1235,8 @@ export default function PainelBI({ currentUser }) {
                     </div>
 
                     {/* Ticket Médio */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
@@ -1253,8 +1253,8 @@ export default function PainelBI({ currentUser }) {
                     </div>
 
                     {/* Itens Vendidos */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-purple-500"></div>
@@ -1271,8 +1271,8 @@ export default function PainelBI({ currentUser }) {
                     </div>
 
                     {/* Desconto Concedido */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-amber-500"></div>
@@ -1289,8 +1289,8 @@ export default function PainelBI({ currentUser }) {
                     </div>
 
                     {/* Comissões */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-pink-500"></div>
@@ -1307,8 +1307,8 @@ export default function PainelBI({ currentUser }) {
                     </div>
 
                     {/* A Receber */}
-                    <div className={`p-4 rounded-2xl border transition-transform hover:-translate-y-0.5 ${
-                      darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200/80 shadow-sm'
+                    <div className={`p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12] ${
+                      darkMode ? '' : 'bg-white border-slate-200/80 shadow-sm'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
@@ -1377,7 +1377,7 @@ export default function PainelBI({ currentUser }) {
                   
                   {/* Line Chart Panel */}
                   <div className={`p-6 rounded-2xl border shadow-xl ${
-                    darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                    darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                       <div className="flex flex-col gap-1">
@@ -1420,7 +1420,7 @@ export default function PainelBI({ currentUser }) {
 
                   {/* Horizontal Bar Chart Panel */}
                   <div className={`p-6 rounded-2xl border shadow-xl ${
-                    darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                    darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                       <div className="flex flex-col gap-1">
@@ -1495,7 +1495,7 @@ export default function PainelBI({ currentUser }) {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     
-                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'}`}>
                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">
                         PRODUTOS DISTINTOS
                       </span>
@@ -1504,7 +1504,7 @@ export default function PainelBI({ currentUser }) {
                       </h4>
                     </div>
 
-                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'}`}>
                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">
                         MARCAS PARCEIRAS
                       </span>
@@ -1513,7 +1513,7 @@ export default function PainelBI({ currentUser }) {
                       </h4>
                     </div>
 
-                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'}`}>
                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">
                         PRODUTO LÍDER
                       </span>
@@ -1525,7 +1525,7 @@ export default function PainelBI({ currentUser }) {
                       </p>
                     </div>
 
-                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'}`}>
                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block mb-1">
                         MARCA LÍDER
                       </span>
@@ -1544,7 +1544,7 @@ export default function PainelBI({ currentUser }) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   
                   <div className={`p-6 rounded-2xl border shadow-xl ${
-                    darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                    darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="mb-4">
                       <span className={`text-xs font-black uppercase tracking-wider block ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -1558,7 +1558,7 @@ export default function PainelBI({ currentUser }) {
                   </div>
 
                   <div className={`p-6 rounded-2xl border shadow-xl ${
-                    darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                    darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="mb-4">
                       <span className={`text-xs font-black uppercase tracking-wider block ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -1575,7 +1575,7 @@ export default function PainelBI({ currentUser }) {
 
                 {/* Full Width bottom chart for product volume */}
                 <div className={`p-6 rounded-2xl border shadow-xl ${
-                  darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                  darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                 }`}>
                   <div className="mb-4">
                     <span className={`text-xs font-black uppercase tracking-wider block ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -1595,7 +1595,7 @@ export default function PainelBI({ currentUser }) {
             {/* ======================================= */}
             {currentTab === 'vendedores' && (
               <div className={`p-6 rounded-2xl border shadow-xl ${
-                darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
               }`}>
                 <div className="mb-6 flex justify-between items-center">
                   <div>
@@ -1744,7 +1744,7 @@ export default function PainelBI({ currentUser }) {
 
                 {/* Detailed Client Ledger */}
                 <div className={`p-6 rounded-2xl border shadow-xl ${
-                  darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                  darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                 }`}>
                   <div className="flex justify-between items-center mb-4">
                     <div>
@@ -1862,7 +1862,7 @@ export default function PainelBI({ currentUser }) {
 
                 {/* Receivables Details Ledgers List */}
                 <div className={`p-6 rounded-2xl border shadow-xl ${
-                  darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                  darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                 }`}>
                   <div className="flex justify-between items-center mb-4">
                     <div>
@@ -1922,7 +1922,7 @@ export default function PainelBI({ currentUser }) {
             {/* ======================================= */}
             {currentTab === 'dados' && (
               <div className={`p-6 rounded-2xl border shadow-xl ${
-                darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
               }`}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                   <div>
@@ -2169,7 +2169,7 @@ export default function PainelBI({ currentUser }) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Left explanation card / interactive context */}
                   <div className={`p-6 rounded-2xl border lg:col-span-1 flex flex-col justify-between ${
-                    darkMode ? 'bg-[#0f111a]/80 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'
+                    darkMode ? 'bg-white/[0.02] border-white/[0.06]' : 'bg-white border-slate-200 shadow-sm'
                   }`}>
                     <div className="space-y-5">
                       <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">

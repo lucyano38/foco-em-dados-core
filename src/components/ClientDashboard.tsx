@@ -220,7 +220,7 @@ Passo 4: Conduza para uma chamada estratégica rápida de 15 minutos ou fechamen
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Connection Widget Card */}
-        <div className="lg:col-span-1 rounded-3xl bg-slate-900/60 border border-white/5 p-6 space-y-6 flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-1 rounded-xl bg-white/[0.02] border border-white/[0.06] p-6 space-y-6 flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status da Conexão</span>
@@ -264,36 +264,36 @@ Passo 4: Conduza para uma chamada estratégica rápida de 15 minutos ou fechamen
         </div>
 
         {/* Live Metrics Widget - Fábrica de Bots Concept */}
-        <div className="lg:col-span-2 rounded-3xl bg-slate-900/60 border border-white/5 p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-2 rounded-xl bg-white/[0.02] border border-white/[0.06] p-6 grid grid-cols-1 sm:grid-cols-3 gap-6 transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
+          <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between space-y-4 transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Conversas Hoje</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Conversas Hoje</span>
               <Sliders className="w-4 h-4 text-cyan-400" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-white">1.482</span>
+              <span className="text-2xl sm:text-3xl font-bold text-slate-100">1.482</span>
               <span className="block text-[10px] text-emerald-400 mt-1 font-semibold">↑ 18.4% vs ontem</span>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col justify-between space-y-4">
+          <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between space-y-4 transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Tempo de Resposta</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tempo de Resposta</span>
               <Zap className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-white">1.2s</span>
+              <span className="text-2xl sm:text-3xl font-bold text-slate-100">1.2s</span>
               <span className="block text-[10px] text-emerald-400 mt-1 font-semibold">Tempo ideal de IA</span>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex flex-col justify-between space-y-4">
+          <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between space-y-4 transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Assertividade IA</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Assertividade IA</span>
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-white">99.2%</span>
+              <span className="text-2xl sm:text-3xl font-bold text-slate-100">99.2%</span>
               <span className="block text-[10px] text-slate-500 mt-1 font-semibold">Taxa de sucesso comercial</span>
             </div>
           </div>
@@ -322,7 +322,7 @@ Passo 4: Conduza para uma chamada estratégica rápida de 15 minutos ou fechamen
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Niche training form */}
-        <div className="lg:col-span-5 rounded-3xl bg-slate-900/60 border border-white/5 p-6 space-y-6">
+        <div className="lg:col-span-5 rounded-xl bg-white/[0.02] border border-white/[0.06] p-6 space-y-6 transition-all duration-200 hover:bg-white/[0.04] hover:border-white/[0.12]">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-cyan-400">
               <Sparkles className="w-5 h-5" />
