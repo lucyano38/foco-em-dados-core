@@ -13,5 +13,6 @@ RUN npm run build
 
 ENV PORT=8080
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+EXPOSE 8080
 
 CMD ["node", "dist/server.cjs"]
