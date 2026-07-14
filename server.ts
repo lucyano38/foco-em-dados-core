@@ -1379,12 +1379,16 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
 
   app.get('*', (req, res) => {
     const indexPath = path.join(process.cwd(), 'dist', 'index.html');
-    let html = fs.readFileSync(indexPath, 'utf-8');
-    html = html.replace(
-      '</head>',
-      `<script>window.__FIREBASE_CONFIG__=${JSON.stringify(firebaseConfig)}</script></head>`
-    );
-    res.type('html').send(html);
+    try {
+      let html = fs.readFileSync(indexPath, 'utf-8');
+      html = html.replace(
+        '</head>',
+        `<script>window.__FIREBASE_CONFIG__=${JSON.stringify(firebaseConfig)}</script></head>`
+      );
+      res.type('html').send(html);
+    } catch {
+      res.status(200).send(`<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Foco em Dados</title><style>body{margin:0;background:#020617;color:#f1f5f9;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}div{text-align:center}h1{font-size:1.5rem;font-weight:700}p{color:#64748b;font-size:0.875rem}</style></head><body><div><h1>Foco em Dados</h1><p>Plataforma em manutenção. Recarregue em instantes.</p></div></body></html>`);
+    }
   });
 
   app.listen(PORT, "0.0.0.0", () => {
