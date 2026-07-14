@@ -6,26 +6,13 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
-import { initializeApp, getApps } from "firebase-admin/app";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
+import { FieldValue } from "firebase-admin/firestore";
+import { db, auth } from "./src/lib/admin";
 import crypto from "crypto";
 import Stripe from "stripe";
 import QRCode from "qrcode";
 import cors from "cors";
 import authRouter from "./src/routes/auth";
-
-// Initialize Firebase Admin 
-// (Requires GOOGLE_APPLICATION_CREDENTIALS env var with service account path in production)
-try {
-  if (!getApps().length) {
-    initializeApp();
-  }
-} catch (error) {
-  console.log("Firebase Admin initialization skipped (needs credentials in production).");
-}
-
-const db = getApps().length ? getFirestore() : null;
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -399,13 +386,7 @@ async function startServer() {
 
         const idToken = authHeader.split("Bearer ")[1];
         
-        // Se o Firebase Admin não estiver configurado corretamente (ambiente de teste local, etc.)
-        if (!getApps().length) {
-          console.warn("Firebase Admin não inicializado. Ignorando validação de token.");
-          return res.status(503).json({ error: "Serviço de autenticação temporariamente indisponível." });
-        }
-
-        const decodedToken = await getAuth().verifyIdToken(idToken);
+        const decodedToken = await auth.verifyIdToken(idToken);
         const email = decodedToken.email || "";
         const uid = decodedToken.uid;
         const isLucyano = email.toLowerCase() === "lucyano.pci@gmail.com";
@@ -463,12 +444,7 @@ async function startServer() {
 
       const idToken = authHeader.split("Bearer ")[1];
       
-      if (!getApps().length) {
-        console.warn("Firebase Admin não inicializado. Ignorando validação.");
-        return res.status(503).json({ error: "Serviço de autenticação temporariamente indisponível." });
-      }
-
-      const decodedToken = await getAuth().verifyIdToken(idToken);
+      const decodedToken = await auth.verifyIdToken(idToken);
       const email = decodedToken.email || "";
       const uid = decodedToken.uid;
       const isLucyano = email.toLowerCase() === "lucyano.pci@gmail.com";
@@ -1035,13 +1011,11 @@ Responda em português brasileiro (PT-BR) exclusivamente com o JSON válido. Nã
       let uid = "";
       if (authHeader && authHeader.startsWith("Bearer ")) {
         const idToken = authHeader.split("Bearer ")[1];
-        if (getApps().length) {
-          try {
-            const decodedToken = await getAuth().verifyIdToken(idToken);
-            uid = decodedToken.uid;
-          } catch (tokenErr) {
-            console.error("Erro ao verificar token no upload:", tokenErr);
-          }
+        try {
+          const decodedToken = await auth.verifyIdToken(idToken);
+          uid = decodedToken.uid;
+        } catch (tokenErr) {
+          console.error("Erro ao verificar token no upload:", tokenErr);
         }
       }
 

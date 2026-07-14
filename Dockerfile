@@ -1,18 +1,16 @@
 FROM node:18-slim
 
-# Instala apenas o necessário para o Puppeteer (Chromium)
 RUN apt-get update && apt-get install -y \
     chromium \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
-# Copia os arquivos já buildados
-COPY dist ./dist
+COPY . .
 
 ENV PORT=8080
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-CMD ["node", "dist/server.cjs"]
+CMD ["npm", "start"]

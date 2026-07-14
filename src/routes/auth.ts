@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getFirestore } from 'firebase-admin/firestore';
+import { db } from '../lib/admin';
 
 const router = Router();
 
@@ -7,7 +7,6 @@ router.post('/register', async (req, res) => {
   const { name, email, uid } = req.body;
 
   try {
-    const db = getFirestore();
 
     let userRole = 'Gratuito';
     if (email === 'lucyano.pci@gmail.com') {
