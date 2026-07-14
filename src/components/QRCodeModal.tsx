@@ -91,7 +91,7 @@ export default function QRCodeModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/80"
       />
 
       {/* Modal Content */}
@@ -99,7 +99,7 @@ export default function QRCodeModal({
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className="backdrop-blur-lg bg-slate-950/90 border border-white/10 rounded-3xl p-6 sm:p-8 max-w-md w-full relative z-10 shadow-[0_0_50px_rgba(16,185,129,0.2)] space-y-6 text-center"
+        className="bg-slate-950/95 border border-white/10 rounded-3xl p-6 sm:p-8 max-w-md w-full relative z-10 shadow-[0_0_50px_rgba(16,185,129,0.2)] space-y-6 text-center"
       >
         {/* Close Button */}
         <button

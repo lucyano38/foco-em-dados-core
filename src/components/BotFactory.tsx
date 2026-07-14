@@ -793,7 +793,7 @@ export default function BotFactory() {
                       <RefreshCw className="w-6 h-6 text-slate-400 animate-spin" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center p-4 text-center">
+                  <div className="absolute inset-0 bg-slate-950/90 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center p-4 text-center">
                     <span className="text-[10px] font-mono text-emerald-400 font-bold">Instância Pronta para Conectar</span>
                   </div>
                 </div>
