@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:20-slim
 
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run build
