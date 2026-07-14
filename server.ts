@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import multer from "multer";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -1368,7 +1369,19 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
   app.use(express.static('dist'));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    const possiblePaths = [
+      path.join(__dirname, 'index.html'),
+      path.join(process.cwd(), 'dist', 'index.html'),
+      path.resolve('dist/index.html'),
+    ];
+    for (const filePath of possiblePaths) {
+      try {
+        if (fs.existsSync(filePath)) {
+          return res.sendFile(filePath);
+        }
+      } catch {}
+    }
+    res.status(200).type('html').send('<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Foco em Dados</title><style>body{margin:0;background:#020617;color:#f1f5f9;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center}h1{font-size:1.5rem;font-weight:700}p{color:#64748b;font-size:0.875rem}</style></head><body><div><h1>Foco em Dados</h1><p>A plataforma está sendo carregada. Tente novamente em instantes.</p></div></body></html>');
   });
 
   app.listen(PORT, "0.0.0.0", () => {
