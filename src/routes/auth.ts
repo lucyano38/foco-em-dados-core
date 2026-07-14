@@ -1,7 +1,5 @@
-// src/routes/auth.ts
 import { Router } from 'express';
 import { getFirestore } from 'firebase-admin/firestore';
-const db = getFirestore();
 
 const router = Router();
 
@@ -9,19 +7,19 @@ router.post('/register', async (req, res) => {
   const { name, email, uid } = req.body;
 
   try {
-    // Regra de Ouro: Define seu acesso como Master automaticamente
+    const db = getFirestore();
+
     let userRole = 'Gratuito';
     if (email === 'lucyano.pci@gmail.com') {
       userRole = 'Master';
     }
 
-    // Salva o usuário de forma simples no banco de dados
     await db.collection('users').doc(uid).set({
       name,
       email,
       role: userRole,
       createdAt: new Date(),
-      stripeCustomerId: null // Será preenchido quando ele assinar
+      stripeCustomerId: null
     });
 
     return res.status(201).json({ 
