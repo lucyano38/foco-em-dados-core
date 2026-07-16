@@ -1,1 +1,4 @@
 firebase-applet-config.json
+dist
+node_modules
+.git
