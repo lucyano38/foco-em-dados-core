@@ -1,4 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -12,7 +14,8 @@ import {
   Calculator,
   HelpCircle,
   Hash,
-  Database
+  Database,
+  FileText
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -192,6 +195,30 @@ export const ProfessionalChartBuilder: React.FC<ProfessionalChartBuilderProps> =
     };
   }, [rawData, selectedY]);
 
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const handleExportPDF = async () => {
+    const element = chartRef.current;
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#0b1326',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`relatorio_bi_${Date.now()}.pdf`);
+    } catch (err) {
+      console.error('Erro ao exportar PDF:', err);
+    }
+  };
+
   // Helper formatting for currency/large numbers
   const formatValue = (val: number) => {
     if (val >= 1_000_000) {
@@ -224,7 +251,7 @@ export const ProfessionalChartBuilder: React.FC<ProfessionalChartBuilderProps> =
   };
 
   return (
-    <div className="w-full bg-slate-900/45 border border-white/5 rounded-2xl p-6 backdrop-blur-xl shadow-xl flex flex-col gap-6" id="bi-chart-builder">
+    <div ref={chartRef} className="w-full bg-slate-900/45 border border-white/5 rounded-2xl p-6 backdrop-blur-xl shadow-xl flex flex-col gap-6" id="bi-chart-builder">
       
       {/* Upper Panel: KPI Cards and Summary Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -540,7 +567,16 @@ export const ProfessionalChartBuilder: React.FC<ProfessionalChartBuilderProps> =
 
           <div className="text-[10px] text-slate-500 mt-3 border-t border-white/5 pt-3 flex items-center justify-between">
             <span>Powered by Gemini & Recharts Core</span>
-            <span>Estilo Inteligente Power BI habilitado</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleExportPDF}
+                className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded-lg text-xs font-semibold text-indigo-300 flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                Exportar PDF
+              </button>
+              <span>Estilo Inteligente Power BI habilitado</span>
+            </div>
           </div>
 
         </div>

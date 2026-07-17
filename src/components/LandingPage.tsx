@@ -527,7 +527,7 @@ export default function LandingPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Vertical 1 */}
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 p-8 flex flex-col justify-between hover:border-cyan-400/30 hover:bg-white/10 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] rounded-2xl transition-all duration-300 group">
+          <div className="glass-card p-8 flex flex-col justify-between hover:border-cyan-400/30 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 group">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-cyan-950/50 border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-950/80 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-300">
                 <BarChart3 className="w-7 h-7 text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
@@ -554,7 +554,7 @@ export default function LandingPage({
           </div>
 
           {/* Vertical 2 */}
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 p-8 flex flex-col justify-between hover:border-cyan-400/30 hover:bg-white/10 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] rounded-2xl transition-all duration-300 group">
+          <div className="glass-card p-8 flex flex-col justify-between hover:border-cyan-400/30 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 group">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-cyan-950/50 border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-950/80 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-300">
                 <Bot className="w-7 h-7 text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
@@ -589,7 +589,7 @@ export default function LandingPage({
           </div>
 
           {/* Vertical 3 */}
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 p-8 flex flex-col justify-between hover:border-cyan-400/30 hover:bg-white/10 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] rounded-2xl transition-all duration-300 group">
+          <div className="glass-card p-8 flex flex-col justify-between hover:border-cyan-400/30 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 group">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-cyan-950/50 border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-950/80 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all duration-300">
                 <Rocket className="w-7 h-7 text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
@@ -662,7 +662,7 @@ export default function LandingPage({
             className="w-full"
           >
             {activeTab === 'bi' && (
-              <div className="backdrop-blur-md bg-white/5 border border-white/10 p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-2xl shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
+              <div className="glass-card p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
                 <div className="lg:col-span-7 space-y-6 text-left">
                   <div className="w-12 h-12 rounded-xl bg-cyan-950/50 border border-cyan-500/20 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
@@ -740,7 +740,7 @@ export default function LandingPage({
             )}
 
             {activeTab === 'bots' && (
-              <div className="backdrop-blur-md bg-white/5 border border-white/10 p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 rounded-2xl shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
+              <div className="glass-card p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
                 {/* Simulator Inputs */}
                 <div className="lg:col-span-5 space-y-6 text-left">
                   <div>
@@ -891,7 +891,7 @@ export default function LandingPage({
             )}
 
             {activeTab === 'marketing' && (
-              <div className="backdrop-blur-md bg-white/5 border border-white/10 p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 rounded-2xl shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
+              <div className="glass-card p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:border-cyan-500/20 transition-all duration-300">
                 {/* Marketing Inputs */}
                 <div className="lg:col-span-5 space-y-6 text-left">
                   <div>
@@ -1068,7 +1068,7 @@ export default function LandingPage({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Plano Pro */}
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col justify-between hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 relative overflow-hidden group">
+          <div className="glass-card p-8 flex flex-col justify-between hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 relative overflow-hidden group">
             <div className="space-y-6">
               <span className="text-[10px] bg-cyan-500/10 text-cyan-400 font-extrabold px-3 py-1 rounded-full uppercase font-mono tracking-wider border border-cyan-500/20">SaaS Inteligência Analítica</span>
               <div>
@@ -1119,7 +1119,7 @@ export default function LandingPage({
           </div>
 
           {/* Plano Premium - Destaque */}
-          <div className="backdrop-blur-md bg-white/10 border-2 border-cyan-400 p-8 rounded-2xl flex flex-col justify-between hover:bg-white/15 transition-all duration-300 relative overflow-hidden group scale-100 md:scale-105 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+          <div className="glass-card border-2 border-cyan-400 p-8 flex flex-col justify-between hover:bg-white/15 transition-all duration-300 relative overflow-hidden group scale-100 md:scale-105 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)]">
             <div className="absolute top-0 right-0 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-[9px] uppercase tracking-wider px-4 py-1.5 rounded-bl-xl shadow-[0_0_10px_rgba(34,211,238,0.4)]">
               Mais Vendido
             </div>
@@ -1181,7 +1181,7 @@ export default function LandingPage({
           </div>
 
           {/* Plano Enterprise */}
-          <div className="backdrop-blur-md bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col justify-between hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 relative overflow-hidden group">
+          <div className="glass-card p-8 flex flex-col justify-between hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all duration-300 relative overflow-hidden group">
             <div className="space-y-6">
               <span className="text-[10px] bg-cyan-500/10 text-cyan-400 font-extrabold px-3 py-1 rounded-full uppercase font-mono tracking-wider border border-cyan-500/20">Soluções Corporativas</span>
               <div>
@@ -1275,7 +1275,7 @@ export default function LandingPage({
             return (
               <div 
                 key={idx} 
-                className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                className="glass-card overflow-hidden transition-all duration-300 hover:border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)]"
               >
                 <button
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}

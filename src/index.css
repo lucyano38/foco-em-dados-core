@@ -49,6 +49,13 @@ body {
   border-radius: 1rem;
 }
 
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+}
+
 .card-hover {
   transition: all 0.2s ease;
 }

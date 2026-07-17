@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import * as XLSX from 'xlsx';
 import { 
   Search, Plus, Trash2, ArrowUpDown, ChevronDown, Check, X, 
-  RotateCcw, Save, Download, Calculator, HelpCircle 
+  RotateCcw, Save, Download, Calculator, HelpCircle, FileSpreadsheet
 } from 'lucide-react';
 
 interface SpreadsheetGridProps {
@@ -197,6 +198,43 @@ export function SpreadsheetGrid({ headers: initialHeaders, sampleData: initialDa
     document.body.removeChild(link);
   };
 
+  // Export grid to Excel with preserved cell formatting
+  const handleDownloadExcel = () => {
+    if (gridData.length === 0) return;
+
+    const aoa: any[][] = [headers];
+    gridData.forEach(row => {
+      aoa.push(headers.map(h => row[h]));
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+    const colWidths = headers.map((h, i) => ({
+      wch: Math.max(
+        h.length,
+        ...gridData.map(r => String(r[h] ?? '').length),
+        14
+      )
+    }));
+    ws['!cols'] = colWidths;
+
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:A1');
+    for (let R = range.s.r + 1; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const addr = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = ws[addr];
+        if (cell && typeof cell.v === 'number') {
+          cell.z = '#,##0.00';
+        }
+      }
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Dados');
+
+    XLSX.writeFile(wb, `planilha_${Date.now()}.xlsx`, { cellStyles: true });
+  };
+
   // Process rows by filtering & sorting
   const processedRows = useMemo(() => {
     let result = [...gridData];
@@ -336,6 +374,14 @@ export function SpreadsheetGrid({ headers: initialHeaders, sampleData: initialDa
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Descartar
+          </button>
+
+          <button
+            onClick={handleDownloadExcel}
+            className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/30 rounded-lg text-xs font-semibold text-emerald-300 flex items-center gap-1.5 transition-all"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            Baixar XLSX
           </button>
 
           <button

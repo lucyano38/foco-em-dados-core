@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import { applyPlugin } from 'jspdf-autotable';
+applyPlugin(jsPDF);
 import { 
   LayoutDashboard, 
   Tag, 
@@ -655,15 +656,21 @@ export default function PainelBI({ currentUser }) {
 
   // Export back as beautiful optimized Excel
   const exportExcel = () => {
-    if (rawData.length === 0) return;
-    const ws = XLSX.utils.json_to_sheet(rawData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Dados Consolidados");
-    XLSX.writeFile(wb, `VendasBI_${fileName.split('.')[0]}.xlsx`);
+    try {
+      if (rawData.length === 0) return;
+      const ws = XLSX.utils.json_to_sheet(rawData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Dados Consolidados");
+      XLSX.writeFile(wb, `VendasBI_${fileName.split('.')[0]}.xlsx`);
+    } catch (err) {
+      console.error("Erro ao exportar Excel:", err);
+      alert("Erro ao exportar Excel: " + (err.message || err));
+    }
   };
 
   // Clean export to premium PDF with Autotable
   const exportPDF = () => {
+    try {
     if (rawData.length === 0) return;
     const doc = new jsPDF();
     
@@ -716,6 +723,10 @@ export default function PainelBI({ currentUser }) {
     }
     
     doc.save(`VendasBI_Relatorio_${fileName.split('.')[0]}.pdf`);
+    } catch (err) {
+      console.error("Erro ao exportar PDF:", err);
+      alert("Erro ao exportar PDF: " + (err.message || err));
+    }
   };
 
   // AGGREGATE CALCULATIONS
