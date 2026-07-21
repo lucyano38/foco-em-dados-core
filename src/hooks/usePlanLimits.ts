@@ -22,7 +22,7 @@ interface PlanUsage {
 const FEATURE_LABELS: Record<string, string> = {
   dashboard: 'Dashboards',
   upload: 'Linhas processadas',
-  chatbot: 'Chatbots',
+  chatbot: 'Chatbots de IA',
   integration: 'Integrações',
   api_call: 'Chamadas de API',
 }
