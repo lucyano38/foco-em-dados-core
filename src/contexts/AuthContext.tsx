@@ -19,6 +19,7 @@ interface Profile {
   plan_tier: string | null
   subscription_status: string | null
   avatar_url: string | null
+  role: string | null
   referral_code: string | null
   affiliate_enabled: boolean
   affiliate_balance: number
@@ -131,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: { redirectTo: window.location.origin },
     })
     if (error) throw error
   }

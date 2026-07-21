@@ -1,11 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Database, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { signInWithEmail, signInWithGoogle } = useAuth()
+  const { user, signInWithEmail, signInWithGoogle } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (user) navigate('/app', { replace: true })
+  }, [user, navigate])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +41,7 @@ export default function Login() {
     try {
       await signInWithGoogle()
     } catch (err: any) {
-      setError(err.message || 'Erro ao entrar com Google.')
+      alert(err?.message || 'Erro ao entrar com Google.')
     }
   }
 
