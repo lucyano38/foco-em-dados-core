@@ -7,6 +7,9 @@ import AuthCallback from './pages/AuthCallback'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import NotFound from './pages/NotFound'
+import AdminAutomacao from './pages/AdminAutomacao'
+import PreviewProposta from './pages/PreviewProposta'
+import ProtectedRouteMaster from './components/ProtectedRouteMaster'
 
 export default function App() {
   return (
@@ -18,6 +21,18 @@ export default function App() {
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
       <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
+
+      <Route path="/preview/:id" element={<PreviewProposta />} />
+
+      <Route
+        path="/admin/automacao"
+        element={
+          <ProtectedRouteMaster>
+            <AdminAutomacao />
+          </ProtectedRouteMaster>
+        }
+      />
+
       <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
     </Routes>
   )
