@@ -25,7 +25,7 @@ export default function Login() {
     setLoading(true)
     try {
       await signInWithEmail(email, password)
-      navigate('/app')
+      // Não navega aqui — o useEffect([user]) cuida do redirect
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login.')
     } finally {
