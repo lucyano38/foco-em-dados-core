@@ -1,24 +1,50 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function AuthCallback() {
-  const navigate = useNavigate()
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/app', { replace: true })
-      } else {
-        const params = new URLSearchParams(window.location.hash.replace('#', '?'))
-        const error = params.get('error_description') || params.get('error')
-        if (error) {
-          alert('Erro de Autenticação: ' + decodeURIComponent(error))
-        }
-        navigate('/login', { replace: true })
+    const handleAuth = async () => {
+      const hash = window.location.hash;
+      if (!hash || !hash.includes('access_token')) {
+        console.error('[AuthCallback] Nenhum access_token encontrado na URL');
+        window.location.href = '/login';
+        return;
       }
-    })
-  }, [navigate])
+
+      const params = new URLSearchParams(hash.replace('#', '?'));
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+
+      if (!accessToken) {
+        console.error('[AuthCallback] access_token não extraído do hash');
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken ?? '',
+        });
+
+        if (error) {
+          console.error('[AuthCallback] Erro no setSession:', error.message, error);
+          window.location.href = '/login';
+          return;
+        }
+
+        console.log('[AuthCallback] Sessão criada com sucesso:', data);
+
+        // Full page reload para evitar race condition com React state
+        window.location.href = '/app';
+      } catch (err) {
+        console.error('[AuthCallback] Exceção no setSession:', err);
+        window.location.href = '/login';
+      }
+    };
+
+    handleAuth();
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-slate-950 flex items-center justify-center">
@@ -27,5 +53,5 @@ export default function AuthCallback() {
         <p className="text-sm text-slate-400">Autenticando...</p>
       </div>
     </div>
-  )
+  );
 }
