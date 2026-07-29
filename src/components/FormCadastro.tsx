@@ -1,43 +1,32 @@
-import React, { useState } from 'react';
-import { auth, db } from '../config/firebase';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  updateProfile 
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  ArrowRight, 
-  Sparkles, 
-  AlertCircle, 
-  ShieldCheck, 
-  Loader2 
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
+import {
+  User as UserIcon,
+  Mail,
+  Lock,
+  ArrowRight,
+  Sparkles,
+  AlertCircle,
+  ShieldCheck,
+  Loader2,
 } from 'lucide-react';
 
-/**
- * COMPONENTE FORMULARIO DE CADASTRO & LOGIN
- * 
- * Implementa uma interface premium de autenticação com tema Dark/Slate.
- * 
- * REGRA DE OURO IMPLEMENTADA:
- * No momento de cadastro, se o e-mail for "lucyano.pci@gmail.com", 
- * a permissão (role) é automaticamente definida como "Master".
- * Os demais usuários são salvos com a permissão "Gratuito".
- */
-export default function FormCadastro({ onAuthSuccess }) {
+interface FormCadastroProps {
+  onAuthSuccess: (user: User) => void;
+}
+
+export default function FormCadastro({ onAuthSuccess }: FormCadastroProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
     setSucesso('');
@@ -45,54 +34,78 @@ export default function FormCadastro({ onAuthSuccess }) {
 
     try {
       if (isLogin) {
-        // Fluxo de Login Comercial
-        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password: senha,
+        });
+        if (error) throw error;
         setSucesso('Conexão realizada com sucesso! Redirecionando...');
-        if (onAuthSuccess) {
-          onAuthSuccess(userCredential.user);
+        if (onAuthSuccess && data.user) {
+          onAuthSuccess(data.user);
         }
       } else {
-        // Validações básicas de cadastro
         if (!nome.trim()) {
           throw new Error('Por favor, digite seu nome.');
         }
 
-        // Criar usuário no Firebase Authentication
-        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-        const user = userCredential.user;
-
-        // Atualiza perfil básico do usuário
-        await updateProfile(user, { displayName: nome });
-
-        // REGRA DE OURO OBRIGATÓRIA: Identificar usuário especial de teste
-        const userRole = email.trim().toLowerCase() === 'lucyano.pci@gmail.com' ? 'Master' : 'Gratuito';
-
-        // Salvar as permissões no Firestore Database com segurança
-        const userDocRef = doc(db, 'users', user.uid);
-        await setDoc(userDocRef, {
-          name: nome,
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
-          role: userRole,
-          createdAt: new Date().toISOString(),
-          stripeCustomerId: null
+          password: senha,
+          options: {
+            data: { name: nome.trim() },
+          },
         });
 
-        setSucesso(`Conta criada! Nível de acesso: ${userRole}. Iniciando sessão...`);
-        if (onAuthSuccess) {
-          onAuthSuccess(user);
+        if (error) throw error;
+
+        const user = data.user;
+        if (user) {
+          const userRole =
+            email.trim().toLowerCase() === 'lucyano.pci@gmail.com'
+              ? 'Master'
+              : 'Gratuito';
+
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              name: nome.trim(),
+              metadata: { role: userRole },
+            })
+            .eq('id', user.id);
+
+          if (profileError) {
+            console.warn(
+              '[FormCadastro] Erro ao atualizar perfil no Supabase:',
+              profileError.message
+            );
+          }
+
+          setSucesso(
+            `Conta criada! Nível de acesso: ${userRole}. Iniciando sessão...`
+          );
+
+          if (onAuthSuccess) {
+            onAuthSuccess(user);
+          }
+        } else {
+          setSucesso(
+            'Conta criada! Verifique seu e-mail para confirmar o cadastro.'
+          );
         }
       }
-    } catch (error) {
-      console.error("Erro na autenticação:", error);
-      // Traduzir erros comuns do Firebase para Português de forma amigável
+    } catch (error: any) {
+      console.error('Erro na autenticação:', error);
       let msgErro = error.message;
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.code === 'email_exists' || error.message?.includes('already registered')) {
         msgErro = 'Este e-mail já está sendo utilizado por outra conta.';
-      } else if (error.code === 'auth/weak-password') {
+      } else if (error.code === 'weak_password' || error.message?.includes('weak_password')) {
         msgErro = 'A senha deve possuir pelo menos 6 caracteres.';
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (error.code === 'invalid_email' || error.message?.includes('invalid email')) {
         msgErro = 'Por favor, insira um endereço de e-mail válido.';
-      } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      } else if (
+        error.message?.includes('Invalid login credentials') ||
+        error.message?.includes('invalid credentials')
+      ) {
         msgErro = 'Credenciais incorretas ou usuário não cadastrado.';
       }
       setErro(msgErro);
@@ -103,11 +116,9 @@ export default function FormCadastro({ onAuthSuccess }) {
 
   return (
     <div className="w-full max-w-md mx-auto bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden text-left">
-      {/* Detalhes de Background Glow */}
       <div className="absolute top-0 right-0 w-36 h-36 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Cabeçalho */}
       <div className="mb-6 relative z-10">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center">
@@ -121,16 +132,13 @@ export default function FormCadastro({ onAuthSuccess }) {
           {isLogin ? 'Bem-vindo ao Foco em Dados' : 'Crie sua Conta Pro'}
         </h2>
         <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-          {isLogin 
-            ? 'Monitore suas vendas e integre seus dashboards inteligentes em tempo real.' 
+          {isLogin
+            ? 'Monitore suas vendas e integre seus dashboards inteligentes em tempo real.'
             : 'Tenha acesso imediato a ferramentas de inteligência artificial de resposta direta.'}
         </p>
       </div>
 
-      {/* Formulário */}
       <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-        
-        {/* Campo Nome (Apenas em Cadastro) */}
         {!isLogin && (
           <div className="space-y-1">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -138,7 +146,7 @@ export default function FormCadastro({ onAuthSuccess }) {
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
-                <User className="w-4 h-4" />
+                <UserIcon className="w-4 h-4" />
               </span>
               <input
                 type="text"
@@ -152,7 +160,6 @@ export default function FormCadastro({ onAuthSuccess }) {
           </div>
         )}
 
-        {/* Campo E-mail */}
         <div className="space-y-1">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             E-mail Corporativo
@@ -170,7 +177,6 @@ export default function FormCadastro({ onAuthSuccess }) {
               className="w-full h-11 bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl pl-10 pr-4 text-xs text-slate-200 placeholder-slate-600 outline-none transition-all"
             />
           </div>
-          {/* Alerta de Role Master automática */}
           {email.trim().toLowerCase() === 'lucyano.pci@gmail.com' && !isLogin && (
             <div className="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 animate-bounce" />
@@ -179,7 +185,6 @@ export default function FormCadastro({ onAuthSuccess }) {
           )}
         </div>
 
-        {/* Campo Senha */}
         <div className="space-y-1">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Sua Senha Segura
@@ -199,7 +204,6 @@ export default function FormCadastro({ onAuthSuccess }) {
           </div>
         </div>
 
-        {/* Mensagens de Feedback */}
         {erro && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-3 rounded-xl flex items-start gap-2 animate-in fade-in duration-200">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
@@ -214,7 +218,6 @@ export default function FormCadastro({ onAuthSuccess }) {
           </div>
         )}
 
-        {/* Botão de Envio */}
         <button
           type="submit"
           disabled={loading}
@@ -234,7 +237,6 @@ export default function FormCadastro({ onAuthSuccess }) {
         </button>
       </form>
 
-      {/* Alternador de Modo */}
       <div className="mt-5 pt-4 border-t border-slate-800 text-center relative z-10">
         <button
           onClick={() => {
@@ -244,8 +246,8 @@ export default function FormCadastro({ onAuthSuccess }) {
           }}
           className="text-xs text-slate-400 hover:text-cyan-400 transition-colors font-medium"
         >
-          {isLogin 
-            ? 'Ainda não possui conta? Cadastre-se' 
+          {isLogin
+            ? 'Ainda não possui conta? Cadastre-se'
             : 'Já possui uma conta ativa? Faça login'}
         </button>
       </div>

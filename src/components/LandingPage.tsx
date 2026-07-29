@@ -7,8 +7,8 @@ import {
   FileSpreadsheet, HelpCircle, ArrowRight, Bot, Zap, Rocket, Globe, Shield,
   Layers, Users, Share2, Code, Mail, Smartphone, ArrowDown, ChevronDown, Check, Play, LogOut, LogIn, MessageCircle
 } from 'lucide-react';
-import { auth, signInWithGoogle, logOut } from '../firebase-config';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext';
+import type { User } from '@supabase/supabase-js';
 
 interface LandingPageProps {
   onNavigateToBI: () => void;
@@ -16,8 +16,6 @@ interface LandingPageProps {
   onNavigateToPrivacy?: () => void;
   onNavigateToTerms?: () => void;
   onNavigateToBotFactory?: () => void;
-  user: any;
-  setUser: (user: any) => void;
 }
 
 import { loadStripe } from '@stripe/stripe-js';
@@ -32,9 +30,9 @@ export default function LandingPage({
   onNavigateToPrivacy,
   onNavigateToTerms,
   onNavigateToBotFactory,
-  user,
-  setUser 
 }: LandingPageProps) {
+
+  const { user, signOut } = useAuth();
 
   // Estados para as interações dos playgrounds
   const [activeTab, setActiveTab] = useState<'bi' | 'bots' | 'marketing'>('bi');
@@ -345,14 +343,14 @@ export default function LandingPage({
                 {/* User info from Google */}
                 <div className="flex items-center gap-2">
                   <img 
-                    src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email || 'User'}`} 
+                    src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user?.user_metadata?.full_name || user?.email || 'User'}`} 
                     alt="User Profile" 
                     referrerPolicy="no-referrer"
                     className="w-8 h-8 rounded-full border border-cyan-400/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]" 
                   />
                   <div className="hidden sm:flex flex-col text-left">
-                    <span className="text-xs font-bold text-slate-200 leading-none">{user.displayName || 'Usuário'}</span>
-                    <span className="text-[9px] text-slate-500 font-mono leading-none mt-1">{user.email}</span>
+                    <span className="text-xs font-bold text-slate-200 leading-none">{user?.user_metadata?.full_name || 'Usuário'}</span>
+                    <span className="text-[9px] text-slate-500 font-mono leading-none mt-1">{user?.email}</span>
                   </div>
                 </div>
 
@@ -366,8 +364,7 @@ export default function LandingPage({
 
                 <button 
                   onClick={async () => {
-                    await logOut();
-                    setUser(null);
+                    await signOut();
                   }}
                   className="inline-flex items-center justify-center text-xs font-bold text-red-400 hover:text-red-300 border border-white/5 hover:border-red-950/40 bg-white/5 hover:bg-white/10 px-3 h-10 rounded-xl transition-all cursor-pointer"
                   title="Sair"
