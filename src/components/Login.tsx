@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, signInWithGoogle } from '../firebase-config';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
   onBack: () => void;
@@ -9,6 +8,7 @@ interface LoginProps {
 }
 
 export default function Login({ onBack, onSuccess }: LoginProps) {
+  const { signInWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -20,19 +20,11 @@ export default function Login({ onBack, onSuccess }: LoginProps) {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      onSuccess(userCredential.user);
+      await signInWithEmail(email, password);
+      onSuccess(null); // O AuthContext gerencia o estado via listener
     } catch (err: any) {
-      console.warn("Firebase Auth error. Tentando login simulado para desenvolvimento local:", err);
-      // Fallback: Se for erro de Firebase ou credenciais erradas, faz o login simulado
-      // para garantir que a experiência de desenvolvimento e visualização do usuário funcione perfeitamente.
-      const mockUser = {
-        uid: "simulated-user-123",
-        email: email,
-        displayName: email.split('@')[0],
-        photoURL: `https://ui-avatars.com/api/?name=${email}`
-      };
-      onSuccess(mockUser);
+      console.error("Erro ao autenticar:", err);
+      setError(err.message || 'Erro ao realizar login.');
     } finally {
       setLoading(false);
     }
@@ -41,11 +33,10 @@ export default function Login({ onBack, onSuccess }: LoginProps) {
   const handleGoogleLogin = async () => {
     setError(null);
     try {
-      const result = await signInWithGoogle();
-      onSuccess(result.user);
+      await signInWithGoogle();
     } catch (err: any) {
       console.error(err);
-      setError('Erro ao autenticar com o Google.');
+      setError('Erro ao iniciar login com Google.');
     }
   };
 
