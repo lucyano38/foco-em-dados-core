@@ -1,17 +1,48 @@
-<!doctype html>
-<html lang="pt-BR" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foco em Dados | Inteligência de Dados e Previsão de Vendas para o Varejo</title>
-    <meta name="description" content="Faça upload da sua planilha de vendas e receba dashboards automáticos, insights por IA e previsões para os próximos 30 dias. Sem setup, sem equipe técnica.">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  </head>
-  <body>
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foco Completo | Mystic Tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;500;600&family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              surface: '#121414',
+              'surface-container-lowest': '#0d0e0f',
+              'surface-container-highest': '#343535',
+              'on-surface': '#e3e2e2',
+              'on-surface-variant': '#d4c5ab',
+              primary: '#ffe4af',
+              'primary-container': '#ffc107',
+              'on-primary': '#3f2e00',
+              background: '#121414',
+              'outline-variant': '#4f4632'
+            },
+            fontFamily: {
+              'headline-lg': ['Hanken Grotesk', 'sans-serif'],
+              'body-md': ['Manrope', 'sans-serif'],
+              'label-sm': ['Geist', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .glass-panel { backdrop-filter: blur(20px); background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 193, 7, 0.15); }
+        .glow-hover:hover { box-shadow: 0 0 25px rgba(250, 189, 0, 0.3); border-color: rgba(250, 189, 0, 0.5); }
+        body { background-color: #121414; color: #e3e2e2; }
+    </style>
+</head>
+<body class="text-on-surface font-body-md overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+</body>
 </html>
-
