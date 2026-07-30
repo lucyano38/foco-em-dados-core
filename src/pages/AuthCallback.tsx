@@ -1,56 +1,41 @@
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 export default function AuthCallback() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleAuth = async () => {
-      console.log("AuthCallback: Iniciando processo de autenticação...");
-      const hash = window.location.hash;
+      console.log("AuthCallback: Iniciando monitoramento de sessão...");
 
-      if (!hash || !hash.includes('access_token')) {
-        console.error("AuthCallback: Nenhum access_token encontrado na URL.");
-        window.location.replace('/login');
-        return;
-      }
-
-      const params = new URLSearchParams(hash.replace('#', '?'));
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token');
-
-      if (!accessToken) {
-        console.error("AuthCallback: access_token não extraído.");
-        window.location.replace('/login');
-        return;
-      }
-
-      console.log("AuthCallback: Token detectado, salvando sessão...");
-
-      try {
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken ?? '',
-        });
-
-        if (error) {
-          console.error("AuthCallback: Erro ao salvar sessão:", error.message);
-          window.location.replace('/login');
-          return;
+      // 1. Escuta mudanças no estado de autenticação
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          console.log("AuthCallback: Evento SIGNED_IN detectado.");
+          navigate('/app');
         }
+      });
 
-        console.log("AuthCallback: Sessão salva com sucesso. Redirecionando para /app.");
-        window.location.replace('/app');
-      } catch (err: any) {
-        console.error("AuthCallback: Erro inesperado:", err);
-        window.location.replace('/login');
+      // 2. Fallback: Checa se já existe sessão ativa
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        console.log("AuthCallback: Sessão encontrada no getSession.");
+        navigate('/app');
+        return;
       }
+
+      return () => {
+        subscription.unsubscribe();
+      };
     };
 
     handleAuth();
-  }, []);
+  }, [navigate]);
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      Processando autenticação...
+    <div style={{ padding: '20px', fontFamily: 'sans-serif', textAlign: 'center', color: '#fff' }}>
+      <p>Finalizando autenticação...</p>
     </div>
   );
 }
