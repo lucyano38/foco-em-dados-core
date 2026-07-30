@@ -22,7 +22,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import QRCodeModal from './QRCodeModal';
 
 // Substitua esta chave pela sua chave publicável (Publishable Key) do painel do Stripe
-const stripePromise = loadStripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY');
 
 export default function LandingPage({ 
   onNavigateToBI, 
