@@ -8,3 +8,4 @@
   - Habilitada detecção de sessão automática no `src/lib/supabase.ts` (commit 8c5500e).
   - Criada pasta `.history` e arquivo `.history/changes.md`.
   - Corrigido carregamento da chave do Stripe na `LandingPage.tsx` (commit ad3f097).
+  - Refatorado `src/components/Login.tsx` para remover dependências do Firebase e utilizar `AuthContext` do Supabase (commit a8ccd22).
