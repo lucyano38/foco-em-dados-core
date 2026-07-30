@@ -9,3 +9,6 @@
   - Criada pasta `.history` e arquivo `.history/changes.md`.
   - Corrigido carregamento da chave do Stripe na `LandingPage.tsx` (commit ad3f097).
   - Refatorado `src/components/Login.tsx` para remover dependências do Firebase e utilizar `AuthContext` do Supabase (commit a8ccd22).
+  - Corrigido travamento no `AuthCallback.tsx` com listeners de autenticação ativos (commit 736c9b0).
+  - Criada migration para a tabela `public.leads` no Supabase (commit 0b88bfa).
+  - Criado e integrado o módulo de automação/Prospector (`src/pages/AdminAutomacao/index.tsx`) com interface Glassmorphic e conexão Supabase (`public.leads`), com commit e push automáticos (commit 0b88bfa).
