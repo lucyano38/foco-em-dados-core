@@ -1,19 +1,18 @@
-# Etapa 1: Instalar dependências e compilar o projeto
-FROM node:18 AS builder
+FROM node:20-slim
+
 WORKDIR /app
+
+# Copia apenas os arquivos de dependência primeiro (para usar cache)
 COPY package*.json ./
-RUN npm install --include=optional
+
+# Instala as dependências limpas no Linux
+RUN npm ci
+
+# Agora copia o restante do código (respeitando o seu novo .dockerignore)
 COPY . .
+
+# Compila o projeto (Vite / Tailwind)
 RUN npm run build
 
-# Etapa 2: Servir o site usando um servidor leve (como Nginx ou Node)
-FROM node:18-alpine
-WORKDIR /app
-COPY package.json ./
-RUN npm install --production --include=optional
-COPY --from=builder /app/dist ./dist
-
-ENV PORT=8080
 EXPOSE 8080
-
 CMD ["node", "dist/server.cjs"]
