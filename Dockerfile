@@ -1,18 +1,19 @@
-# Use uma imagem leve de Node.js
-FROM node:18-alpine
-
-# Define o diretório de trabalho
+# Etapa 1: Instalar dependências e compilar o projeto
+FROM node:18 AS builder
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# Copia os arquivos de build
-COPY dist ./dist
+# Etapa 2: Servir o site usando um servidor leve (como Nginx ou Node)
+FROM node:18-alpine
+WORKDIR /app
 COPY package.json ./
-
-# Instala apenas dependências de produção (se houver)
 RUN npm install --production
+COPY --from=builder /app/dist ./dist
 
-# Expõe a porta que o Cloud Run usa
+ENV PORT=8080
 EXPOSE 8080
 
-# Comando que força o início do seu servidor
 CMD ["node", "dist/server.cjs"]
