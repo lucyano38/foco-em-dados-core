@@ -1,18 +1,18 @@
-FROM node:20-slim
+# Use uma imagem leve de Node.js
+FROM node:18-alpine
 
-RUN apt-get update && apt-get install -y \
-    chromium \
-    && rm -rf /var/lib/apt/lists/*
-
+# Define o diretório de trabalho
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
 
-COPY . .
-RUN npm run build
+# Copia os arquivos de build
+COPY dist ./dist
+COPY package.json ./
 
-ENV PORT=8080
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+# Instala apenas dependências de produção (se houver)
+RUN npm install --production
+
+# Expõe a porta que o Cloud Run usa
 EXPOSE 8080
 
+# Comando que força o início do seu servidor
 CMD ["node", "dist/server.cjs"]
