@@ -2,7 +2,7 @@
 FROM node:18 AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --include=optional
 COPY . .
 RUN npm run build
 
@@ -10,7 +10,7 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 COPY package.json ./
-RUN npm install --production
+RUN npm install --production --include=optional
 COPY --from=builder /app/dist ./dist
 
 ENV PORT=8080
