@@ -1364,12 +1364,20 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
   }
 
   // --- CONFIGURAÇÃO PARA SERVIR O FRONTEND ---
+  const staticPath = __dirname;
 
-  const staticPath = path.resolve(__dirname, '..', 'dist');
+  // Bloquear acesso direto aos arquivos do servidor compilado por segurança
+  app.use((req, res, next) => {
+    if (req.path === '/server.cjs' || req.path === '/server.cjs.map') {
+      return res.status(404).send('Not Found');
+    }
+    next();
+  });
+
   app.use(express.static(staticPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(staticPath, 'index.html'));
+    res.sendFile(path.join(staticPath, 'index.html'));
   });
 
   app.listen(PORT, "0.0.0.0", () => {
