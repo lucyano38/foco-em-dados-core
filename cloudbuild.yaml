@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-west1-docker.pkg.dev/appcuidador-23628/foco-completo/site:latest', '.']
+images:
+  - 'us-west1-docker.pkg.dev/appcuidador-23628/foco-completo/site:latest'
