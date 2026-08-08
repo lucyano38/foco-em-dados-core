@@ -1,15 +1,15 @@
 steps:
   # 1. Compila a imagem Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/appcuidador-23628/github.com/lucyano38/foco-em-dados-core:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA', '.']
     id: 'Build'
 
-  # 2. Envia a imagem para o Container Registry
+  # 2. Envia a imagem para o Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/appcuidador-23628/github.com/lucyano38/foco-em-dados-core:$COMMIT_SHA']
+    args: ['push', 'us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA']
     id: 'Push'
 
-  # 3. Realiza o deploy para o Cloud Run (foco-completo)
+  # 3. Realiza o deploy automático para o Cloud Run (foco-completo)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     entrypoint: 'gcloud'
     args:
@@ -18,13 +18,13 @@ steps:
       - 'update'
       - 'foco-completo'
       - '--platform=managed'
-      - '--image=gcr.io/appcuidador-23628/github.com/lucyano38/foco-em-dados-core:$COMMIT_SHA'
+      - '--image=us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA'
       - '--region=us-west1'
       - '--quiet'
     id: 'Deploy'
 
 images:
-  - 'gcr.io/appcuidador-23628/github.com/lucyano38/foco-em-dados-core:$COMMIT_SHA'
+  - 'us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
