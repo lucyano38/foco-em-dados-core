@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, FileSpreadsheet } from 'lucide-react'
+import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Shield } from 'lucide-react'
 
 const FEATURES = [
   {
@@ -57,6 +57,10 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
             <a href="#funciona" className="hover:text-white transition-colors">Como funciona</a>
             <Link to="/precos" className="hover:text-white transition-colors">Planos</Link>
+            <Link to="/admin/automacao" className="text-amber-400 hover:text-amber-300 font-bold transition-colors flex items-center gap-1">
+              <Shield className="w-3.5 h-3.5" />
+              Acesso Restrito Admin
+            </Link>
             <a href="#contato" className="hover:text-white transition-colors">Suporte</a>
           </nav>
           <div className="flex items-center gap-3">
@@ -90,8 +94,13 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="pt-36 pb-20 px-4">
-          <div className="max-w-5xl mx-auto text-center">
+        {/* Hero Section com Background HD */}
+        <section 
+          className="pt-36 pb-20 px-4 relative bg-cover bg-center overflow-hidden" 
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop')" }}
+        >
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm"></div>
+          <div className="max-w-5xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-6">
               <Sparkles className="w-3.5 h-3.5" />
               Sua loja com IA — sem programação
@@ -112,14 +121,14 @@ export default function Home() {
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link
                 to={user ? '/app' : '/login'}
-                className="h-12 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all"
+                className="h-12 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20"
               >
                 <Upload className="w-4 h-4" />
                 Fazer Upload Grátis
               </Link>
               <a
                 href="#funciona"
-                className="h-12 px-8 rounded-xl border border-white/10 hover:border-white/20 text-sm font-medium flex items-center gap-2 transition-all"
+                className="h-12 px-8 rounded-xl border border-white/10 hover:border-white/20 text-sm font-medium flex items-center gap-2 transition-all bg-white/5"
               >
                 Ver Como Funciona
               </a>
@@ -127,8 +136,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="funciona" className="py-20 px-4">
-          <div className="max-w-6xl mx-auto">
+        {/* Seção Como Funciona com Background HD 2 */}
+        <section 
+          id="funciona" 
+          className="py-20 px-4 relative bg-cover bg-center overflow-hidden border-t border-b border-white/5"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1920&auto=format&fit=crop')" }}
+        >
+          <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md"></div>
+          <div className="max-w-6xl mx-auto relative z-10">
             <h2 className="text-3xl font-bold text-center mb-4">Como funciona</h2>
             <p className="text-slate-400 text-center mb-12 max-w-xl mx-auto">
               Três passos simples para transformar dados em decisões.
@@ -139,7 +154,7 @@ export default function Home() {
                 { step: '02', title: 'IA analisa', desc: 'Nossa IA processa e identifica padrões, sazonalidade, produtos top e gargalos automaticamente.' },
                 { step: '03', title: 'Decida com dados', desc: 'Receba dashboards, alertas e previsões para tomar decisões mais rápidas e precisas.' },
               ].map((item) => (
-                <div key={item.step} className="glass-card p-8 text-center">
+                <div key={item.step} className="glass-card p-8 text-center bg-slate-900/60 backdrop-blur-xl border border-white/10">
                   <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-lg mx-auto mb-4">
                     {item.step}
                   </div>
@@ -213,6 +228,7 @@ export default function Home() {
             Foco em Dados
           </div>
           <div className="flex items-center gap-6">
+            <Link to="/admin/automacao" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">Acesso Restrito Admin</Link>
             <Link to="/privacidade" className="hover:text-slate-300 transition-colors">Privacidade</Link>
             <Link to="/termos" className="hover:text-slate-300 transition-colors">Termos</Link>
             <a href="mailto:atendimento@focoemdados.com.br" className="hover:text-slate-300 transition-colors">atendimento@focoemdados.com.br</a>
