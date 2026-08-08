@@ -38,7 +38,8 @@ export default function HermesChatWidget() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://focoemdados2.app.n8n.cloud/webhook/site-chat', {
+      // Requisição via proxy do backend (/api/chat) para evitar bloqueios de CORS e garantir estabilidade server-to-server
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
