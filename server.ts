@@ -267,6 +267,54 @@ async function startServer() {
     }
   });
 
+  // Checkout de pagamento único (one-time) para prospecção em massa (R$ 39,90)
+  app.post("/api/stripe/create-payment", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(400).json({
+          success: false,
+          error: "O gateway de pagamento Stripe não está configurado. Adicione STRIPE_SECRET_KEY para ativar o checkout."
+        });
+      }
+
+      const { amount, successUrl, cancelUrl } = req.body;
+      if (!amount || typeof amount !== "number" || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: "Valor (amount, em centavos) é obrigatório."
+        });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        mode: 'payment',
+        line_items: [
+          {
+            price_data: {
+              currency: 'brl',
+              product_data: {
+                name: 'Prospecção em Massa (planilha acima de 100 linhas)',
+                description: 'Envio de planilha com mais de 100 linhas para o pipeline de prospecção B2B.',
+              },
+              unit_amount: amount,
+            },
+            quantity: 1,
+          },
+        ],
+        success_url: successUrl || `${req.protocol}://${req.get('host')}/?success=true`,
+        cancel_url: cancelUrl || `${req.protocol}://${req.get('host')}/?canceled=true`,
+      });
+
+      return res.json({ success: true, sessionId: session.id, url: session.url });
+    } catch (err: any) {
+      console.error("[Stripe] Erro ao criar pagamento único:", err);
+      return res.status(500).json({
+        success: false,
+        error: `Erro ao iniciar pagamento: ${err.message || "Erro no gateway Stripe."}`
+      });
+    }
+  });
+
   // ==========================================
   // WEBHOOKS (Kiwify & Hotmart)
   // ==========================================

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Shield } from 'lucide-react'
 
 const FEATURES = [
@@ -94,20 +95,20 @@ export default function Home() {
       </header>
 
       <main>
-        {/* Hero Section com Background HD */}
+        {/* Hero Section com Background Místico Cyber 3D */}
         <section 
-          className="pt-36 pb-20 px-4 relative bg-cover bg-center overflow-hidden" 
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop')" }}
+          className="pt-36 pb-20 px-4 relative overflow-hidden"
+          style={{ background: 'radial-gradient(circle at center, rgba(250, 189, 0, 0.2) 0%, rgba(82, 3, 213, 0.15) 50%, #121414 100%)' }}
         >
-          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-slate-950/40"></div>
           <div className="max-w-5xl mx-auto text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-6">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-6 glassmorphism">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               Sua loja com IA — sem programação
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
               Inteligência de Dados e{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-purple-500 bg-clip-text text-transparent">
                 Previsão de Vendas
               </span>
               <br />
@@ -121,14 +122,14 @@ export default function Home() {
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link
                 to={user ? '/app' : '/login'}
-                className="h-12 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20"
+                className="h-12 px-8 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 border border-amber-300/50"
               >
                 <Upload className="w-4 h-4" />
                 Fazer Upload Grátis
               </Link>
               <a
                 href="#funciona"
-                className="h-12 px-8 rounded-xl border border-white/10 hover:border-white/20 text-sm font-medium flex items-center gap-2 transition-all bg-white/5"
+                className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
               >
                 Ver Como Funciona
               </a>
@@ -183,6 +184,18 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Upload de Planilha + Pipeline + Stripe */}
+        <section className="py-20 px-4 relative">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-4">Envie sua planilha de prospecção</h2>
+            <p className="text-slate-400 text-center mb-10 max-w-xl mx-auto">
+              Até 100 linhas: envio gratuito para o pipeline. Acima disso, faça login e desbloqueie com um
+              pagamento único de R$ 39,90.
+            </p>
+            <SpreadsheetUpload />
           </div>
         </section>
 
