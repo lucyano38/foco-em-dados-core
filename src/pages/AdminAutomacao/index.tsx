@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, Plus, Trash2, Mail, Phone, Search, RefreshCw, AlertCircle, CheckCircle2, Bot, Sparkles } from 'lucide-react';
+import { Users, Plus, Trash2, Mail, Phone, Search, RefreshCw, AlertCircle, CheckCircle2, Bot, Sparkles, Kanban, MoveRight } from 'lucide-react';
 
 interface Lead {
   id: string;
@@ -12,6 +12,18 @@ interface Lead {
   notes: string;
   created_at: string;
 }
+
+const PIPELINE_STAGES = [
+  { value: 'discovery', label: 'Discovery', color: 'bg-slate-500/10 text-slate-300 border-slate-500/30' },
+  { value: 'abordagem', label: 'Abordagem', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
+  { value: 'qualificacao', label: 'Qualificação', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
+  { value: 'proposta', label: 'Proposta', color: 'bg-purple-500/10 text-purple-400 border-purple-500/30' },
+  { value: 'fechamento', label: 'Fechamento', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
+];
+
+const PIPELINE_MAP: Record<string, { label: string; color: string }> = Object.fromEntries(
+  PIPELINE_STAGES.map((s) => [s.value, { label: s.label, color: s.color }])
+);
 
 export default function AdminAutomacao() {
   const { user } = useAuth();
@@ -24,7 +36,7 @@ export default function AdminAutomacao() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('novo');
+  const [status, setStatus] = useState('discovery');
   const [notes, setNotes] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -99,6 +111,21 @@ export default function AdminAutomacao() {
     }
   };
 
+  const handleAdvanceStage = async (lead: Lead) => {
+    const currentIndex = PIPELINE_STAGES.findIndex((s) => s.value === lead.status);
+    if (currentIndex < 0 || currentIndex >= PIPELINE_STAGES.length - 1) return;
+    const nextStage = PIPELINE_STAGES[currentIndex + 1].value;
+    try {
+      const { error } = await supabase.from('leads').update({ status: nextStage }).eq('id', lead.id);
+      if (error) throw error;
+      setLeads(leads.map((l) => (l.id === lead.id ? { ...l, status: nextStage } : l)));
+      setSuccess(`Lead "${lead.name}" movido para ${PIPELINE_MAP[nextStage].label}.`);
+    } catch (err: any) {
+      console.error('Erro ao avançar lead:', err);
+      setError(err.message || 'Erro ao avançar lead no pipeline.');
+    }
+  };
+
   const filteredLeads = leads.filter(
     (l) =>
       l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -145,6 +172,63 @@ export default function AdminAutomacao() {
           <p>{success}</p>
         </div>
       )}
+
+      {/* Pipeline de Leads (Kanban) */}
+      <div className="glass-card p-6 rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-xl shadow-2xl">
+        <div className="flex items-center gap-2 mb-5">
+          <Kanban className="w-4 h-4 text-cyan-400" />
+          <h2 className="text-base font-bold text-slate-100">Pipeline de Leads</h2>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            Discovery → Abordagem → Qualificação → Proposta → Fechamento
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {PIPELINE_STAGES.map((stage) => {
+            const stageLeads = leads.filter((l) => l.status === stage.value);
+            return (
+              <div key={stage.value} className="bg-slate-950/50 border border-white/5 rounded-xl p-3 min-h-[120px]">
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${stage.color}`}>
+                    {stage.label}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">{stageLeads.length}</span>
+                </div>
+                <div className="space-y-2">
+                  {stageLeads.map((lead) => (
+                    <div key={lead.id} className="bg-white/[0.03] border border-white/10 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-slate-200 truncate">{lead.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{lead.email || 'sem e-mail'}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <button
+                          onClick={() => handleAdvanceStage(lead)}
+                          disabled={stage.value === 'fechamento'}
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-400 hover:text-cyan-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                          title={`Mover para ${PIPELINE_STAGES[PIPELINE_STAGES.findIndex((s) => s.value === stage.value) + 1]?.label || ''}`}
+                        >
+                          <MoveRight className="w-3 h-3" />
+                          Avançar
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLead(lead.id)}
+                          className="p-1 rounded hover:bg-red-500/10 text-slate-600 hover:text-red-400 transition-colors cursor-pointer"
+                          title="Remover"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {stageLeads.length === 0 && (
+                    <p className="text-[10px] text-slate-600 text-center py-3 border border-dashed border-white/5 rounded-lg">
+                      Sem leads
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Formulário de Cadastro / Novo Lead */}
@@ -206,10 +290,11 @@ export default function AdminAutomacao() {
                   onChange={(e) => setStatus(e.target.value)}
                   className="w-full h-11 bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-4 text-xs text-slate-200 outline-none transition-all"
                 >
-                  <option value="novo">Novo Lead</option>
-                  <option value="qualificado">Qualificado</option>
-                  <option value="contatado">Em Contato</option>
-                  <option value="convertido">Convertido (Cliente)</option>
+                  {PIPELINE_STAGES.map((stage) => (
+                    <option key={stage.value} value={stage.value}>
+                      {stage.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -307,14 +392,10 @@ export default function AdminAutomacao() {
                         <td className="py-3 px-3">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
-                              lead.status === 'convertido'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                : lead.status === 'qualificado'
-                                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
-                                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              PIPELINE_MAP[lead.status]?.color || 'bg-slate-500/10 text-slate-300 border-slate-500/30'
                             }`}
                           >
-                            {lead.status}
+                            {PIPELINE_MAP[lead.status]?.label || lead.status}
                           </span>
                         </td>
                         <td className="py-3 px-3 text-slate-500 font-mono text-[11px]">

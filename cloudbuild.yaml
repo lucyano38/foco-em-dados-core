@@ -1,7 +1,17 @@
 steps:
-  # 1. Compila a imagem Docker
+  # 1. Compila a imagem Docker (com as chaves VITE de build)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA', '.']
+    args:
+      - 'build'
+      - '-t'
+      - 'us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA'
+      - '--build-arg'
+      - 'VITE_SUPABASE_URL=https://ioijbixifvbosythznhh.supabase.co'
+      - '--build-arg'
+      - 'VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvaWpiaXhpZnZib3N5dGh6bmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjk4MzksImV4cCI6MjA5OTk0NTgzOX0.mnX7iKNChokWSGnJm8iep58Cu_syKKOpr-ywwKt2hBs'
+      - '--build-arg'
+      - 'VITE_STRIPE_PUBLISHABLE_KEY=pk_live_51SYO3jFP2uFvAXtTYha0OZkQY7HqCGwr0RJxSwnOJUFG2baIpsM2iBb6YTX9nxcImqm2NMeUkEldCvmJwXmBzrvt00fUihvp4W'
+      - '.'
     id: 'Build'
 
   # 2. Envia a imagem para o Artifact Registry
@@ -20,6 +30,9 @@ steps:
       - '--platform=managed'
       - '--image=us-west1-docker.pkg.dev/appcuidador-23628/cloud-run-source-deploy/foco-completo:$COMMIT_SHA'
       - '--region=us-west1'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'ADMIN_PASSWORD=foco2026,DISABLE_GCP_GEMINI_API=false,GEMINI_API_KEY=AQ.Ab8RN6JNN9qkTJay_1EbrukxS5R0J91FBriAcOYK4TDBfJeI_A,OPENROUTER_API_KEY=Sk-or-v1-6392542680c49484254d95c61b10c79679315a8e7594b35ecd1d58ea06a0df44,STRIPE_SECRET_KEY=Sk_live_51SYO3jFP2uFvAXtTCaPgP9yj69lmNu53gS0CJXTiwc8xF5QtgjmWTrVBrEAIoFh1QqQUNZdOzSEfSALwChofGZA900rLlANjuw,SUPABASE_URL=https://ioijbixifvbosythznhh.supabase.co,SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvaWpiaXhpZnZib3N5dGh6bmhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDM2OTgzOSwiZXhwIjoyMDk5OTQ1ODM5fQ.sRryjZH-25K9t28UYfC6PnTwKCrvsfyEnTCkH_vcUrA,TELEGRAM_BOT_TOKEN=8716515024:AAH_IpZRBhHjZWCIvMoV-N7LJ6LXnu_ZEE8,TELEGRAM_ADMIN_CHAT_ID=5643486739'
       - '--quiet'
     id: 'Deploy'
 
