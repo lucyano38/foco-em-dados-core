@@ -5,7 +5,9 @@ import { Database, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { user, signInWithEmail, signInWithGoogle } = useAuth()
+  const { user, signInWithEmail, signInWithGoogle, signUp } = useAuth()
+  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -22,41 +24,55 @@ export default function Login() {
       setError('Preencha todos os campos.')
       return
     }
+    if (mode === 'signup' && !name.trim()) {
+      setError('Informe seu nome para criar a conta.')
+      return
+    }
     setLoading(true)
     try {
-      await signInWithEmail(email, password)
-      // Não navega aqui — o useEffect([user]) cuida do redirect
+      if (mode === 'login') {
+        await signInWithEmail(email, password)
+      } else {
+        await signUp(email, password, name.trim())
+        setMode('login')
+        setError('Conta criada! Confirme seu e-mail e entre.')
+      }
     } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login.')
+      setError(err.message || 'Erro ao autenticar.')
     } finally {
       setLoading(false)
     }
   }
 
   const handleGoogle = async () => {
+    setError(null)
     try {
       await signInWithGoogle()
     } catch (err: any) {
-      alert(err?.message || 'Erro ao entrar com Google.')
+      setError(err?.message || 'Erro ao entrar com Google.')
     }
   }
 
   return (
-    <div className="w-full min-h-screen bg-slate-950 text-slate-100 font-sans flex items-center justify-center p-4">
+    <div className="w-full min-h-screen bg-[#121414] text-[#e3e2e2] font-sans flex items-center justify-center p-4">
       <div className="mesh-bg" />
 
       <div className="w-full max-w-sm">
         <Link to="/" className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-            <Database className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center">
+            <Database className="w-4 h-4 text-[#121414]" />
           </div>
-          <span className="font-bold text-lg">Foco em Dados</span>
+          <span className="font-[family-name:var(--font-display)] font-bold text-lg">Foco em Dados</span>
         </Link>
 
-        <div className="glass-card p-6 space-y-5">
+        <div className="glassmorphism p-6 rounded-2xl space-y-5">
           <div className="text-center">
-            <h1 className="text-xl font-bold">Entrar</h1>
-            <p className="text-sm text-slate-400 mt-1">Acesse sua conta para continuar.</p>
+            <h1 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#ffe4af]">
+              {mode === 'login' ? 'Entrar' : 'Criar Conta'}
+            </h1>
+            <p className="text-sm text-[#d4c5ab] mt-1">
+              {mode === 'login' ? 'Acesse sua conta para continuar.' : 'Cadastre-se grátis e comece agora.'}
+            </p>
           </div>
 
           {error && (
@@ -67,42 +83,54 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === 'signup' && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#d4c5ab] ml-1">Nome</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Seu nome"
+                  className="input-mystic w-full h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300 ml-1">E-mail</label>
+              <label className="text-xs font-medium text-[#d4c5ab] ml-1">E-mail</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#d4c5ab]/50" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="w-full h-10 pl-10 pr-3 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="input-mystic w-full h-10 pl-10 pr-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300 ml-1">Senha</label>
+              <label className="text-xs font-medium text-[#d4c5ab] ml-1">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#d4c5ab]/50" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Sua senha"
-                  className="w-full h-10 pl-10 pr-3 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="input-mystic w-full h-10 pl-10 pr-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
                 />
               </div>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-10 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="btn-glow w-full h-10 rounded-lg text-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[#121414]/30 border-t-[#121414] rounded-full animate-spin" />
               ) : (
                 <>
-                  Entrar
+                  {mode === 'login' ? 'Entrar' : 'Criar Conta'}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -111,16 +139,16 @@ export default function Login() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/5" />
+              <div className="w-full border-t border-[#4f4632]/50" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-slate-800 px-2 text-slate-500">ou</span>
+              <span className="bg-[#121414] px-2 text-[#d4c5ab]/60">ou</span>
             </div>
           </div>
 
           <button
             onClick={handleGoogle}
-            className="w-full h-10 rounded-lg border border-white/10 hover:border-white/20 text-sm font-medium flex items-center justify-center gap-2 transition-all"
+            className="w-full h-10 rounded-lg border border-[#4f4632]/60 hover:border-[#fabd00]/50 text-sm font-medium text-[#e3e2e2] flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -131,9 +159,28 @@ export default function Login() {
             Entrar com Google
           </button>
 
-          <p className="text-center text-xs text-slate-500">
-            Ainda não tem conta?{' '}
-            <Link to="/login" className="text-cyan-400 hover:underline font-medium">Criar Conta</Link>
+          <p className="text-center text-xs text-[#d4c5ab]/60">
+            {mode === 'login' ? (
+              <>
+                Ainda não tem conta?{' '}
+                <button
+                  onClick={() => { setMode('signup'); setError(null) }}
+                  className="text-[#fabd00] hover:underline font-medium cursor-pointer"
+                >
+                  Cadastre-se
+                </button>
+              </>
+            ) : (
+              <>
+                Já tem conta?{' '}
+                <button
+                  onClick={() => { setMode('login'); setError(null) }}
+                  className="text-[#fabd00] hover:underline font-medium cursor-pointer"
+                >
+                  Entrar
+                </button>
+              </>
+            )}
           </p>
         </div>
       </div>
