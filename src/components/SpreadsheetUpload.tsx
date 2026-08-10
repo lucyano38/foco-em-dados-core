@@ -143,12 +143,12 @@ export default function SpreadsheetUpload() {
   return (
     <div className="glassmorphism rounded-2xl p-6 sm:p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-11 h-11 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center">
-          <FileSpreadsheet className="w-5 h-5 text-amber-400" />
+        <div className="w-11 h-11 rounded-xl bg-[#fabd00]/10 border border-[#fabd00]/30 flex items-center justify-center">
+          <FileSpreadsheet className="w-5 h-5 text-[#fabd00]" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-amber-300">Upload de Planilha</h3>
-          <p className="text-xs text-slate-400">CSV ou Excel (.xlsx/.xls) — até 100 linhas grátis</p>
+          <h3 className="text-lg font-bold text-[#ffe4af]">Fazer Upload de Planilha</h3>
+          <p className="text-xs text-[#d4c5ab]">CSV ou Excel (.xlsx/.xls) — até 100 linhas grátis</p>
         </div>
       </div>
 
@@ -164,15 +164,15 @@ export default function SpreadsheetUpload() {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={parsing}
-          className="w-full border-2 border-dashed border-amber-400/30 hover:border-amber-400/60 rounded-xl py-10 flex flex-col items-center gap-3 transition-all bg-white/[0.02] cursor-pointer"
+          className="w-full border-2 border-dashed border-[#fabd00]/30 hover:border-[#fabd00]/60 rounded-xl py-10 flex flex-col items-center gap-3 transition-all bg-white/[0.02] cursor-pointer"
         >
           {parsing ? (
-            <Loader2 className="w-6 h-6 text-amber-400 animate-spin" />
+            <Loader2 className="w-6 h-6 text-[#fabd00] animate-spin" />
           ) : (
-            <Upload className="w-6 h-6 text-amber-400" />
+            <Upload className="w-6 h-6 text-[#fabd00]" />
           )}
-          <span className="text-sm text-slate-300">{parsing ? 'Lendo arquivo...' : 'Clique para selecionar a planilha'}</span>
-          <span className="text-[11px] text-slate-500">Formatos aceitos: .csv, .xlsx, .xls</span>
+          <span className="text-sm text-[#e3e2e2]">{parsing ? 'Lendo arquivo...' : 'Clique para selecionar a planilha'}</span>
+          <span className="text-[11px] text-[#d4c5ab]/60">Formatos aceitos: .csv, .xlsx, .xls</span>
         </button>
       )}
 
@@ -180,9 +180,9 @@ export default function SpreadsheetUpload() {
         <div className="space-y-4">
           <div className="bg-white/[0.03] border border-white/10 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-200 truncate max-w-[260px]">{filename}</p>
-              <p className="text-xs text-slate-400">
-                <strong className="text-amber-300">{totalRows.toLocaleString('pt-BR')}</strong> linhas ·{' '}
+              <p className="text-sm font-semibold text-[#e3e2e2] truncate max-w-[260px]">{filename}</p>
+              <p className="text-xs text-[#d4c5ab]">
+                <strong className="text-[#fabd00]">{totalRows.toLocaleString('pt-BR')}</strong> linhas ·{' '}
                 {columns.length} colunas
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function SpreadsheetUpload() {
                 setResult(null);
                 if (fileInputRef.current) fileInputRef.current.value = '';
               }}
-              className="text-xs text-slate-500 hover:text-slate-300"
+              className="text-xs text-[#d4c5ab]/60 hover:text-[#ffe4af] cursor-pointer"
             >
               Trocar arquivo
             </button>
@@ -204,46 +204,44 @@ export default function SpreadsheetUpload() {
             <button
               onClick={submitFree}
               disabled={submitting}
-              className="w-full h-12 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 transition-all border border-amber-300/50 disabled:opacity-50"
+              className="w-full h-12 rounded-xl btn-glow text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              Enviar Gratuitamente para o Pipeline
+              Processar Gratuitamente
             </button>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-start gap-3 bg-amber-400/10 border border-amber-400/40 rounded-xl p-4">
-                <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 bg-[#fabd00]/10 border border-[#fabd00]/40 rounded-xl p-4">
+                <AlertTriangle className="w-5 h-5 text-[#fabd00] shrink-0 mt-0.5" />
                 <div className="text-sm">
-                  <p className="text-amber-300 font-semibold">Planilha com mais de {MAX_FREE_ROWS} linhas</p>
-                  <p className="text-slate-400 text-xs mt-1">
-                    Para enviar prospecção em massa, é necessário login e pagamento único de{' '}
-                    <strong className="text-amber-300">R$ 39,90</strong>.
+                  <p className="text-[#ffe4af] font-semibold">Planilha com mais de {MAX_FREE_ROWS} linhas</p>
+                  <p className="text-[#d4c5ab] text-xs mt-1">
+                    Para processamento em massa, é necessário login e pagamento único de{' '}
+                    <strong className="text-[#fabd00]">R$ 39,90</strong>.
                   </p>
                 </div>
               </div>
               <button
                 onClick={openStripeCheckout}
                 disabled={checkingOut}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 transition-all border border-amber-300/50 disabled:opacity-50"
+                className="w-full h-12 rounded-xl btn-glow text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {checkingOut ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
-                ) : user ? (
-                  <Lock className="w-4 h-4" />
                 ) : (
                   <Lock className="w-4 h-4" />
                 )}
-                {user ? 'Pagar R$ 39,90 e Enviar' : 'Fazer Login e Pagar R$ 39,90'}
+                {user ? 'Pagar R$ 39,90 e Processar' : 'Fazer Login e Pagar R$ 39,90'}
               </button>
             </div>
           )}
 
           {result?.submitted && (
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0" />
-              <p className="text-sm text-green-300">
-                Planilha <strong>{result.filename}</strong> enviada para o pipeline de prospecção com{' '}
-                {result.totalRows.toLocaleString('pt-BR')} linhas.
+            <div className="bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-xl p-4 flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-[#4ade80] shrink-0" />
+              <p className="text-sm text-[#4ade80]">
+                Planilha <strong>{result.filename}</strong> recebida com sucesso —{' '}
+                {result.totalRows.toLocaleString('pt-BR')} linhas na fila de processamento.
               </p>
             </div>
           )}

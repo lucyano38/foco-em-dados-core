@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function ProtectedRouteMaster({ children }) {
-  const { user, loading } = useAuth();
+export default function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
     return (
@@ -12,9 +12,9 @@ export default function ProtectedRouteMaster({ children }) {
     );
   }
 
-  if (!user || user.email !== 'lucyano.pci@gmail.com') {
+  if (!user || !isAdmin) {
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 }

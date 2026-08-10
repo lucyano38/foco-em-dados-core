@@ -6,7 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
-import type { User } from '@supabase/supabase-js'
+import type { User, Session } from '@supabase/supabase-js'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 interface Profile {
@@ -51,14 +51,29 @@ interface AuthContextValue {
   profile: Profile | null
   plan: Plan | null
   loading: boolean
+  isAdmin: boolean
   signInWithEmail: (email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
-  signUp: (email: string, password: string, name: string) => Promise<void>
+  signUp: (email: string, password: string, name: string) => Promise<{ autoLoggedIn: boolean }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+
+export const ADMIN_EMAIL = 'lucyano.pci@gmail.com'
+
+export function translateAuthError(error: any): string {
+  const code = error?.message || ''
+  if (/invalid login credentials/i.test(code)) return 'E-mail ou senha incorretos.'
+  if (/user already registered/i.test(code)) return 'Este e-mail já está cadastrado. Faça login ou redefina sua senha.'
+  if (/password should be at least/i.test(code)) return 'A senha deve ter pelo menos 6 caracteres.'
+  if (/email not confirmed/i.test(code)) return 'Confirme seu e-mail antes de entrar (verifique a caixa de entrada/spam).'
+  if (/unable to validate|no user found/i.test(code)) return 'Usuário não encontrado. Verifique o e-mail ou crie uma conta.'
+  if (/rate limit/i.test(code)) return 'Muitas tentativas. Aguarde alguns instantes e tente novamente.'
+  if (/network|fetch|timed out/i.test(code)) return 'Falha de conexão. Verifique sua internet e tente novamente.'
+  return error?.message || 'Erro ao autenticar.'
+}
 
 async function fetchProfile(
   userId: string
@@ -67,7 +82,7 @@ async function fetchProfile(
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
   if (!profile) return { profile: null, plan: null }
 
@@ -77,7 +92,7 @@ async function fetchProfile(
       .from('plans')
       .select('*')
       .eq('id', profile.plan_id)
-      .single()
+      .maybeSingle()
 
     if (planData) plan = planData as Plan
   }
@@ -90,6 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const isAdmin = Boolean(
+    user &&
+    (user.email === ADMIN_EMAIL ||
+      profile?.role === 'admin' ||
+      profile?.role === 'master')
+  )
 
   const loadUser = useCallback(async (currentUser: User | null) => {
     setUser(currentUser)
@@ -126,20 +148,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Autenticação indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(),
       password,
     })
-    if (error) throw error
+    if (error) throw translateAuthError(error)
   }
 
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured) {
       throw new Error('Login com Google indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
+    const redirectTo = `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -148,20 +171,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     if (error) {
       console.error('[Auth] signInWithOAuth error:', error)
-      throw error
+      throw translateAuthError(error)
     }
   }
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string
+  ): Promise<{ autoLoggedIn: boolean }> => {
     if (!isSupabaseConfigured) {
       throw new Error('Cadastro indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
-    const { error } = await supabase.auth.signUp({
-      email,
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
       password,
-      options: { data: { name } },
+      options: {
+        data: { name: name.trim(), full_name: name.trim() },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     })
-    if (error) throw error
+    if (error) throw translateAuthError(error)
+
+    // Se a confirmação de e-mail estiver desativada no projeto, a sessão já vem pronta
+    const session: Session | null = data.session
+    if (session?.user) {
+      await loadUser(session.user)
+      return { autoLoggedIn: true }
+    }
+    return { autoLoggedIn: false }
   }
 
   const signOut = async () => {
@@ -183,6 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         plan,
         loading,
+        isAdmin,
         signInWithEmail,
         signInWithGoogle,
         signUp,

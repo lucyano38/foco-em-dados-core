@@ -8,9 +8,11 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import NotFound from './pages/NotFound'
 import AdminAutomacao from './pages/AdminAutomacao'
+import Admin from './pages/Admin'
 import PreviewProposta from './pages/PreviewProposta'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedRouteMaster from './components/ProtectedRouteMaster'
+import AdminRoute from './components/AdminRoute'
 import SiteChat from './components/SiteChat'
 
 export default function App() {
@@ -27,6 +29,15 @@ export default function App() {
         <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
 
         <Route path="/preview/:id" element={<PreviewProposta />} />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
 
         <Route
           path="/admin/automacao"
