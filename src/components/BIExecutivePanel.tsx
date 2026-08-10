@@ -5,7 +5,8 @@ import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  Upload, FileSpreadsheet, Lock, CheckCircle2, AlertTriangle, Loader2, BarChart3, PieChart, LineChart,
+  Upload, FileSpreadsheet, Lock, CheckCircle2, AlertTriangle, Loader2,
+  BarChart3, PieChart, LineChart, Download, RefreshCcw, LayoutDashboard, Check,
 } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -33,42 +34,67 @@ interface BiData {
   byCategory: { name: string; value: number }[];
 }
 
-function parseFile(file: File): Promise<ParsedSheet> {
+type EtlStageId = 'idle' | 'extract' | 'transform' | 'load' | 'done';
+
+interface EtlState {
+  stage: EtlStageId;
+  activeIndex: number;
+  log: string[];
+}
+
+const ETL_STAGES = [
+  { id: 'extract', label: 'Ingestão', sub: 'Extract', icon: Download, desc: 'Lendo CSV/XLSX' },
+  { id: 'transform', label: 'Transformação', sub: 'Transform', icon: RefreshCcw, desc: 'Limpando e padronizando' },
+  { id: 'load', label: 'Carregamento', sub: 'Load', icon: LayoutDashboard, desc: 'Gerando o Dashboard' },
+] as const;
+
+const PIE_COLORS = ['#fabd00', '#cdbdff', '#4ade80', '#60a5fa', '#fbbf24', '#ff8a5c', '#5203d5', '#ffe4af'];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function readRawFile(file: File): Promise<string | ArrayBuffer> {
   return new Promise((resolve, reject) => {
-    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-    if (isExcel) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const workbook = XLSX.read(e.target?.result, { type: 'array' });
-          const sheetName = workbook.SheetNames[0];
-          if (!sheetName) return reject(new Error('O arquivo Excel não possui planilhas.'));
-          const sheet = workbook.Sheets[sheetName];
-          const json = XLSX.utils.sheet_to_json<Record<string, any>>(sheet);
-          const columns = json.length ? Object.keys(json[0]) : [];
-          resolve({ rows: json, columns, totalRows: json.length });
-        } catch (err: any) {
-          reject(new Error('Falha ao processar o arquivo Excel: ' + err.message));
-        }
-      };
-      reader.onerror = () => reject(new Error('Falha ao ler o arquivo.'));
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target?.result as string | ArrayBuffer);
+    reader.onerror = () => reject(new Error('Falha ao ler o arquivo.'));
+    if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
       reader.readAsArrayBuffer(file);
     } else {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const text = String(e.target?.result || '');
-          const results = Papa.parse<Record<string, any>>(text, { header: true, skipEmptyLines: true, dynamicTyping: true });
-          const columns = (results.meta.fields || []).map(h => String(h).trim());
-          resolve({ rows: results.data, columns, totalRows: results.data.length });
-        } catch (err: any) {
-          reject(new Error('Falha ao processar o arquivo CSV: ' + err.message));
-        }
-      };
-      reader.onerror = () => reject(new Error('Falha ao ler o arquivo.'));
       reader.readAsText(file);
     }
   });
+}
+
+function parseSheet(file: File, raw: string | ArrayBuffer): ParsedSheet {
+  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+  if (isExcel) {
+    const workbook = XLSX.read(raw as ArrayBuffer, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) throw new Error('O arquivo Excel não possui planilhas.');
+    const json = XLSX.utils.sheet_to_json<Record<string, any>>(workbook.Sheets[sheetName]);
+    return { rows: json, columns: Object.keys(json[0] || {}), totalRows: json.length };
+  }
+  const results = Papa.parse<Record<string, any>>(String(raw), {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: true,
+  });
+  const columns = (results.meta.fields || []).map((h) => String(h).trim());
+  return { rows: results.data, columns, totalRows: results.data.length };
+}
+
+function cleanRows(sheet: ParsedSheet): ParsedSheet {
+  const cleanedRows = sheet.rows.filter((r) =>
+    sheet.columns.some((c) => {
+      const v = r[c];
+      return v !== undefined && v !== null && String(v).trim() !== '';
+    })
+  );
+  return {
+    rows: cleanedRows,
+    columns: sheet.columns.filter((c) => c.trim() !== ''),
+    totalRows: cleanedRows.length,
+  };
 }
 
 function buildBiData(filename: string, sheet: ParsedSheet): BiData {
@@ -111,7 +137,90 @@ function buildBiData(filename: string, sheet: ParsedSheet): BiData {
   return { filename, sheet, numericColumns, dimensionColumn, metricColumn, totals, byCategory };
 }
 
-const PIE_COLORS = ['#fabd00', '#cdbdff', '#4ade80', '#60a5fa', '#fbbf24', '#ff8a5c', '#5203d5', '#ffe4af'];
+function EtlPipeline({ etl }: { etl: EtlState }) {
+  const stageIndex = etl.stage === 'idle' ? -1 : ETL_STAGES.findIndex((s) => s.id === etl.stage);
+
+  return (
+    <div className="bg-white/[0.03] border border-[#4f4632]/40 rounded-2xl p-4">
+      <div className="flex items-center justify-between mb-4">
+        <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#fabd00]">
+          Pipeline de Dados (ETL)
+        </p>
+        {etl.stage === 'done' && (
+          <span className="text-[10px] text-[#4ade80] flex items-center gap-1">
+            <Check className="w-3 h-3" /> Concluído
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        {ETL_STAGES.map((stage, i) => {
+          const state =
+            stageIndex === -1 ? 'pending'
+            : i < stageIndex ? 'done'
+            : i === stageIndex ? 'active'
+            : 'pending';
+          const Icon = stage.icon;
+          return (
+            <div key={stage.id} className="flex-1">
+              <div
+                className={`rounded-xl border px-3 py-2.5 transition-all ${
+                  state === 'active'
+                    ? 'border-[#fabd00]/60 bg-[#fabd00]/10'
+                    : state === 'done'
+                    ? 'border-[#4ade80]/40 bg-[#4ade80]/5'
+                    : 'border-[#4f4632]/50 bg-white/[0.02]'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                      state === 'active'
+                        ? 'bg-[#fabd00] text-[#121414]'
+                        : state === 'done'
+                        ? 'bg-[#4ade80]/20 text-[#4ade80]'
+                        : 'bg-white/5 text-[#d4c5ab]/50'
+                    }`}
+                  >
+                    {state === 'done' ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : state === 'active' ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Icon className="w-3.5 h-3.5" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold truncate ${state === 'pending' ? 'text-[#d4c5ab]/50' : 'text-[#e3e2e2]'}`}>
+                      {stage.label}
+                    </p>
+                    <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#d4c5ab]/50 uppercase">
+                      {stage.sub}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {i < ETL_STAGES.length - 1 && (
+                <div className={`h-0.5 mx-1 -mt-0.5 rounded-full ${i < stageIndex ? 'bg-[#4ade80]/50' : 'bg-[#4f4632]/40'}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {etl.log.length > 0 && (
+        <div className="mt-3 space-y-1">
+          {etl.log.map((line, i) => (
+            <p key={i} className="font-[family-name:var(--font-mono)] text-[10px] text-[#d4c5ab]/70 flex items-center gap-1.5">
+              <span className="text-[#fabd00]">▸</span>
+              {line}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function BIExecutivePanel() {
   const { user } = useAuth();
@@ -121,6 +230,7 @@ export default function BIExecutivePanel() {
   const [submitting, setSubmitting] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [bi, setBi] = useState<BiData | null>(null);
+  const [etl, setEtl] = useState<EtlState>({ stage: 'idle', activeIndex: -1, log: [] });
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -128,15 +238,43 @@ export default function BIExecutivePanel() {
     setParsing(true);
     setError(null);
     setSaved(false);
+    setBi(null);
+    setEtl({ stage: 'extract', activeIndex: 0, log: [] });
     try {
-      const sheet = await parseFile(file);
-      if (!sheet.totalRows) {
-        setError('A planilha está vazia.');
-        return;
-      }
-      setBi(buildBiData(file.name, sheet));
+      // 1. INGESTÃO (Extract) — leitura real do arquivo
+      setEtl((prev) => ({ ...prev, log: [`Lendo ${file.name}…`] }));
+      await sleep(700);
+      const raw = await readRawFile(file);
+      setEtl((prev) => ({ ...prev, log: [...prev.log, `Arquivo lido (${(file.size / 1024).toFixed(1)} KB)`] }));
+
+      // 2. TRANSFORMAÇÃO (Transform) — parse + limpeza real
+      setEtl((prev) => ({ ...prev, stage: 'transform', activeIndex: 1, log: [...prev.log, 'Parseando CSV/XLSX…'] }));
+      await sleep(800);
+      const rawSheet = parseSheet(file, raw);
+      const sheet = cleanRows(rawSheet);
+      setEtl((prev) => ({
+        ...prev,
+        log: [
+          ...prev.log,
+          `${rawSheet.columns.length} colunas detectadas`,
+          `${sheet.totalRows} linhas válidas após limpeza`,
+        ],
+      }));
+
+      // 3. CARREGAMENTO (Load) — geração do dashboard
+      setEtl((prev) => ({ ...prev, stage: 'load', activeIndex: 2, log: [...prev.log, 'Detectando métricas numéricas…'] }));
+      await sleep(800);
+      const result = buildBiData(file.name, sheet);
+      setEtl((prev) => ({
+        ...prev,
+        stage: 'done',
+        activeIndex: 2,
+        log: [...prev.log, `Coluna de dimensão: ${result.dimensionColumn}`, `Métrica principal: ${result.metricColumn}`, 'Dashboard executivo gerado'],
+      }));
+      setBi(result);
     } catch (err: any) {
       setError(err.message || 'Erro ao ler o arquivo.');
+      setEtl({ stage: 'idle', activeIndex: -1, log: [] });
     } finally {
       setParsing(false);
     }
@@ -214,6 +352,8 @@ export default function BIExecutivePanel() {
         </div>
       </div>
 
+      <EtlPipeline etl={etl} />
+
       <input
         ref={fileInputRef}
         type="file"
@@ -226,14 +366,14 @@ export default function BIExecutivePanel() {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={parsing}
-          className="w-full border-2 border-dashed border-[#fabd00]/30 hover:border-[#fabd00]/60 rounded-xl py-10 flex flex-col items-center gap-3 transition-all bg-white/[0.02] cursor-pointer"
+          className="mt-4 w-full border-2 border-dashed border-[#fabd00]/30 hover:border-[#fabd00]/60 rounded-xl py-10 flex flex-col items-center gap-3 transition-all bg-white/[0.02] cursor-pointer"
         >
           {parsing ? (
             <Loader2 className="w-6 h-6 text-[#fabd00] animate-spin" />
           ) : (
             <FileSpreadsheet className="w-6 h-6 text-[#fabd00]" />
           )}
-          <span className="text-sm text-[#e3e2e2]">{parsing ? 'Lendo arquivo...' : 'Clique para selecionar a planilha'}</span>
+          <span className="text-sm text-[#e3e2e2]">{parsing ? 'Processando pipeline de dados...' : 'Clique para selecionar a planilha'}</span>
           <span className="text-[11px] text-[#d4c5ab]/60">Formatos aceitos: .csv, .xlsx, .xls</span>
         </button>
       )}
@@ -252,13 +392,14 @@ export default function BIExecutivePanel() {
               <p className="text-sm font-semibold text-[#e3e2e2] truncate max-w-[280px]">{bi.filename}</p>
               <p className="text-xs text-[#d4c5ab]">
                 <strong className="text-[#fabd00]">{bi.sheet.totalRows.toLocaleString('pt-BR')}</strong> linhas ·{' '}
-                {bi.sheet.columns.length} colunas
+                {bi.sheet.columns.length} colunas · {bi.numericColumns.length} métricas
               </p>
             </div>
             <button
               onClick={() => {
                 setBi(null);
                 setSaved(false);
+                setEtl({ stage: 'idle', activeIndex: -1, log: [] });
                 if (fileInputRef.current) fileInputRef.current.value = '';
               }}
               className="text-xs text-[#d4c5ab]/70 hover:text-[#ffe4af] cursor-pointer"
@@ -275,11 +416,11 @@ export default function BIExecutivePanel() {
                 className="btn-glow h-11 px-6 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                Enviar Gratuitamente para o Pipeline
+                Enviar para o Pipeline de Dados
               </button>
               {saved && (
                 <span className="text-xs text-[#4ade80] flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> Planilha enviada com sucesso!
+                  <CheckCircle2 className="w-4 h-4" /> Dados enviados com sucesso!
                 </span>
               )}
             </div>
@@ -290,7 +431,7 @@ export default function BIExecutivePanel() {
                 <div className="text-sm">
                   <p className="text-[#ffe4af] font-semibold">Planilha com mais de {MAX_FREE_ROWS} linhas</p>
                   <p className="text-[#d4c5ab] text-xs mt-1">
-                    Para prospecção em massa é necessário login e pagamento único de{' '}
+                    Para processamento em massa é necessário login e pagamento único de{' '}
                     <strong className="text-[#fabd00]">R$ 39,90</strong>.
                   </p>
                 </div>

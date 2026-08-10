@@ -1,109 +1,104 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { Database } from 'lucide-react';
+
+const MAX_WAIT_MS = 8000;
+const POLL_INTERVAL_MS = 500;
 
 export default function AuthCallback() {
-  const [errorState, setErrorState] = useState(false);
+  const [status, setStatus] = useState<'processing' | 'error'>('processing');
+  const [message, setMessage] = useState('Autenticando e abrindo o sistema...');
 
   useEffect(() => {
+    let cancelled = false;
+
     const handleAuth = async () => {
-      console.log("AuthCallback: Iniciando processamento do callback...");
+      console.log('[AuthCallback] processando callback...');
+      const params = new URLSearchParams(window.location.search);
 
-      const hash = window.location.hash;
-      const search = window.location.search;
+      // Erro enviado pelo provedor OAuth (ex.: usuário cancelou, configuração inválida)
+      const oauthError = params.get('error') || params.get('error_description');
+      if (oauthError) {
+        console.error('[AuthCallback] erro do provedor OAuth:', oauthError);
+        setMessage('Falha no login com Google. Verifique se o provedor OAuth está habilitado no Supabase e as URLs de redirecionamento.');
+        setStatus('error');
+        setTimeout(() => {
+          if (!cancelled) window.location.replace('/login');
+        }, 4000);
+        return;
+      }
 
-      try {
-        // 1. Se houver tokens no hash da URL (OAuth implicit flow)
-        if (hash && hash.includes('access_token')) {
-          const params = new URLSearchParams(hash.replace('#', '?'));
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
-
-          if (accessToken) {
-            console.log("AuthCallback: Token detectado na URL, salvando sessão...");
-            const { error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken ?? '',
-            });
-
-            if (error) {
-              console.error("AuthCallback: Erro ao definir sessão:", error.message);
-              throw error;
-            }
-
-            console.log("AuthCallback: Sessão salva com sucesso. Redirecionando para /app...");
-            window.location.replace('/app');
-            return;
-          }
-        }
-
-        // 2. Se houver código PKCE (?code=...) na query string
-        if (search && search.includes('code=')) {
-          console.log("AuthCallback: Código PKCE detectado na query string. O cliente Supabase processará automaticamente.");
-          // Aguarda um momento para o Supabase processar o código via detectSessionInUrl: true
-          const { data: { session }, error } = await supabase.auth.getSession();
-          if (error) throw error;
-          if (session) {
-            console.log("AuthCallback: Sessão PKCE obtida com sucesso. Redirecionando para /app...");
-            window.location.replace('/app');
-            return;
-          }
-        }
-
-        // 3. Fallback geral: verificar se já existe sessão ativa
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          console.log("AuthCallback: Sessão ativa encontrada. Redirecionando para /app...");
+      // 1. Tokens no hash (implicit flow — raridade com PKCE, mantido por compatibilidade)
+      const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+      const accessToken = hashParams.get('access_token');
+      if (accessToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: hashParams.get('refresh_token') ?? '',
+        });
+        if (error) {
+          console.error('[AuthCallback] erro ao definir sessão:', error.message);
+        } else if (!cancelled) {
           window.location.replace('/app');
           return;
         }
-
-        // Se chegou aqui sem token nem sessão após 2 segundos, falha
-        console.warn("AuthCallback: Nenhum token ou sessão válida encontrados.");
-        throw new Error("Sessão não encontrada.");
-
-      } catch (err: any) {
-        console.error("AuthCallback erro:", err);
-        setErrorState(true);
-        setTimeout(() => {
-          window.location.replace('/login');
-        }, 3000);
       }
+
+      // 2. Fluxo PKCE (?code=...): o supabase-js troca o código automaticamente
+      // via detectSessionInUrl, mas há uma corrida: esperamos a sessão aparecer.
+      const startedAt = Date.now();
+      while (Date.now() - startedAt < MAX_WAIT_MS) {
+        if (cancelled) return;
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('[AuthCallback] erro ao obter sessão:', error.message);
+          break;
+        }
+        if (session?.user) {
+          console.log('[AuthCallback] sessão obtida, redirecionando para /app');
+          window.location.replace('/app');
+          return;
+        }
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+      }
+
+      // 3. Fallback: sessão já existente de outro login
+      const { data: { session: existing } } = await supabase.auth.getSession();
+      if (existing?.user && !cancelled) {
+        window.location.replace('/app');
+        return;
+      }
+
+      console.warn('[AuthCallback] nenhuma sessão válida encontrada após espera.');
+      setMessage('Não foi possível concluir a autenticação. Você será redirecionado para o login.');
+      setStatus('error');
+      setTimeout(() => {
+        if (!cancelled) window.location.replace('/login');
+      }, 3000);
     };
 
     handleAuth();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#030712',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'sans-serif',
-      color: '#fff',
-      padding: '20px'
-    }}>
-      {errorState ? (
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#f87171', fontSize: '14px', marginBottom: '8px' }}>Erro ao autenticar, redirecionando...</p>
-          <p style={{ color: '#9ca3af', fontSize: '12px' }}>Voltando para o login em instantes.</p>
+    <div className="w-full min-h-screen bg-[#121414] text-[#e3e2e2] font-sans flex items-center justify-center p-4">
+      <div className="mesh-bg" />
+      <div className="glassmorphism rounded-2xl p-8 max-w-sm w-full text-center space-y-4">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center mx-auto">
+          <Database className="w-5 h-5 text-[#121414]" />
         </div>
-      ) : (
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '32px',
-            height: '32px',
-            border: '3px solid #22d3ee',
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 12px auto'
-          }} />
-          <p style={{ fontSize: '14px', color: '#9ca3af' }}>Autenticando e abrindo o sistema...</p>
-        </div>
-      )}
+        {status === 'processing' ? (
+          <>
+            <div className="w-8 h-8 border-2 border-[#fabd00] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm text-[#d4c5ab]">{message}</p>
+          </>
+        ) : (
+          <p className="text-sm text-red-400">{message}</p>
+        )}
+      </div>
     </div>
   );
 }
