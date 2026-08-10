@@ -1,18 +1,23 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Faltam VITE_SUPABASE_URL e/ou VITE_SUPABASE_ANON_KEY no .env'
-  )
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+
+if (!isSupabaseConfigured) {
+  console.warn('[supabase] VITE_SUPABASE_URL e/ou VITE_SUPABASE_ANON_KEY ausentes. Configure no painel da Vercel (env) para habilitar login.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-})
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+    },
+  }
+)

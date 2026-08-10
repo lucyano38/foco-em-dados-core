@@ -11,7 +11,7 @@ import AdminAutomacao from './pages/AdminAutomacao'
 import PreviewProposta from './pages/PreviewProposta'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedRouteMaster from './components/ProtectedRouteMaster'
-import HermesChatWidget from './components/HermesChatWidget'
+import SiteChat from './components/SiteChat'
 
 export default function App() {
   return (
@@ -21,6 +21,7 @@ export default function App() {
         <Route path="/precos" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
         <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
@@ -38,7 +39,7 @@ export default function App() {
 
         <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
       </Routes>
-      <HermesChatWidget />
+      <SiteChat />
     </>
   )
 }

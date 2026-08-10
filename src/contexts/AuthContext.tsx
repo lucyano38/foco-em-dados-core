@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 interface Profile {
   id: string
@@ -122,6 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadUser])
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Autenticação indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+    }
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -130,6 +133,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Login com Google indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -147,6 +153,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, name: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cadastro indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+    }
     const { error } = await supabase.auth.signUp({
       email,
       password,
