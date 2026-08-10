@@ -12,6 +12,8 @@ import Stripe from "stripe";
 import QRCode from "qrcode";
 import cors from "cors";
 import authRouter from "./src/routes/auth";
+import { generateRedesignPage, publishTailscaleFunnel, closeFunnel, getActiveFunnels, createAutoDesign } from "./src/services/autoDesigner";
+import { getProspectionStatus, sendProspectionMessage, resetProspectionCounter, PROSPECTION_LIMIT_MESSAGE } from "./src/services/prospectionGuard";
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -1439,6 +1441,95 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
         res.status(500).json({ error: innerErr.message || "Erro ao processar simulação." });
       }
     }
+  });
+
+  // ----- MOTOR AUTÔNOMO DE REDESIGN (autoDesigner) + TAILSCALE FUNNEL (9router) -----
+  const designStore = new Map<string, { request: any; html: string; createdAt: number }>();
+
+  app.post("/api/auto-design", async (req, res) => {
+    try {
+      const request = req.body?.request || req.body;
+      if (!request || !request.companyName) {
+        return res.status(400).json({ error: "Informe o request com companyName." });
+      }
+      const design = await generateRedesignPage(request);
+      designStore.set(design.designId, { request, html: design.html, createdAt: Date.now() });
+      res.json({ designId: design.designId, generatedAt: design.generatedAt, model: design.model, html: design.html });
+    } catch (err: any) {
+      console.error("[autoDesigner] Erro ao gerar página:", err);
+      res.status(500).json({ error: err.message || "Erro ao gerar página de redesign." });
+    }
+  });
+
+  app.get("/api/auto-design/:id", (req, res) => {
+    const entry = designStore.get(req.params.id);
+    if (!entry) return res.status(404).json({ error: "Design não encontrado." });
+    res.type("html").send(entry.html);
+  });
+
+  app.post("/api/auto-design/:id/publish", async (req, res) => {
+    try {
+      const entry = designStore.get(req.params.id);
+      if (!entry) return res.status(404).json({ error: "Design não encontrado." });
+      const funnel = await publishTailscaleFunnel(entry.html);
+      res.json({ designId: req.params.id, internalUrl: funnel.internalUrl, publicUrl: funnel.publicUrl, tailnet: funnel.tailnet });
+    } catch (err: any) {
+      console.error("[autoDesigner] Erro ao publicar funnel:", err);
+      res.status(500).json({ error: err.message || "Erro ao publicar funnel." });
+    }
+  });
+
+  app.get("/api/auto-design/funnels", (req, res) => {
+    res.json({ funnels: getActiveFunnels() });
+  });
+
+  app.post("/api/auto-design/funnel/close", async (req, res) => {
+    try {
+      const port = Number(req.body?.port);
+      if (!port) return res.status(400).json({ error: "Informe a porta." });
+      const closed = await closeFunnel(port);
+      res.json({ closed, port });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Erro ao fechar funnel." });
+    }
+  });
+
+  // ----- TRAVA DE PROSPECÇÃO (máx. 5 envios/dia) -----
+  app.get("/api/prospection/status", (req, res) => {
+    const key = String(req.query.key || req.ip || "sistema");
+    res.json(getProspectionStatus(key));
+  });
+
+  app.post("/api/prospection/send", async (req, res) => {
+    try {
+      const { key, channel, to, text, subject } = req.body || {};
+      if (!to || !text) {
+        return res.status(400).json({ error: "Informe 'to' (destino) e 'text' (mensagem)." });
+      }
+      const quotaKey = String(key || req.ip || "sistema");
+      const result = await sendProspectionMessage({ key: quotaKey, channel, to, text, subject });
+      if (!result.sent) {
+        const status = getProspectionStatus(quotaKey);
+        if (status.used >= status.limit) {
+          return res.status(429).json({ error: PROSPECTION_LIMIT_MESSAGE, ...status });
+        }
+        return res.status(500).json({ error: `Falha no envio via ${result.channel}.`, detail: result.detail, ...status });
+      }
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      if (err?.name === "ProspectionLimitError") {
+        return res.status(429).json({ error: err.message, ...getProspectionStatus(String(req.body?.key || req.ip || "sistema")) });
+      }
+      console.error("[prospection] Erro no envio:", err);
+      res.status(500).json({ error: err.message || "Erro no envio de prospecção." });
+    }
+  });
+
+  app.post("/api/prospection/reset", (req, res) => {
+    const key = String(req.body?.key || "");
+    if (!key) return res.status(400).json({ error: "Informe a key." });
+    resetProspectionCounter(key);
+    res.json({ reset: true, ...getProspectionStatus(key) });
   });
 
   // ROTA GET '/' que responde com JSON { status: "online", bot: "aguardando_conexao" } para checagem/uptime de saúde
