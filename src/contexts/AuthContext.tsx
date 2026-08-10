@@ -78,26 +78,84 @@ export function translateAuthError(error: any): string {
 async function fetchProfile(
   userId: string
 ): Promise<{ profile: Profile | null; plan: Plan | null }> {
-  const { data: profile } = await supabase
+  const { data: profile, error: readError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .maybeSingle()
 
+  if (readError) {
+    console.error('[Auth] erro ao buscar perfil:', readError.message)
+  }
+
   if (!profile) return { profile: null, plan: null }
 
   let plan: Plan | null = null
   if (profile.plan_id) {
-    const { data: planData } = await supabase
+    const { data: planData, error: planError } = await supabase
       .from('plans')
       .select('*')
       .eq('id', profile.plan_id)
       .maybeSingle()
 
+    if (planError) {
+      console.error('[Auth] erro ao buscar plano:', planError.message)
+    }
     if (planData) plan = planData as Plan
   }
 
   return { profile: profile as Profile, plan }
+}
+
+// Garante que o usuário tenha registro na tabela profiles.
+// Contas já existentes (ex.: lucyano.pci@gmail.com) são apenas lidas;
+// usuários novos vindos do Google OAuth ganham perfil sem erro de permissão
+// (insert com RLS "profiles_insert_own" + onConflict para evitar duplicidade).
+async function ensureProfileExists(user: User): Promise<Profile | null> {
+  const { data: existing, error: readError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (readError) {
+    console.error('[Auth] erro ao verificar perfil existente:', readError.message)
+    return null
+  }
+
+  if (existing) return existing as Profile
+
+  const name =
+    String(user.user_metadata?.name || user.user_metadata?.full_name || '').trim() ||
+    user.email?.split('@')[0] ||
+    ''
+
+  console.log('[Auth] perfil não encontrado — criando para', user.email ?? user.id)
+  const { data: inserted, error: insertError } = await supabase
+    .from('profiles')
+    .upsert(
+      {
+        id: user.id,
+        email: user.email,
+        name,
+      },
+      { onConflict: 'id' }
+    )
+    .select()
+    .maybeSingle()
+
+  if (insertError) {
+    console.error('[Auth] falha ao criar perfil (o trigger handle_new_user pode ter criado antes):', insertError.message)
+    // Tolerante: a tabela pode ter sido criada pelo trigger entre a leitura e o upsert
+    const { data: retry } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+    return (retry as Profile) ?? null
+  }
+
+  return (inserted as Profile) ?? null
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -116,9 +174,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadUser = useCallback(async (currentUser: User | null) => {
     setUser(currentUser)
     if (currentUser) {
-      const result = await fetchProfile(currentUser.id)
-      setProfile(result.profile)
-      setPlan(result.plan)
+      try {
+        // Google/email: garante o registro na tabela profiles antes de carregar o plano
+        const profileRow = await ensureProfileExists(currentUser)
+        const result = await fetchProfile(currentUser.id)
+        setProfile(profileRow ?? result.profile)
+        setPlan(result.plan)
+        console.log('[Auth] sessão carregada para', currentUser.email ?? currentUser.id)
+      } catch (err: any) {
+        console.error('[Auth] falha ao carregar perfil/sessão:', err?.message || err)
+        setProfile(null)
+        setPlan(null)
+      }
     } else {
       setProfile(null)
       setPlan(null)
@@ -128,12 +195,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setLoading(true)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      loadUser(session?.user ?? null)
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data: { session }, error }) => {
+        if (error) {
+          console.error('[Auth] falha ao recuperar sessão:', error.message)
+          setLoading(false)
+          return
+        }
+        loadUser(session?.user ?? null)
+      })
+      .catch((err: any) => {
+        console.error('[Auth] exceção ao recuperar sessão:', err?.message || err)
+        setLoading(false)
+      })
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        console.log('[Auth] evento onAuthStateChange:', _event)
         loadUser(session?.user ?? null)
       }
     )
