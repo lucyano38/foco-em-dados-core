@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import { supabase, isSupabaseConfigured, signInWithProvider } from '../lib/supabase'
 
 interface Profile {
   id: string
@@ -54,6 +54,7 @@ interface AuthContextValue {
   isAdmin: boolean
   signInWithEmail: (email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
+  signInWithGithub: () => Promise<void>
   signUp: (email: string, password: string, name: string) => Promise<{ autoLoggedIn: boolean }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -235,24 +236,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured) {
-      throw new Error('Login com Google indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
+      throw new Error('Login com Google indisponível: configure VITE_SUPABASE_ANON_KEY.')
     }
     // Redireciona direto para /dashboard — o supabase-js troca o código PKCE
     // na própria página (detectSessionInUrl) e o ProtectedRoute libera o acesso.
-    const redirectTo = `${window.location.origin}/dashboard`
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    })
-    if (error) {
-      console.error('[Auth] signInWithOAuth error:', error)
-      throw translateAuthError(error)
+    try {
+      await signInWithProvider('google')
+    } catch (err: any) {
+      console.error('[Auth] signInWithGoogle error:', err)
+      throw translateAuthError(err)
+    }
+  }
+
+  const signInWithGithub = async () => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Login com GitHub indisponível: configure VITE_SUPABASE_ANON_KEY.')
+    }
+    try {
+      await signInWithProvider('github')
+    } catch (err: any) {
+      console.error('[Auth] signInWithGithub error:', err)
+      throw translateAuthError(err)
     }
   }
 
@@ -305,6 +309,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         signInWithEmail,
         signInWithGoogle,
+        signInWithGithub,
         signUp,
         signOut,
         refreshProfile,

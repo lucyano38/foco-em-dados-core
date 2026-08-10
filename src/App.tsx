@@ -17,7 +17,7 @@ import SiteChat from './components/SiteChat'
 
 export default function App() {
   return (
-    <>
+    <div className="min-h-screen bg-[#121414] text-[#e3e2e2] font-sans antialiased">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/precos" element={<Pricing />} />
@@ -51,6 +51,6 @@ export default function App() {
         <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
       </Routes>
       <SiteChat />
-    </>
+    </div>
   )
 }
