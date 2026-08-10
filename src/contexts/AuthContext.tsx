@@ -158,7 +158,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured) {
       throw new Error('Login com Google indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
-    const redirectTo = `${window.location.origin}/auth/callback`
+    // Redireciona direto para /dashboard — o supabase-js troca o código PKCE
+    // na própria página (detectSessionInUrl) e o ProtectedRoute libera o acesso.
+    const redirectTo = `${window.location.origin}/dashboard`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
