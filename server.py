@@ -52,6 +52,56 @@ if gemini_key and genai:
     except Exception as e:
         print(f"Erro Gemini: {e}")
 
+# ============================================================
+# AISA — gateway unificado de IA (OpenAI-compatible)
+# https://api.aisa.one/v1  |  modelos: qwen-flash (sem saldo mínimo)
+# ============================================================
+AISA_API_KEY = os.environ.get("AISA_API_KEY", "")
+AISA_BASE_URL = os.environ.get("AISA_BASE_URL", "https://api.aisa.one/v1").rstrip("/")
+AISA_MODEL = os.environ.get("AISA_MODEL", "qwen-flash")
+
+def aisa_chat(system_prompt, user_message, max_tokens=1500, timeout=60):
+    """Chama o chat completions da AISA e retorna o texto gerado.
+
+    Usa a AISA como motor principal de IA da prospecção.
+    Retorna o texto da resposta ou levanta exceção em caso de erro.
+    """
+    if not AISA_API_KEY:
+        raise RuntimeError("AISA_API_KEY não configurada.")
+    headers = {
+        "Authorization": f"Bearer {AISA_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": AISA_MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        "max_tokens": max_tokens,
+    }
+    try:
+        res = requests.post(f"{AISA_BASE_URL}/chat/completions", headers=headers, json=payload, timeout=timeout)
+        res.raise_for_status()
+        data = res.json()
+        return data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+    except requests.exceptions.HTTPError as e:
+        raise RuntimeError(f"AISA (HTTP {res.status_code}): {res.text[:300]}") from e
+
+def gerar_texto_ia(system_prompt, user_message, fallback=""):
+    """Motor de IA com prioridade AISA e fallback para Gemini + texto padrão."""
+    try:
+        return aisa_chat(system_prompt, user_message)
+    except Exception as e:
+        print(f"[AISA] Falha, tentando Gemini: {e}")
+    if gemini_client:
+        try:
+            res = gemini_client.models.generate_content(model='gemini-2.5-flash', contents=user_message)
+            return res.text
+        except Exception as e:
+            print(f"[Gemini] Falha: {e}")
+    return fallback
+
 def formatar_whatsapp(phone_raw):
     numeros = re.sub(r'\D', '', str(phone_raw))
     if not numeros:
@@ -71,7 +121,7 @@ def auth():
         return jsonify({"success": True, "token": "authenticated-admin"})
     return jsonify({"success": False, "message": "Senha incorreta"}), 401
 
-# ROTA CHAT HERMES COM INTEGRAÇÃO AO 9ROUTER
+# ROTA CHAT HERMES COM INTEGRAÇÃO À AISA (gateway unificado de IA)
 @app.route('/api/chat-hermes', methods=['POST', 'OPTIONS'])
 def chat_hermes():
     if request.method == 'OPTIONS':
@@ -81,34 +131,11 @@ def chat_hermes():
     message = data.get('message', '')
     prompt_instrucao = data.get('prompt_instrucao', 'Você é o Hermes, assistente virtual da Foco em Dados e especialista em prospecção B2B.')
     
-    openai_base = os.environ.get("OPENAI_API_BASE", "http://localhost:20128/v1")
-    openai_key = os.environ.get("OPENAI_API_KEY", "sk-2df7af436c116929-0p8f9l-e7dab052")
-    default_model = os.environ.get("DEFAULT_MODEL", "gc/gemini-2.5-flash")
-    
-    headers = {
-        "Authorization": f"Bearer {openai_key}",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "model": default_model,
-        "messages": [
-            {"role": "system", "content": prompt_instrucao},
-            {"role": "user", "content": message}
-        ]
-    }
-    
     try:
-        url = openai_base.rstrip('/') + "/chat/completions"
-        res = requests.post(url, headers=headers, json=payload, timeout=15)
-        if res.status_code == 200:
-            res_json = res.json()
-            resposta_da_ia = res_json.get('choices', [{}])[0].get('message', {}).get('content', 'Olá! Como posso ajudar?')
-            return jsonify({"reply": resposta_da_ia, "status": "sucesso"})
-        else:
-            return jsonify({"reply": f"Erro no 9router (Status {res.status_code}): {res.text}", "status": "erro"}), 500
+        resposta_da_ia = gerar_texto_ia(prompt_instrucao, message)
+        return jsonify({"reply": resposta_da_ia, "status": "sucesso"})
     except Exception as e:
-        return jsonify({"reply": f"Erro de conexão com o 9router: {str(e)}", "status": "erro"}), 500
+        return jsonify({"reply": f"Erro de conexão com a IA: {str(e)}", "status": "erro"}), 500
 
 # PIPELINE DE PROSPECÇÃO AUTÔNOMA (HERMES AGENT / OPENSQUAD)
 @app.route('/api/agent/hermes-prospect', methods=['POST', 'OPTIONS'])
@@ -161,23 +188,13 @@ def hermes_prospect():
         score = 95 if not has_website else 45
         wa_phone = formatar_whatsapp(item['phone'])
 
-        prompt_pitch = f"""Você é o Hermes Agent do Foco Completo.
+        prompt_pitch = f"""Você é o Hermes Agent do Foco Completo, especialista em prospecção B2B de alta conversão.
 Empresa: {item['name']} em {city}.
 Status: {'NÃO POSSUI SITE NO GOOGLE' if not has_website else 'Possui site antigo'}.
-Gere uma abordagem profissional para WhatsApp e E-mail oferecendo criação de Website moderno com Chatbot AI no Google Cloud."""
+Gere uma abordagem profissional e personalizada para WhatsApp e E-mail oferecendo criação de Website moderno com Chatbot AI no Google Cloud. Seja breve, persuasivo e em português brasileiro (máx. 80 palavras)."""
 
-        pitch = "Abordagem comercial pronta."
-        if gemini_client:
-            try:
-                res_ai = gemini_client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt_pitch
-                )
-                pitch = res_ai.text
-            except Exception as e:
-                pitch = f"Erro no Gemini: {str(e)}"
-        else:
-            pitch = f"Olá! Notei que o {item['name']} não possui site ativo em {city}. Criamos páginas de alta conversão integradas com Chatbot para WhatsApp no GCP."
+        fallback_pitch = f"Olá! Notei que o {item['name']} não possui site ativo em {city}. Criamos páginas de alta conversão integradas com Chatbot para WhatsApp no GCP. Posso te mandar uma proposta sem compromisso?"
+        pitch = gerar_texto_ia(prompt_pitch, prompt_pitch, fallback=fallback_pitch)
 
         lead_data = {
             "name": item['name'],
@@ -263,17 +280,14 @@ Forneça um relatório executivo de BI contendo:
 3. Plano Estratégico de Crescimento e Vendas."""
 
         analysis_text = "Análise concluída."
-        if gemini_client:
-            try:
-                res = gemini_client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt_bi
-                )
-                analysis_text = res.text
-            except Exception as e:
-                analysis_text = f"Análise automatizada finalizada para {total_rows} linhas."
-        else:
-            analysis_text = f"Planilha processada com sucesso! Mapeadas {len(cols)} colunas e {total_rows} registros."
+        try:
+            analysis_text = gerar_texto_ia(
+                "Você é um especialista em Business Intelligence (estilo Qlik Sense / Power BI).",
+                prompt_bi,
+                fallback=f"Planilha processada com sucesso! Mapeadas {len(cols)} colunas e {total_rows} registros."
+            )
+        except Exception as e:
+            analysis_text = f"Análise automatizada finalizada para {total_rows} linhas. ({e})"
 
         return jsonify({
             "status": "success",
@@ -313,15 +327,14 @@ INVESTIMENTO: {val}
 CLÁUSULAS LGPD OBRIGATÓRIAS (Lei 13.709/2018)."""
 
     contract_text = "Minuta contratual minutuada."
-    if gemini_client:
-        try:
-            res = gemini_client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=prompt
-            )
-            contract_text = res.text
-        except Exception as e:
-            contract_text = f"Erro no Gemini: {str(e)}"
+    try:
+        contract_text = gerar_texto_ia(
+            "Você é um advogado especialista em contratos de TI e LGPD (Lei 13.709/2018).",
+            prompt,
+            fallback="Minuta de contrato gerada. Solicite o documento completo."
+        )
+    except Exception as e:
+        contract_text = f"Erro na geração do contrato: {str(e)}"
 
     if supabase:
         try:
