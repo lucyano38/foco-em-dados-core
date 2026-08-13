@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
+
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +9,18 @@ import { Upload, FileSpreadsheet, Lock, CheckCircle2, AlertTriangle, Loader2 } f
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
 const MAX_FREE_ROWS = 100;
 const PAID_PRICE_CENTS = 3990; // R$ 39,90
+const MAX_FILE_MB = 10;
+
+function friendlyError(err: any, filename: string): string {
+  const msg = String(err?.message || '');
+  if (/corrupt|invalid|unsupported|incomplete|zip|crc|header/i.test(msg)) {
+    return `O arquivo "${filename}" parece estar corrompido ou em formato não suportado. Use .csv, .xlsx ou .xls.`;
+  }
+  if (/empty|no sheet|planilhas/i.test(msg)) {
+    return `O arquivo "${filename}" está vazio ou sem planilhas válidas.`;
+  }
+  return msg ? `Não foi possível processar "${filename}": ${msg}` : `Não foi possível processar "${filename}". Verifique se o arquivo é válido.`;
+}
 
 interface UploadResult {
   filename: string;
@@ -73,12 +85,28 @@ export default function SpreadsheetUpload() {
     setError(null);
     setResult(null);
     try {
+      if (!file.name.toLowerCase().match(/\.(csv|xlsx?)$/)) {
+        throw new Error(`Formato não suportado: "${file.name}". Use .csv, .xlsx ou .xls.`);
+      }
+      if (file.size > MAX_FILE_MB * 1024 * 1024) {
+        throw new Error(`O arquivo excede o limite de ${MAX_FILE_MB}MB. Gere uma planilha menor e tente novamente.`);
+      }
+      if (file.size === 0) {
+        throw new Error('O arquivo está vazio (0 bytes).');
+      }
       const { totalRows, columns } = await countRows(file);
+      if (totalRows === 0) {
+        throw new Error('Nenhuma linha de dados encontrada na planilha.');
+      }
       setFilename(file.name);
       setTotalRows(totalRows);
       setColumns(columns);
     } catch (err: any) {
-      setError(err.message || 'Erro ao ler o arquivo.');
+      setError(friendlyError(err, file.name));
+      setFilename('');
+      setTotalRows(null);
+      setColumns([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } finally {
       setParsing(false);
     }
@@ -127,10 +155,8 @@ export default function SpreadsheetUpload() {
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Erro ao iniciar o checkout.');
       }
-      const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY);
-      if (!stripe) throw new Error('Falha ao carregar o Stripe.');
-      const { error: redirectError } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      if (redirectError) throw new Error(redirectError.message);
+      if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.');
+      window.location.href = data.url;
     } catch (err: any) {
       setError(err.message || 'Erro ao iniciar o pagamento.');
     } finally {

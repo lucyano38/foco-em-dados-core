@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import LeadFinder from '../components/LeadFinder';
 import {
   Database, Plus, Trash2, Send, Phone, Mail, ArrowRight, GripVertical,
   ShieldCheck, Users, Target, CheckCircle2, Loader2,
@@ -40,9 +41,16 @@ const STORAGE_KEY = 'foco_admin_pipeline';
 const SEED_LEADS: PipelineLead[] = [
   { id: 'seed-1', name: 'Moda Bella Store', phone: '5511999990001', email: 'contato@modabellastore.com.br', notes: 'Loja de moda feminina, sem site. Capturado via busca automatizada.', value: 2900, status: 'prospeccao', source: 'Hermes AI', created_at: new Date().toISOString() },
   { id: 'seed-2', name: 'Auto Peças Silva', phone: '5511988880002', email: 'vendas@autopecassilva.com.br', notes: 'Possui site simples, sem integração de vendas.', value: 1800, status: 'prospeccao', source: 'Hermes AI', created_at: new Date().toISOString() },
+  { id: 'seed-6', name: 'Academia Corpo em Forma', phone: '5511970000006', email: 'contato@corpoemforma.com.br', notes: 'Captada via Facebook Ads. Sem sistema de matrículas online.', value: 1500, status: 'prospeccao', source: 'Facebook', created_at: new Date().toISOString() },
+  { id: 'seed-7', name: 'Petshop Amigo Fiel', phone: '5511960000007', email: 'ola@petshopamigofiel.com.br', notes: 'Buscada por geolocalização na cidade de São Paulo.', value: 1200, status: 'prospeccao', source: 'Google Maps', created_at: new Date().toISOString() },
   { id: 'seed-3', name: 'Padaria Pão Dourado', phone: '5511977770003', email: 'contato@paodourado.com.br', notes: 'Interessada em automação de WhatsApp.', value: 950, status: 'qualificacao', source: 'Indicação', created_at: new Date().toISOString() },
+  { id: 'seed-8', name: 'Barbearia Navalha de Ouro', phone: '5511950000008', email: 'agenda@navalhadeouro.com.br', notes: 'Quer agendamento online e cardápio de serviços digital.', value: 1100, status: 'qualificacao', source: 'Google Maps', created_at: new Date().toISOString() },
   { id: 'seed-4', name: 'Clínica Vida Plena', phone: '5511966660004', email: 'recepcao@clinicavidaplena.com.br', notes: 'Quer dashboard de BI para agenda e faturamento.', value: 3900, status: 'proposta', source: 'Indicação', created_at: new Date().toISOString() },
+  { id: 'seed-9', name: 'Loja Bella Calçados', phone: '5511940000009', email: 'vendas@bellacalcados.com.br', notes: 'Proposta enviada com mockup de site e WhatsApp integrado.', value: 2600, status: 'proposta', source: 'Hermes AI', created_at: new Date().toISOString() },
   { id: 'seed-5', name: 'Mercado Bom Preço', phone: '5511955550005', email: 'adm@mercadobompreco.com.br', notes: 'Negociando site + loja virtual completa.', value: 4800, status: 'negociacao', source: 'Hermes AI', created_at: new Date().toISOString() },
+  { id: 'seed-10', name: 'Distribuidora Central Bebidas', phone: '5511930000010', email: 'comercial@centralbebidas.com.br', notes: 'Fechou loja online + BI, em detalhes finais de contrato.', value: 5900, status: 'negociacao', source: 'Google', created_at: new Date().toISOString() },
+  { id: 'seed-11', name: 'Salão Studio Beleza', phone: '5511920000011', email: 'contato@studiobeleza.com.br', notes: 'Cliente ativa — site + agendamento implantados. Cliente satisfeita.', value: 3200, status: 'fechamento', source: 'Indicação', created_at: new Date().toISOString() },
+  { id: 'seed-12', name: 'Farmácia Vida + Saúde', phone: '5511910000012', email: 'farmacia@vidamais.com.br', notes: 'Contrato assinado, implementação em andamento.', value: 6800, status: 'fechamento', source: 'Hermes AI', created_at: new Date().toISOString() },
 ];
 
 const STAGE_LABEL: Record<PipelineStageId, string> = {
@@ -126,10 +134,23 @@ export default function Admin() {
         }
       }
 
-      const merged = remote.length
-        ? [...remote, ...(stored || []).filter((s) => s.id.startsWith('seed-'))]
-        : (stored && stored.length ? stored : SEED_LEADS);
-      setLeads(merged);
+      const seedIds = new Set(SEED_LEADS.map((s) => s.id));
+      const userLeads = remote.length ? remote : (stored || []).filter((s) => !s.id.startsWith('seed-'));
+      const merged = [...userLeads, ...(stored || []).filter((s) => s.id.startsWith('seed-')), ...SEED_LEADS];
+      const seen = new Set<string>();
+      const deduped = merged.filter((l) => {
+        if (seen.has(l.id)) return false;
+        if (l.id.startsWith('seed-')) {
+          if (seedIds.has(l.id)) {
+            seen.add(l.id);
+            return true;
+          }
+          return false;
+        }
+        seen.add(l.id);
+        return true;
+      });
+      setLeads(deduped);
       setLoaded(true);
     };
     load();
@@ -250,6 +271,14 @@ export default function Admin() {
             Nova Prospecção
           </button>
         </div>
+
+        <LeadFinder
+          onAddToPipeline={(lead) => {
+            persist([{ ...lead, status: lead.status as PipelineStageId }, ...leads]);
+            setToast(`Lead "${lead.name}" capturado e adicionado à Prospecção.`);
+            setTimeout(() => setToast(null), 3500);
+          }}
+        />
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {PIPELINE_STAGES.map((s) => (

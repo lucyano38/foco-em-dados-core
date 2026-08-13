@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js'
+
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail } from 'lucide-react'
@@ -104,9 +104,8 @@ export default function Home() {
       })
       const data = await res.json()
       if (!res.ok || !data.success) throw new Error(data.error || 'Erro ao iniciar o checkout.')
-      const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY)
-      if (!stripe) throw new Error('Falha ao carregar o Stripe.')
-      await stripe.redirectToCheckout({ sessionId: data.sessionId })
+      if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.')
+      window.location.href = data.url
     } catch (err: any) {
       alert(err?.message || 'Erro ao iniciar o pagamento.')
     }

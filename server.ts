@@ -14,6 +14,8 @@ import cors from "cors";
 import authRouter from "./src/routes/auth";
 import { generateRedesignPage, publishTailscaleFunnel, closeFunnel, getActiveFunnels, createAutoDesign } from "./src/services/autoDesigner";
 import { getProspectionStatus, sendProspectionMessage, resetProspectionCounter, PROSPECTION_LIMIT_MESSAGE } from "./src/services/prospectionGuard";
+import { handleWahaWebhook, processN8nProspects, getWahaStatus, STRICT_SUPABASE_URL } from "./src/services/wahaIntegration";
+import { generateMockLeads } from "./src/services/mockLeadSearch";
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -1532,6 +1534,116 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     res.json({ reset: true, ...getProspectionStatus(key) });
   });
 
+  // ----- BUSCA DE LEADS (Google Maps / Redes com fallback simulado) -----
+  app.post("/api/prospection/search", async (req, res) => {
+    try {
+      const { city, segment, geo, limit, query } = req.body || {};
+      if (!city && !query) {
+        return res.status(400).json({ error: "Informe pelo menos 'city' (cidade/UF) ou 'query'." });
+      }
+      const started = Date.now();
+      const params = {
+        city: String(city || query || "").trim(),
+        segment: segment ? String(segment) : undefined,
+        geo: Boolean(geo),
+        limit: limit ? Number(limit) : 10,
+        query: query ? String(query) : undefined,
+      };
+
+      let leads: any[] = [];
+      let source: "external" | "mock" = "mock";
+
+      const extUrl = process.env.PROSPECTION_API_URL;
+      if (extUrl) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 6000);
+          const extRes = await fetch(extUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(params),
+            signal: ctrl.signal,
+          });
+          clearTimeout(timer);
+          if (extRes.ok) {
+            const extData = await extRes.json();
+            if (Array.isArray(extData?.leads) && extData.leads.length > 0) {
+              leads = extData.leads;
+              source = "external";
+            }
+          }
+        } catch (err: any) {
+          console.warn("[prospection/search] API externa falhou, usando mock:", err.message);
+        }
+      }
+
+      if (leads.length === 0) {
+        leads = generateMockLeads(params);
+      }
+
+      res.json({
+        success: true,
+        source,
+        elapsed: Date.now() - started,
+        filters: { city: params.city, segment: params.segment, geo: params.geo },
+        total: leads.length,
+        leads,
+      });
+    } catch (err: any) {
+      console.error("[prospection/search] Erro:", err);
+      res.status(500).json({ error: err.message || "Erro interno na busca de leads." });
+    }
+  });
+
+  // ----- INTEGRAÇÃO WAHA PLUS (webhooks do WhatsApp) -----
+  app.get("/api/waha/status", (req, res) => {
+    const status = getWahaStatus();
+    res.json({
+      ...status,
+      supabaseUrl: STRICT_SUPABASE_URL,
+      docs: "POST /api/waha/webhook aceita eventos do WAHA Plus ou repassados pelo n8n.",
+    });
+  });
+
+  app.post("/api/waha/webhook", async (req, res) => {
+    try {
+      const body = req.body || {};
+      const expectedToken = process.env.WAHA_WEBHOOK_TOKEN;
+      const receivedToken = String(body.token || req.headers["x-waha-token"] || "");
+      if (expectedToken && receivedToken !== expectedToken) {
+        return res.status(401).json({ error: "Token de webhook inválido." });
+      }
+      const result = await handleWahaWebhook(body);
+      if (result.type === "incoming" && result.lead && !result.lead.ok) {
+        return res.status(500).json({ received: true, error: result.lead.error });
+      }
+      res.json(result);
+    } catch (err: any) {
+      console.error("[waha/webhook] Erro:", err);
+      res.status(500).json({ error: err.message || "Erro no webhook do WAHA." });
+    }
+  });
+
+  // ----- INTEGRAÇÃO N8N (prospecções automatizadas do Hermes Agent) -----
+  app.post("/api/n8n/prospect", async (req, res) => {
+    try {
+      const payload = req.body || {};
+      const prospects = payload.prospects && Array.isArray(payload.prospects)
+        ? payload.prospects
+        : Array.isArray(payload)
+          ? payload
+          : [];
+      if (prospects.length === 0) {
+        return res.status(400).json({ error: "Envie um array de prospecções em 'prospects' ou no body." });
+      }
+      const result = await processN8nProspects(prospects);
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      console.error("[n8n/prospect] Erro:", err);
+      res.status(500).json({ error: err.message || "Erro ao processar prospecções do n8n." });
+    }
+  });
+
   // ROTA GET '/' que responde com JSON { status: "online", bot: "aguardando_conexao" } para checagem/uptime de saúde
   app.get("/", (req, res, next) => {
     // Se o cliente explicitamente solicita JSON ou se for uma rota de checagem automatizada (ex: com query ou Accept JSON)
@@ -1568,7 +1680,8 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     res.sendFile(path.join(staticPath, 'index.html'));
   });
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const PORT_NUMBER = typeof PORT === "string" ? parseInt(PORT, 10) : PORT;
+  app.listen(Number.isFinite(PORT_NUMBER) ? PORT_NUMBER : 8080, "0.0.0.0", () => {
     console.log(`Servidor rodando na porta ${PORT}`);
   });
 }
