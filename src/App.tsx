@@ -9,6 +9,7 @@ import TermsOfService from './pages/TermsOfService'
 import NotFound from './pages/NotFound'
 import AdminAutomacao from './pages/AdminAutomacao'
 import Admin from './pages/Admin'
+import AdminProspeccao from './pages/AdminProspeccao'
 import PreviewProposta from './pages/PreviewProposta'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedRouteMaster from './components/ProtectedRouteMaster'
@@ -35,6 +36,15 @@ export default function App() {
           element={
             <AdminRoute>
               <Admin />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/prospeccao"
+          element={
+            <AdminRoute>
+              <AdminProspeccao />
             </AdminRoute>
           }
         />
