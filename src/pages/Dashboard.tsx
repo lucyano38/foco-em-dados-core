@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext'
 import { useDataUpload } from '../hooks/useDataUpload'
 import { usePlanLimits } from '../hooks/usePlanLimits'
 import BIExecutivePanel from '../components/BIExecutivePanel'
+import { WHATSAPP_URL } from '../lib/contact'
 import {
   Upload, Database, BarChart3, TrendingUp, LogOut,
-  FileText, AlertCircle, CheckCircle, X, Loader2,
+  FileText, AlertCircle, CheckCircle, X, Loader2, MessageCircle,
 } from 'lucide-react'
 
 function UsageBar({ label, used, limit, percent }: {
@@ -165,8 +166,9 @@ export default function Dashboard() {
             <Link to="/precos" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">
               Planos
             </Link>
-            <a href="mailto:atendimento@focoemdados.com.br" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">
-              Suporte
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-[#d4c5ab] hover:text-[#4ade80] transition-colors">
+              <MessageCircle className="w-3 h-3" />
+              Suporte WhatsApp
             </a>
             <button
               onClick={handleLogout}

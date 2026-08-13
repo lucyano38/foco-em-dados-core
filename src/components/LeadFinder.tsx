@@ -4,6 +4,7 @@ import {
   Globe, AlertCircle, CheckCircle2, Sparkles, Building2, Target,
 } from 'lucide-react'
 import { SEGMENTS, generateMockLeads, type MockLead, type LeadSearchParams } from '../services/mockLeadSearch'
+import { safeJson } from '../lib/safeFetch'
 
 export interface LeadForPipeline {
   id: string
@@ -75,7 +76,7 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
       })
       clearTimeout(timeout)
       if (!res.ok) throw new Error('Servidor indisponível para busca.')
-      const data = await res.json()
+      const data = await safeJson(res)
       if (Array.isArray(data.leads) && data.leads.length > 0) {
         setLeads(data.leads)
         setSource(data.source === 'external' ? 'server' : 'mock')
