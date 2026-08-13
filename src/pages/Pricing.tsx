@@ -3,6 +3,8 @@ import { Check, Database, ArrowLeft } from 'lucide-react'
 
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
 
+const FREE_PLAN_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero iniciar no plano Gratuito')}`
+
 const PLANS = [
   {
     tier: 'free',
@@ -16,6 +18,8 @@ const PLANS = [
       'Insights básicos por IA',
       '50 MB de armazenamento',
     ],
+    highlighted: false,
+    href: FREE_PLAN_WHATSAPP_URL,
   },
   {
     tier: 'starter',
@@ -31,6 +35,7 @@ const PLANS = [
       '500 MB de armazenamento',
     ],
     highlighted: false,
+    href: 'https://buy.stripe.com/cNifZheobdbYd0Db9O5Vu04',
   },
   {
     tier: 'pro',
@@ -47,40 +52,7 @@ const PLANS = [
       '2 GB de armazenamento',
     ],
     highlighted: true,
-  },
-  {
-    tier: 'business',
-    name: 'Business',
-    price: 597,
-    description: 'Para equipes que precisam de análises avançadas.',
-    features: [
-      'Dashboards ilimitados',
-      'Linhas ilimitadas',
-      'Múltiplos usuários',
-      'Data lake dedicado',
-      'Forecast avançado',
-      'Onboarding personalizado',
-      'Suporte 24h',
-      '10 GB de armazenamento',
-    ],
-    highlighted: false,
-  },
-  {
-    tier: 'enterprise',
-    name: 'Enterprise',
-    price: 997,
-    description: 'Para grandes operações com demandas personalizadas.',
-    features: [
-      'Usuários ilimitados',
-      'Linhas ilimitadas',
-      'IA customizada',
-      'SLA 99,9%',
-      'Gerente dedicado',
-      'Treinamento de equipe',
-      'Suporte 24h',
-      '100 GB de armazenamento',
-    ],
-    highlighted: false,
+    href: 'https://buy.stripe.com/cNi7sLfsf0pcbWzem05Vu05',
   },
 ]
 
@@ -111,7 +83,7 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {PLANS.map((plan) => (
             <div
               key={plan.tier}
@@ -145,8 +117,10 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/login"
+              <a
+                href={plan.href}
+                target="_blank"
+                rel="noreferrer"
                 className={`mt-6 h-10 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                   plan.highlighted
                     ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950'
@@ -154,7 +128,7 @@ export default function Pricing() {
                 }`}
               >
                 {plan.price === 0 ? 'Começar Grátis' : 'Assinar Agora'}
-              </Link>
+              </a>
             </div>
           ))}
         </div>
