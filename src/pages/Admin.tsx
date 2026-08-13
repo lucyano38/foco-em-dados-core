@@ -5,7 +5,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import LeadFinder from '../components/LeadFinder';
 import {
   Database, Plus, Trash2, Send, Phone, Mail, ArrowRight, GripVertical,
-  ShieldCheck, Users, Target, CheckCircle2, Loader2,
+  ShieldCheck, Users, Target, CheckCircle2, Loader2, Sparkles,
 } from 'lucide-react';
 
 export interface PipelineLead {
@@ -244,6 +244,10 @@ export default function Admin() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/admin/prospeccao" className="inline-flex items-center gap-1.5 text-xs text-[#fabd00] hover:text-[#ffe4af] transition-colors">
+              <Sparkles className="w-3.5 h-3.5" />
+              Prospecção Redesign
+            </Link>
             <Link to="/app" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">Área do Cliente</Link>
             <button
               onClick={() => signOut()}
