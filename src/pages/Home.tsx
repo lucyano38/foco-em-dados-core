@@ -4,13 +4,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
-import { safeJson, friendlyFetchError } from '../lib/safeFetch'
+import { safeJson } from '../lib/safeFetch'
 import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
 const PROSPECTION_PRICE_CENTS = 3990 // R$ 39,90
 
 const LUCIANO_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano! Gostaria de ativar o seu agente de IA no meu negócio.')}`
+
+const PROSPECTION_CHECKOUT_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero ativar a Prospecção Inteligente por R$ 39,90.')}`
+
+const FREE_PLAN_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero iniciar no plano Gratuito')}`
 
 const SOLUTIONS = [
   {
@@ -114,15 +118,25 @@ const FEATURES = [
 ]
 
 const PLANS = [
-  { name: 'Gratuito', price: 'R$ 0', features: ['3 dashboards', '2.000 linhas/mês', 'Upload CSV/Excel', 'Insights básicos por IA'], popular: false },
-  { name: 'Starter', price: 'R$ 97', features: ['10 dashboards', '50.000 linhas/mês', 'Alertas automáticos', 'Previsão de vendas 30 dias', 'Exportação de relatórios'], popular: false },
-  { name: 'Pro', price: 'R$ 297', features: ['Dashboards ilimitados', '500.000 linhas/mês', 'Análise preditiva avançada', 'API pública', 'Integrações com ERPs', 'Suporte prioritário'], popular: true },
-  { name: 'Business', price: 'R$ 597', features: ['Tudo do Pro +', 'Linhas ilimitadas', 'Múltiplos usuários', 'Data lake dedicado', 'Forecast avançado', 'Onboarding personalizado'], popular: false },
-  { name: 'Enterprise', price: 'R$ 997', features: ['Tudo do Business +', 'IA customizada', 'SLA 99,9%', 'Gerente dedicado', 'Suporte 24h', 'Armazenamento ilimitado'], popular: false },
+  {
+    name: 'Gratuito', price: 'R$ 0', cta: 'Começar Grátis',
+    features: ['3 dashboards', '2.000 linhas/mês', 'Upload CSV/Excel', 'Insights básicos por IA'],
+    popular: false, href: FREE_PLAN_WHATSAPP_URL,
+  },
+  {
+    name: 'Starter', price: 'R$ 97', cta: 'Assinar',
+    features: ['10 dashboards', '50.000 linhas/mês', 'Alertas automáticos', 'Previsão de vendas 30 dias', 'Exportação de relatórios'],
+    popular: false, href: 'https://buy.stripe.com/cNifZheobdbYd0Db9O5Vu04',
+  },
+  {
+    name: 'Pro', price: 'R$ 297', cta: 'Assinar',
+    features: ['Dashboards ilimitados', '500.000 linhas/mês', 'Análise preditiva avançada', 'API pública', 'Integrações com ERPs', 'Suporte prioritário'],
+    popular: true, href: 'https://buy.stripe.com/cNi7sLfsf0pcbWzem05Vu05',
+  },
 ]
 
 export default function Home() {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -134,11 +148,15 @@ export default function Home() {
       navigate('/login')
       return
     }
-    if (!STRIPE_PUBLISHABLE_KEY) {
-      alert('Pagamento indisponível: chave do Stripe não configurada.')
+    if (isAdmin) {
+      navigate('/admin/prospeccao')
       return
     }
     try {
+      if (!STRIPE_PUBLISHABLE_KEY) {
+        window.location.href = PROSPECTION_CHECKOUT_WHATSAPP_URL
+        return
+      }
       const res = await fetch('/api/stripe/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -154,8 +172,8 @@ export default function Home() {
       }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.')
       window.location.href = data.url
-    } catch (err: any) {
-      alert(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'))
+    } catch {
+      window.location.href = PROSPECTION_CHECKOUT_WHATSAPP_URL
     }
   }
 
@@ -445,9 +463,9 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">Planos</h2>
             <p className="text-slate-400 text-center mb-12 max-w-xl mx-auto">
-              Do teste gratuito ao enterprise. Sem fidelidade.
+              Do teste gratuito ao plano Pro. Sem fidelidade.
             </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
               {PLANS.map((p) => (
                 <div key={p.name} className={`glass-card p-6 flex flex-col ${p.popular ? 'border-cyan-500/30 ring-1 ring-cyan-500/20' : ''}`}>
                   {p.popular && (
@@ -463,12 +481,14 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    to="/login"
+                  <a
+                    href={p.href}
+                    target="_blank"
+                    rel="noreferrer"
                     className="mt-6 h-10 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-sm flex items-center justify-center gap-2 transition-all"
                   >
-                    {p.price === 'R$ 0' ? 'Começar Grátis' : 'Assinar'}
-                  </Link>
+                    {p.cta}
+                  </a>
                 </div>
               ))}
             </div>
