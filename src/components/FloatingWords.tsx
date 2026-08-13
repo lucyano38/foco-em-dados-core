@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 const WORDS = [
-  'BI', 'Automação', 'Hermes Agent', 'Sites', 'Lojas Virtuais',
+  'BI', 'Automação', 'Agente Luciano', 'Sites', 'Lojas Virtuais',
   'Dashboard', 'Power BI', 'QlikSense', 'IA', 'Prospecção',
   'Stripe', 'WhatsApp', 'ETL', 'Supabase', 'Vercel', 'Dados',
 ];

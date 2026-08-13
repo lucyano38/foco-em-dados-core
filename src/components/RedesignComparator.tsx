@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Loader2, Sparkles, AlertTriangle } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { safeJson, friendlyFetchError } from '../lib/safeFetch';
 
 export interface RedesignRow {
   id: string;
@@ -31,29 +33,55 @@ export default function RedesignComparator() {
     setLoadingRows(true);
     setError(null);
     try {
-      const res = await fetch('/api/prospection/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ city: '', segment: '', limit: 50 }),
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!res.ok) {
-        throw new Error((await res.json()).error || 'Falha ao carregar prospecções.');
+      let list: RedesignRow[] = [];
+
+      if (isSupabaseConfigured) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100);
+        if (error) throw new Error(error.message);
+        list = (data || []).map((l: any) => ({
+          id: String(l.id || l.name),
+          name: l.name || l.companyName || 'Sem nome',
+          segment: l.segment || l.segmento,
+          city: l.city || l.cidade,
+          uf: l.uf,
+          whatsapp: l.whatsapp || l.phone || l.telefone,
+          hasWebsite: Boolean(l.hasWebsite ?? l.has_site ?? l.has_site_web),
+        }));
       }
-      const data = await res.json();
-      const list: RedesignRow[] = (data.leads || []).map((l: any) => ({
-        id: String(l.id || l.name),
-        name: l.name || l.companyName || 'Sem nome',
-        segment: l.segment,
-        city: l.city,
-        uf: l.uf,
-        whatsapp: l.whatsapp || l.phone,
-        hasWebsite: Boolean(l.hasWebsite),
-      }));
+
+      if (list.length === 0) {
+        const res = await fetch('/api/prospection/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: '', segment: '', limit: 50 }),
+          signal: AbortSignal.timeout(8000),
+        });
+        if (!res.ok) {
+          throw new Error((await safeJson(res)).error || 'Falha ao carregar prospecções.');
+        }
+        const data = await safeJson(res);
+        list = (data.leads || []).map((l: any) => ({
+          id: String(l.id || l.name),
+          name: l.name || l.companyName || 'Sem nome',
+          segment: l.segment,
+          city: l.city,
+          uf: l.uf,
+          whatsapp: l.whatsapp || l.phone,
+          hasWebsite: Boolean(l.hasWebsite),
+        }));
+      }
+
       const seen = new Set<string>();
       setRows(list.filter((r) => !seen.has(r.id) && (seen.add(r.id), true)));
+      if (list.length === 0) {
+        setError('Nenhum lead encontrado na tabela leads do Supabase.');
+      }
     } catch (err: any) {
-      setError(err.message || 'Erro ao buscar prospecções.');
+      setError(friendlyFetchError(err, 'Erro ao buscar prospecções.'));
     } finally {
       setLoadingRows(false);
     }
@@ -80,12 +108,12 @@ export default function RedesignComparator() {
         }),
         signal: AbortSignal.timeout(45000),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Falha ao gerar o redesign.');
       setResult({ designId: data.designId, html: data.html, generatedAt: data.generatedAt, model: data.model });
       setView('depois');
     } catch (err: any) {
-      setError(err.message || 'Erro ao gerar o redesign.');
+      setError(friendlyFetchError(err, 'Erro ao gerar o redesign.'));
       setResult(null);
     } finally {
       setGeneratingId(null);
