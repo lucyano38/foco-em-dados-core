@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Check, Database, ArrowLeft } from 'lucide-react'
 
+import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
+
 const PLANS = [
   {
     tier: 'free',
@@ -163,9 +165,13 @@ export default function Pricing() {
             <Link to="/termos" className="text-cyan-400 hover:underline">Termos de Uso</Link>.
           </p>
           <p className="text-xs text-slate-500">
-            Dúvidas? Fale com a gente:{' '}
-            <a href="mailto:atendimento@focoemdados.com.br" className="text-cyan-400 hover:underline">
-              atendimento@focoemdados.com.br
+            Dúvidas? Fale com a gente no{' '}
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">
+              WhatsApp (11) 99441-1307
+            </a>{' '}
+            ou{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-cyan-400 hover:underline">
+              {CONTACT_EMAIL}
             </a>
           </p>
         </div>

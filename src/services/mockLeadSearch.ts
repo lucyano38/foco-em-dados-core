@@ -271,7 +271,7 @@ export function generateMockLeads(params: LeadSearchParams): MockLead[] {
       hasWebsite,
       notes: `${comment} ${profile.notes} Buscada em ${city} (${state}).`,
       score: Math.min(99, Math.round(profile.score + rand() * 8)),
-      source: `Hermes AI · ${pick(rand, sources)}`,
+      source: `Luciano AI · ${pick(rand, sources)}`,
       verified: rand() > 0.25,
     };
     leads.push(lead);

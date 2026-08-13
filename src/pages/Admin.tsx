@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { safeJson, friendlyFetchError } from '../lib/safeFetch';
 import LeadFinder from '../components/LeadFinder';
 import {
   Database, Plus, Trash2, Send, Phone, Mail, ArrowRight, GripVertical,
-  ShieldCheck, Users, Target, CheckCircle2, Loader2,
+  ShieldCheck, Users, Target, CheckCircle2, Loader2, Sparkles,
 } from 'lucide-react';
 
 export interface PipelineLead {
@@ -204,13 +205,13 @@ export default function Admin() {
           notes: lead.notes,
         }),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) {
         throw new Error(data.error || 'Falha no envio.');
       }
       setToast(`Abordagem enviada para ${lead.name}.`);
     } catch (err: any) {
-      setToast(`Erro: ${err.message || 'falha no envio.'}`);
+      setToast(`Erro: ${friendlyFetchError(err, 'falha no envio.')}`);
     } finally {
       setSendingId(null);
       setTimeout(() => setToast(null), 4000);
@@ -244,6 +245,10 @@ export default function Admin() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/admin/prospeccao" className="inline-flex items-center gap-1.5 text-xs text-[#fabd00] hover:text-[#ffe4af] transition-colors">
+              <Sparkles className="w-3.5 h-3.5" />
+              Prospecção Redesign
+            </Link>
             <Link to="/app" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">Área do Cliente</Link>
             <button
               onClick={() => signOut()}
@@ -408,7 +413,7 @@ export default function Admin() {
         <div className="glass-card p-5 flex items-start gap-3">
           <Target className="w-4 h-4 text-[#cdbdff] shrink-0 mt-0.5" />
           <p className="text-xs text-[#d4c5ab] leading-relaxed">
-            <strong className="text-[#e3e2e2]">Fluxo de conversão:</strong> o Hermes Agent captura leads (empresas com ou sem site),
+            <strong className="text-[#e3e2e2]">Fluxo de conversão:</strong> o Agente Luciano captura leads (empresas com ou sem site),
             insere na etapa <strong>1. Prospecção</strong> e você conduz até <strong>5. Fechamento</strong>. O botão "Enviar"
             dispara a abordagem via WhatsApp/e-mail (limite de 5 prospecções/dia na política atual).
           </p>

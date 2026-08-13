@@ -132,10 +132,34 @@ export default function PrivacyPolicy({ onBack }: { onBack: () => void }) {
             </p>
           </section>
 
-          {/* Section 6 */}
+          {/* Section 6 - Cookies */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2 border-b border-slate-900 pb-2">
-              <span className="text-cyan-400 font-mono">6.</span> Contato e Suporte
+              <span className="text-cyan-400 font-mono">6.</span> Cookies e Publicidade (Google AdSense / Analytics)
+            </h2>
+            <p>
+              Este site utiliza cookies próprios e de terceiros para garantir o funcionamento da plataforma,
+              medir audiência e exibir anúncios contextualizados. Ao navegar, você poderá ser direcionado a
+              publicidade veiculada por meio do <strong className="text-slate-200">Google AdSense</strong>, que
+              pode armazenar cookies no seu dispositivo.
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-slate-400">
+              <li><strong>Cookies Essenciais:</strong> necessários para autenticação, sessão e segurança do painel. Não podem ser desativados.</li>
+              <li><strong>Cookies de Publicidade (AdSense / Google):</strong> utilizados pelo Google para exibir anúncios com base no histórico de navegação. O Google pode usar cookies como <code className="text-cyan-400 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-[11px]">NID</code>, <code className="text-cyan-400 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-[11px]">_gcl_au</code> e demais identificadores publicitários.</li>
+              <li><strong>Cookies de Analytics:</strong> agregados e anônimos, utilizados para entender como o site é usado e melhorar a experiência.</li>
+              <li><strong>Opt-out:</strong> você pode gerenciar ou bloquear os cookies de publicidade em <a href="https://adssettings.google.com/authenticated" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">Ads Settings do Google</a> ou em <a href="https://www.aboutads.info/choices" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">aboutads.info</a>.</li>
+            </ul>
+            <p className="bg-slate-900/60 p-4 border border-slate-800 rounded-xl text-xs text-slate-400">
+              Ao clicar em "Aceitar e Continuar" no banner de cookies, você consente com o uso de cookies de
+              publicidade e medição conforme esta Política e a <strong className="text-slate-200">LGPD</strong> (Lei nº 13.709/2018).
+              Você pode revogar esse consentimento a qualquer momento limpando os cookies do seu navegador.
+            </p>
+          </section>
+
+          {/* Section 7 */}
+          <section className="space-y-3">
+            <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2 border-b border-slate-900 pb-2">
+              <span className="text-cyan-400 font-mono">7.</span> Contato e Suporte
             </h2>
             <p>
               Se houver qualquer dúvida sobre esta Política de Privacidade ou sobre o tratamento das suas informações integradas, entre em contato imediatamente com o nosso encarregado de proteção de dados:
@@ -158,7 +182,7 @@ export default function PrivacyPolicy({ onBack }: { onBack: () => void }) {
         <div className="mt-16 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>© 2026 Foco em Dados. Todos os direitos reservados.</div>
           <div className="flex gap-4">
-            <a href="/termos" onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', '/termos'); window.dispatchEvent(new PopStateEvent('popstate')); }} className="hover:text-slate-300 transition-colors">Termos de Serviço</a>
+            <a href="/termos-de-uso" className="hover:text-slate-300 transition-colors">Termos de Uso</a>
             <span>•</span>
             <span className="text-cyan-500/80 font-bold">focoemdados.com.br</span>
           </div>

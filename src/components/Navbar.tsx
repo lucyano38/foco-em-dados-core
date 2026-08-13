@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Database, Shield, ArrowRight } from 'lucide-react';
+import { Database, Shield, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#4f4632]/40 backdrop-blur-xl bg-[#121414]/70">
@@ -21,10 +21,18 @@ export default function Navbar() {
           <a href="#pilares" className="nav-link px-2 py-1 rounded-lg hover:text-[#e3e2e2]">Soluções</a>
           <a href="#funil" className="nav-link px-2 py-1 rounded-lg hover:text-[#e3e2e2]">Funil de Prospecção</a>
           <Link to="/precos" className="nav-link px-2 py-1 rounded-lg hover:text-[#e3e2e2]">Planos</Link>
-          <Link to="/admin/automacao" className="nav-link px-2 py-1 rounded-lg hover:text-[#ffe4af] flex items-center gap-1 font-bold text-[#fabd00]">
-            <Shield className="w-3.5 h-3.5" />
-            Acesso Restrito Admin
-          </Link>
+          {isAdmin && (
+            <Link to="/admin/prospeccao" className="nav-link px-2 py-1 rounded-lg hover:text-[#ffe4af] flex items-center gap-1 font-bold text-[#fabd00]">
+              <Sparkles className="w-3.5 h-3.5" />
+              Prospecção Redesign
+            </Link>
+          )}
+          {isAdmin && (
+            <Link to="/admin/automacao" className="nav-link px-2 py-1 rounded-lg hover:text-[#ffe4af] flex items-center gap-1 font-bold text-[#fabd00]">
+              <Shield className="w-3.5 h-3.5" />
+              Admin Automação
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
