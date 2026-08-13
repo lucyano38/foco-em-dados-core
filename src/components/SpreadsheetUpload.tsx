@@ -12,6 +12,8 @@ const MAX_FREE_ROWS = 100;
 const PAID_PRICE_CENTS = 3990; // R$ 39,90
 const MAX_FILE_MB = 10;
 
+const CHECKOUT_FALLBACK_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero ativar o processamento em massa de planilhas por R$ 39,90.')}`;
+
 function friendlyError(err: any, filename: string): string {
   const msg = String(err?.message || '');
   if (/corrupt|invalid|unsupported|incomplete|zip|crc|header/i.test(msg)) {
@@ -31,7 +33,7 @@ interface UploadResult {
 }
 
 export default function SpreadsheetUpload() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [filename, setFilename] = useState('');
@@ -136,13 +138,17 @@ export default function SpreadsheetUpload() {
       navigate('/login');
       return;
     }
-    if (!STRIPE_PUBLISHABLE_KEY) {
-      setError('Pagamento indisponível: chave do Stripe não configurada.');
+    if (isAdmin) {
+      submitFree();
       return;
     }
     setCheckingOut(true);
     setError(null);
     try {
+      if (!STRIPE_PUBLISHABLE_KEY) {
+        window.location.href = CHECKOUT_FALLBACK_WHATSAPP_URL;
+        return;
+      }
       const res = await fetch('/api/stripe/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -158,8 +164,8 @@ export default function SpreadsheetUpload() {
       }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.');
       window.location.href = data.url;
-    } catch (err: any) {
-      setError(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'));
+    } catch {
+      window.location.href = CHECKOUT_FALLBACK_WHATSAPP_URL;
     } finally {
       setCheckingOut(false);
     }
