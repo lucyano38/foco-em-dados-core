@@ -11,7 +11,7 @@ interface Message {
 export default function SiteChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { sender: 'bot', text: 'Olá! Sou o Hermes, consultor de IA da Foco em Dados. Como posso ajudar?' }
+    { sender: 'bot', text: 'Olá! Sou o Luciano, consultor de IA da Foco em Dados. Como posso ajudar?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -97,7 +97,7 @@ export default function SiteChat() {
       {isOpen ? (
         <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
           <div className="bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] p-4 font-bold flex justify-between items-center">
-            <span className="flex items-center gap-2">💬 Hermes · Foco em Dados</span>
+            <span className="flex items-center gap-2">💬 Luciano · Foco em Dados</span>
             <button
               onClick={() => setIsOpen(false)}
               className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center cursor-pointer transition-colors"

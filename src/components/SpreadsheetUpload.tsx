@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { useAuth } from '../contexts/AuthContext';
+import { safeJson, friendlyFetchError } from '../lib/safeFetch';
 import { Upload, FileSpreadsheet, Lock, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
@@ -120,11 +121,11 @@ export default function SpreadsheetUpload() {
     formData.append('file', fileInputRef.current.files[0]);
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Falha no envio.');
       setResult({ filename, totalRows, columns, submitted: true });
     } catch (err: any) {
-      setError(err.message || 'Erro ao enviar a planilha.');
+      setError(friendlyFetchError(err, 'Erro ao enviar a planilha.'));
     } finally {
       setSubmitting(false);
     }
@@ -151,14 +152,14 @@ export default function SpreadsheetUpload() {
           cancelUrl: `${window.location.origin}/?checkout=canceled`,
         }),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Erro ao iniciar o checkout.');
       }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.');
       window.location.href = data.url;
     } catch (err: any) {
-      setError(err.message || 'Erro ao iniciar o pagamento.');
+      setError(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'));
     } finally {
       setCheckingOut(false);
     }

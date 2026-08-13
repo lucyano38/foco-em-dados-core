@@ -3,47 +3,90 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
-import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail } from 'lucide-react'
+import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
+import { safeJson, friendlyFetchError } from '../lib/safeFetch'
+import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
 const PROSPECTION_PRICE_CENTS = 3990 // R$ 39,90
 
+const LUCIANO_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano! Gostaria de ativar o seu agente de IA no meu negócio.')}`
+
 const SOLUTIONS = [
   {
     icon: Bot,
-    name: 'Hermes Agent',
-    tagline: 'Orquestrador de IA e Automação Multi-Agentes para Empresas',
-    desc: 'Um agente de IA autônomo que conversa com seus clientes, prospecta no WhatsApp e Telegram e executa automações 24/7 no seu negócio.',
+    tag: 'AUTOMAÇÃO 24/7 & IA',
+    name: 'Agente Luciano',
+    subtitle: 'Atendimento automático e qualificação de leads no WhatsApp, Telegram e Instagram.',
     gradient: 'from-amber-400 to-orange-500',
     glow: 'shadow-amber-500/20',
     cta: 'Ativar Agente',
+    includes: [
+      'Atendimento automático no WhatsApp, Telegram e Instagram',
+      'Respostas inteligentes treinadas com os dados da sua empresa',
+      'Agendamento de reuniões e qualificação de leads em tempo real',
+      'Alerta VIP no seu WhatsApp assim que o cliente aceitar fechar',
+    ],
+    marketPrice: 'R$ 2.500,00',
+    salePrice: 'Sob Consulta',
+    ctaType: 'external' as const,
+    externalUrl: LUCIANO_WHATSAPP_URL,
   },
   {
     icon: BarChart3,
-    name: 'BI & Data Pipeline (ETL)',
-    tagline: 'Análise de dados automatizada estilo Power BI / Zernio',
-    desc: 'Conecte planilhas, ERPs e APIs em um pipeline ETL que gera dashboards executivos, KPIs e relatórios automáticos sem programação.',
+    tag: 'BUSINESS INTELLIGENCE',
+    name: 'BI & Data Pipeline',
+    subtitle: 'Dashboards executivos e consolidação de dados em tempo real, sem programação.',
     gradient: 'from-purple-500 to-fuchsia-500',
     glow: 'shadow-purple-500/20',
     cta: 'Criar Dashboard',
+    includes: [
+      'Importação rápida de arquivos CSV e Excel',
+      'Dashboards dinâmicos com KPIs e faturamento',
+      'Consolidação de dados em tempo real via Supabase',
+      'Dataset corporativo demonstrativo para início imediato',
+    ],
+    marketPrice: 'R$ 1.800,00',
+    salePrice: 'Grátis / R$ 39,90',
+    ctaType: 'route' as const,
+    route: '/app',
   },
   {
     icon: Target,
+    tag: 'CAPTAÇÃO DE CLIENTES',
     name: 'Prospecção Inteligente',
-    tagline: 'Ferramenta de captação de clientes B2B',
-    desc: 'Envie sua base de clientes e a IA gera abordagens personalizadas por WhatsApp e e-mail, com pontuação de oportunidade para cada lead.',
+    subtitle: 'Captação ativa de clientes com abordagens personalizadas por IA e pontuação de oportunidade.',
     gradient: 'from-amber-400 to-purple-500',
     glow: 'shadow-purple-500/20',
     cta: 'Prospectar R$ 39,90',
+    includes: [
+      'Busca segmentada por cidade, nicho e porte',
+      'Abordagens personalizadas geradas por IA',
+      'Pontuação de oportunidade para priorizar contatos',
+      'Redesign demonstrativo (Antes/Depois) para prospecção ativa',
+    ],
+    marketPrice: 'R$ 1.200,00',
+    salePrice: 'R$ 39,90',
+    ctaType: 'checkout' as const,
   },
   {
     icon: Kanban,
-    name: 'CRM Comercial (Kanban)',
-    tagline: 'Gestão de pipeline de vendas em 5 etapas',
-    desc: 'Pipeline Discovery → Abordagem → Qualificação → Proposta → Fechamento. Organize leads, mova etapas e acompanhe tudo em tempo real.',
+    tag: 'GESTÃO DE VENDAS',
+    name: 'CRM Comercial',
+    subtitle: 'Pipeline de vendas organizado em 5 etapas com histórico unificado de conversas.',
     gradient: 'from-fuchsia-500 to-amber-400',
     glow: 'shadow-amber-500/20',
     cta: 'Abrir Pipeline',
+    includes: [
+      'Pipeline visual organizado em 5 etapas claras',
+      'Histórico unificado de conversas e propostas',
+      'Sincronização automática com as captações do Luciano',
+      'Painel limpo sem poluição visual',
+    ],
+    marketPrice: 'R$ 350,00',
+    salePrice: 'Incluso',
+    ctaType: 'route' as const,
+    route: '/admin',
   },
 ]
 
@@ -83,7 +126,7 @@ export default function Home() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = 'Foco em Dados | Hermes Agent, BI, Prospecção e CRM — Inteligência para Empresas'
+    document.title = 'Foco em Dados | Agente Luciano, BI, Prospecção e CRM — Inteligência para Empresas'
   }, [])
 
   const openProspectionCheckout = async () => {
@@ -91,7 +134,10 @@ export default function Home() {
       navigate('/login')
       return
     }
-    if (!STRIPE_PUBLISHABLE_KEY) return
+    if (!STRIPE_PUBLISHABLE_KEY) {
+      alert('Pagamento indisponível: chave do Stripe não configurada.')
+      return
+    }
     try {
       const res = await fetch('/api/stripe/create-payment', {
         method: 'POST',
@@ -102,12 +148,14 @@ export default function Home() {
           cancelUrl: `${window.location.origin}/?checkout=canceled`,
         }),
       })
-      const data = await res.json()
-      if (!res.ok || !data.success) throw new Error(data.error || 'Erro ao iniciar o checkout.')
+      const data = await safeJson(res)
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Erro ao iniciar o checkout.')
+      }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.')
       window.location.href = data.url
     } catch (err: any) {
-      alert(err?.message || 'Erro ao iniciar o pagamento.')
+      alert(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'))
     }
   }
 
@@ -201,10 +249,10 @@ export default function Home() {
               para o seu negócio crescer
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Agente de IA autônomo (Hermes), BI & Data Pipeline, prospecção inteligente e CRM
+              Agente de IA autônomo (Luciano), BI & Data Pipeline, prospecção inteligente e CRM
               Kanban — tudo em uma única plataforma. Sem setup, sem equipe técnica.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-4">
+            <div className="mt-10 flex items-center justify-center gap-4 flex-wrap">
               <Link
                 to={user ? '/app' : '/login'}
                 className="h-12 px-8 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 border border-amber-300/50"
@@ -212,6 +260,15 @@ export default function Home() {
                 <Upload className="w-4 h-4" />
                 Fazer Upload Grátis
               </Link>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
+              >
+                <MessageCircle className="w-4 h-4 text-amber-300" />
+                Falar no WhatsApp
+              </a>
               <a
                 href="#funciona"
                 className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
@@ -249,26 +306,64 @@ export default function Home() {
                   key={s.name}
                   className="group glass-card p-6 flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-white/20 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10"
                 >
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.gradient} ${s.glow} flex items-center justify-center mb-5 shadow-lg`}>
-                    <s.icon className="w-6 h-6 text-slate-950" />
+                  <div className="w-full mb-4 flex items-center justify-between">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.gradient} ${s.glow} flex items-center justify-center shadow-lg`}>
+                      <s.icon className="w-6 h-6 text-slate-950" />
+                    </div>
+                    <span className="text-[9px] font-bold tracking-[0.18em] text-slate-400 uppercase border border-white/10 bg-white/[0.03] rounded-full px-2.5 py-1">
+                      {s.tag}
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-slate-100">{s.name}</h3>
-                  <p className="text-[11px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-purple-400 uppercase tracking-wide mt-1">
-                    {s.tagline}
+                  <p className="text-sm text-slate-400 mt-2 leading-relaxed">{s.subtitle}</p>
+
+                  <p className="text-[10px] font-bold tracking-[0.14em] text-amber-300/90 uppercase mt-5 mb-2">
+                    O que está incluído:
                   </p>
-                  <p className="text-sm text-slate-400 mt-3 flex-1 leading-relaxed">{s.desc}</p>
-                  {s.name === 'Prospecção Inteligente' ? (
+                  <ul className="space-y-2 flex-1">
+                    {s.includes.map((item) => (
+                      <li key={item} className="text-xs text-slate-300 flex items-start gap-2">
+                        <Check className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-3 space-y-1">
+                    <p className="text-[10px] font-bold tracking-[0.14em] text-slate-500 uppercase">
+                      Preço de mercado
+                    </p>
+                    <p className="text-lg font-bold text-slate-500 line-through">{s.marketPrice}</p>
+                    <p className="text-[10px] font-bold tracking-[0.14em] text-amber-300/90 uppercase">
+                      Comigo (Luciano)
+                    </p>
+                    <p className={`text-2xl font-extrabold bg-gradient-to-r ${s.gradient} bg-clip-text text-transparent`}>
+                      {s.salePrice}
+                    </p>
+                  </div>
+
+                  {s.ctaType === 'external' ? (
+                    <a
+                      href={s.externalUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-5 h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                    >
+                      {s.cta}
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  ) : s.ctaType === 'checkout' ? (
                     <button
                       onClick={openProspectionCheckout}
-                      className="mt-6 h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      className="mt-5 h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       {s.cta}
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   ) : (
                     <Link
-                      to="/login"
-                      className="mt-6 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+                      to={s.route}
+                      className="mt-5 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold flex items-center justify-center gap-2 transition-all"
                     >
                       {s.cta}
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -387,15 +482,24 @@ export default function Home() {
             <Database className="w-4 h-4 text-amber-400" />
             <span className="font-semibold text-slate-300">Foco em Dados</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 flex-wrap justify-center">
             <Link to="/privacidade" className="hover:text-slate-300 transition-colors">Privacidade</Link>
             <Link to="/termos" className="hover:text-slate-300 transition-colors">Termos</Link>
             <a
-              href="mailto:atendimento@focoemdados.com.br"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25d366]/10 border border-[#25d366]/30 text-[#4ade80] hover:bg-[#25d366]/20 transition-all"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              WhatsApp (11) 99441-1307
+            </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-300 hover:bg-white/10 hover:text-amber-200 transition-all"
             >
               <Mail className="w-3.5 h-3.5" />
-              atendimento@focoemdados.com.br
+              {CONTACT_EMAIL}
             </a>
           </div>
         </div>

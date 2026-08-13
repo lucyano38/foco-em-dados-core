@@ -274,7 +274,7 @@ export async function processN8nProspects(prospects: N8nProspect[]): Promise<{
       email: p.email,
       notes: p.notes,
       status: p.status || 'prospeccao',
-      source: p.source || 'n8n · Hermes',
+      source: p.source || 'n8n · Luciano',
       city: p.city,
     })
     if (res.ok) created += 1

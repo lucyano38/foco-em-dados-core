@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { useAuth } from '../contexts/AuthContext';
+import { safeJson, friendlyFetchError } from '../lib/safeFetch';
 import {
   Upload, FileSpreadsheet, Lock, CheckCircle2, AlertTriangle, Loader2,
   BarChart3, PieChart, LineChart, Download, RefreshCcw, LayoutDashboard, Check,
@@ -438,11 +439,11 @@ export default function BIExecutivePanel() {
     formData.append('file', fileInputRef.current.files[0]);
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error || 'Falha no envio.');
       setSaved(true);
     } catch (err: any) {
-      setError(err.message || 'Erro ao enviar a planilha.');
+      setError(friendlyFetchError(err, 'Erro ao enviar a planilha.'));
     } finally {
       setSubmitting(false);
     }
@@ -469,14 +470,14 @@ export default function BIExecutivePanel() {
           cancelUrl: `${window.location.origin}/?checkout=canceled`,
         }),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Erro ao iniciar o checkout.');
       }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.');
       window.location.href = data.url;
     } catch (err: any) {
-      setError(err.message || 'Erro ao iniciar o pagamento.');
+      setError(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'));
     } finally {
       setCheckingOut(false);
     }

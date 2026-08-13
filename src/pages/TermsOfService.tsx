@@ -158,7 +158,7 @@ export default function TermsOfService({ onBack }: { onBack: () => void }) {
         <div className="mt-16 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>© 2026 Foco em Dados. Todos os direitos reservados.</div>
           <div className="flex gap-4">
-            <a href="/privacidade" onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', '/privacidade'); window.dispatchEvent(new PopStateEvent('popstate')); }} className="hover:text-slate-300 transition-colors">Política de Privacidade</a>
+            <a href="/politica-de-privacidade" className="hover:text-slate-300 transition-colors">Política de Privacidade</a>
             <span>•</span>
             <span className="text-cyan-500/80 font-bold">focoemdados.com.br</span>
           </div>
