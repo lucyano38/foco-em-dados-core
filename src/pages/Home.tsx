@@ -4,13 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
-import { safeJson, friendlyFetchError } from '../lib/safeFetch'
+import { safeJson } from '../lib/safeFetch'
 import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
 const PROSPECTION_PRICE_CENTS = 3990 // R$ 39,90
 
 const LUCIANO_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano! Gostaria de ativar o seu agente de IA no meu negócio.')}`
+
+const PROSPECTION_CHECKOUT_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero ativar a Prospecção Inteligente por R$ 39,90.')}`
 
 const SOLUTIONS = [
   {
@@ -122,7 +124,7 @@ const PLANS = [
 ]
 
 export default function Home() {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -134,11 +136,15 @@ export default function Home() {
       navigate('/login')
       return
     }
-    if (!STRIPE_PUBLISHABLE_KEY) {
-      alert('Pagamento indisponível: chave do Stripe não configurada.')
+    if (isAdmin) {
+      navigate('/admin/prospeccao')
       return
     }
     try {
+      if (!STRIPE_PUBLISHABLE_KEY) {
+        window.location.href = PROSPECTION_CHECKOUT_WHATSAPP_URL
+        return
+      }
       const res = await fetch('/api/stripe/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -154,8 +160,8 @@ export default function Home() {
       }
       if (!data.url) throw new Error('URL de checkout não retornada pelo servidor.')
       window.location.href = data.url
-    } catch (err: any) {
-      alert(friendlyFetchError(err, 'Erro ao iniciar o pagamento.'))
+    } catch {
+      window.location.href = PROSPECTION_CHECKOUT_WHATSAPP_URL
     }
   }
 
