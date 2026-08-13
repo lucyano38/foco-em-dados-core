@@ -15,6 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedRouteMaster from './components/ProtectedRouteMaster'
 import AdminRoute from './components/AdminRoute'
 import SiteChat from './components/SiteChat'
+import CookieConsent from './components/CookieConsent'
 
 export default function App() {
   return (
@@ -27,7 +28,9 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
+        <Route path="/politica-de-privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
         <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
+        <Route path="/termos-de-uso" element={<TermsOfService onBack={() => window.history.back()} />} />
 
         <Route path="/preview/:id" element={<PreviewProposta />} />
 
@@ -61,6 +64,7 @@ export default function App() {
         <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
       </Routes>
       <SiteChat />
+      <CookieConsent />
     </div>
   )
 }
