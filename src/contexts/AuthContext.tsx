@@ -62,7 +62,9 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-export const ADMIN_EMAIL = 'lucyano.pci@gmail.com'
+export const ADMIN_EMAILS = ['lucyano.pci@gmail.com', 'atendimento@focoemdados.com.br']
+
+export const ADMIN_EMAIL = ADMIN_EMAILS[0]
 
 export function translateAuthError(error: any): string {
   const code = error?.message || ''
@@ -167,7 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = Boolean(
     user &&
-    (user.email === ADMIN_EMAIL ||
+    (ADMIN_EMAILS.includes(String(user.email || '').toLowerCase()) ||
       profile?.role === 'admin' ||
       profile?.role === 'master')
   )

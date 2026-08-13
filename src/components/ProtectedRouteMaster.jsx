@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ADMIN_EMAILS } from '../contexts/AuthContext';
 
 export default function ProtectedRouteMaster({ children }) {
   const { user, loading } = useAuth();
@@ -12,7 +13,7 @@ export default function ProtectedRouteMaster({ children }) {
     );
   }
 
-  if (!user || user.email !== 'lucyano.pci@gmail.com') {
+  if (!user || !ADMIN_EMAILS.includes(String(user.email || '').toLowerCase())) {
     return <Navigate to="/" replace />;
   }
 
