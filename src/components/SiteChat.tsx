@@ -107,21 +107,21 @@ export default function SiteChat() {
             </button>
           </div>
 
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#121414]/80">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#18191c]">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`p-3 rounded-xl text-sm max-w-[85%] leading-relaxed ${
                   msg.sender === 'user'
                     ? 'bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] ml-auto font-medium rounded-br-none'
-                    : 'bg-white/5 text-[#e3e2e2] mr-auto rounded-bl-none border border-white/10'
+                    : 'bg-[#2a2c31] text-[#e3e2e2] mr-auto rounded-bl-none border border-white/10'
                 }`}
               >
                 {msg.text}
               </div>
             ))}
             {loading && (
-              <div className="p-3 rounded-xl text-sm bg-white/5 text-[#d4c5ab] mr-auto rounded-bl-none border border-white/10 w-fit">
+              <div className="p-3 rounded-xl text-sm bg-[#2a2c31] text-[#d4c5ab] mr-auto rounded-bl-none border border-white/10 w-fit">
                 <span className="inline-flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#fabd00] animate-bounce" />
                   <span className="w-1.5 h-1.5 rounded-full bg-[#fabd00] animate-bounce [animation-delay:0.15s]" />
@@ -132,7 +132,7 @@ export default function SiteChat() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-white/10 flex gap-2 bg-[#121414]/80">
+          <div className="p-3 border-t border-white/10 flex gap-2 bg-[#18191c]">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}

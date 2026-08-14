@@ -1663,27 +1663,38 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     app.use(vite.middlewares);
   }
 
-  // --- CONFIGURAÇÃO PARA SERVIR O FRONTEND ---
-  const staticPath = __dirname;
+  // No Vercel Serverless, o estático é servido pela plataforma e o app responde só /api/*.
+  if (!process.env.VERCEL) {
+    // --- CONFIGURAÇÃO PARA SERVIR O FRONTEND ---
+    const staticPath = __dirname;
 
-  // Bloquear acesso direto aos arquivos do servidor compilado por segurança
-  app.use((req, res, next) => {
-    if (req.path === '/server.cjs' || req.path === '/server.cjs.map') {
-      return res.status(404).send('Not Found');
-    }
-    next();
-  });
+    // Bloquear acesso direto aos arquivos do servidor compilado por segurança
+    app.use((req, res, next) => {
+      if (req.path === '/server.cjs' || req.path === '/server.cjs.map') {
+        return res.status(404).send('Not Found');
+      }
+      next();
+    });
 
-  app.use(express.static(staticPath));
+    app.use(express.static(staticPath));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(staticPath, 'index.html'));
-  });
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(staticPath, 'index.html'));
+    });
 
-  const PORT_NUMBER = typeof PORT === "string" ? parseInt(PORT, 10) : PORT;
-  app.listen(Number.isFinite(PORT_NUMBER) ? PORT_NUMBER : 8080, "0.0.0.0", () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-  });
+    const PORT_NUMBER = typeof PORT === "string" ? parseInt(PORT, 10) : PORT;
+    app.listen(Number.isFinite(PORT_NUMBER) ? PORT_NUMBER : 8080, "0.0.0.0", () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  }
+
+  return app;
 }
 
-startServer();
+export async function getApp(): Promise<express.Express> {
+  return startServer();
+}
+
+if (!process.env.VERCEL) {
+  startServer();
+}
