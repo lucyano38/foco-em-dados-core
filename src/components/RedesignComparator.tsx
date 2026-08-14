@@ -20,6 +20,61 @@ interface ComparatorResult {
   model: string;
 }
 
+function buildOfflineTemplate(row: RedesignRow): string {
+  const color = '#f7b500';
+  const name = row.name.replace(/[<>&"']/g, '');
+  const segment = row.segment || 'comércio local';
+  const city = [row.city, row.uf].filter(Boolean).join(' - ') || 'Sua cidade';
+  const wa = row.whatsapp ? `https://wa.me/${String(row.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent(`Olá! Vi a proposta da ${name} e quero saber mais.`)}` : '';
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${name} — Proposta Comercial | Foco em Dados</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',system-ui,sans-serif;background:#0b0d10;color:#f1f5f9;min-height:100vh}
+  .bg{position:fixed;inset:0;background:radial-gradient(circle at 20% 10%,${color}26 0%,rgba(88,28,228,.22) 45%,#0b0d10 100%);z-index:-2}
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 24px}
+  .badge{display:inline-flex;padding:8px 16px;border-radius:999px;border:1px solid ${color}55;color:${color};background:${color}0f;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  h1{font-size:clamp(2.1rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin:22px 0 16px;background:linear-gradient(100deg,#fff 20%,${color} 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-size:clamp(1rem,2vw,1.2rem);color:#cbd5e1;max-width:640px;line-height:1.65}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;font-size:13px;color:#94a3b8}
+  .chip{padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+  .offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:34px 0}
+  .offer{padding:20px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);font-size:14px;color:#e2e8f0;line-height:1.6}
+  .offer::before{content:"✦ ";color:${color}}
+  .cta{display:inline-block;margin-top:10px;padding:15px 30px;border-radius:14px;background:linear-gradient(135deg,${color},#7c3aed);color:#0b0d10;font-weight:800;text-decoration:none;box-shadow:0 12px 34px ${color}40}
+  .foot{margin-top:44px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#64748b;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <main class="wrap">
+    <span class="badge">✦ ${row.hasWebsite ? 'Redesign completo' : 'Sem site — presença digital do zero'}</span>
+    <h1>${name}: presença digital que vende mais</h1>
+    <p class="sub">A ${name} está estruturando sua presença digital em ${city} com uma página moderna, rápida e focada em conversão.</p>
+    <div class="meta">
+      <span class="chip">${segment}</span>
+      <span class="chip">${city}</span>
+      <span class="chip">Proposta gerada por IA — Foco em Dados</span>
+    </div>
+    <div class="offers">
+      <div class="offer">Site/redesign profissional responsivo</div>
+      <div class="offer">Integração com WhatsApp</div>
+      <div class="offer">Otimização para busca local (SEO)</div>
+    </div>
+    ${wa ? `<a class="cta" href="${wa}">Chamar no WhatsApp</a>` : ''}
+    <div class="foot">
+      <span>${name} — ${city}</span>
+      <span>Demonstração temporária · Foco em Dados</span>
+    </div>
+  </main>
+</body>
+</html>`;
+}
+
 export default function RedesignComparator() {
   const [rows, setRows] = useState<RedesignRow[]>([]);
   const [loadingRows, setLoadingRows] = useState(false);
@@ -91,6 +146,7 @@ export default function RedesignComparator() {
     setGeneratingId(row.id);
     setError(null);
     setCurrentLead(row);
+    let serverDetail: string | null = null;
     try {
       const res = await fetch('/api/auto-design', {
         method: 'POST',
@@ -109,12 +165,19 @@ export default function RedesignComparator() {
         signal: AbortSignal.timeout(45000),
       });
       const data = await safeJson(res);
-      if (!res.ok) throw new Error(data.error || 'Falha ao gerar o redesign.');
+      if (!res.ok) {
+        serverDetail = data.error || 'Falha ao gerar o redesign.';
+        throw new Error(serverDetail);
+      }
       setResult({ designId: data.designId, html: data.html, generatedAt: data.generatedAt, model: data.model });
       setView('depois');
     } catch (err: any) {
-      setError(friendlyFetchError(err, 'Erro ao gerar o redesign.'));
-      setResult(null);
+      const offline = buildOfflineTemplate(row);
+      setResult({ designId: `offline_${Date.now().toString(36)}`, html: offline, generatedAt: new Date().toISOString(), model: 'template-offline' });
+      setView('depois');
+      setError(
+        `${serverDetail || friendlyFetchError(err, 'Erro ao gerar o redesign.')} — mockup gerado offline no navegador.`
+      );
     } finally {
       setGeneratingId(null);
     }

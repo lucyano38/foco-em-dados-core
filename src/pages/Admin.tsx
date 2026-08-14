@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { safeJson, friendlyFetchError } from '../lib/safeFetch';
+import { safeJson } from '../lib/safeFetch';
 import LeadFinder from '../components/LeadFinder';
 import {
   Database, Plus, Trash2, Send, Phone, Mail, ArrowRight, GripVertical,
@@ -72,6 +72,8 @@ export default function Admin() {
   const [form, setForm] = useState({ name: '', phone: '', email: '', notes: '', value: '' });
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [batchWorking, setBatchWorking] = useState(false);
+  const [batchFeedback, setBatchFeedback] = useState<string | null>(null);
 
   const persist = (next: PipelineLead[]) => {
     setLeads(next);
@@ -191,31 +193,120 @@ export default function Admin() {
     persist(leads.filter((l) => l.id !== id));
   };
 
-  const sendApproach = async (lead: PipelineLead) => {
-    setSendingId(lead.id);
-    setToast(null);
+  const buildApproach = (lead: PipelineLead): { emailSubject: string; emailText: string; whatsappText: string } => {
+    const context = lead.notes ? ` Contexto: ${lead.notes}.` : '';
+    const valueLine = lead.value
+      ? ` Já preparamos uma proposta estimada em R$ ${lead.value.toLocaleString('pt-BR')}, pensada para o porte do seu negócio.`
+      : '';
+    const emailSubject = `Proposta Foco em Dados — ${lead.name}`;
+    const emailText =
+      `Olá, ${lead.name}!${context}${valueLine}\n\n` +
+      `Sou o Luciano, da Foco em Dados. Identifiquei que a ${lead.name} pode crescer muito mais com presença digital de alta conversão: site profissional, WhatsApp automatizado e dashboard de BI — com acompanhamento próximo e sem fidelidade.\n\n` +
+      `Posso te mostrar um comparativo antes/depois da presença digital da sua empresa, sem custo e sem compromisso. É só responder este e-mail ou chamar no WhatsApp (11) 99441-1307 que eu envio hoje mesmo.\n\n` +
+      `Abraço,\nLuciano Tavares — Foco em Dados\nfocoemdados.com.br`;
+    const whatsappText =
+      `Olá, ${lead.name}! 👋 Aqui é o Luciano, da Foco em Dados.${context}${valueLine}\n\n` +
+      `Posso te enviar grátis um comparativo antes/depois da presença digital da ${lead.name} — site, WhatsApp e BI prontos para vender mais.\n` +
+      `Basta responder "quero ver" aqui mesmo que eu te mando hoje. 😉`;
+    return { emailSubject, emailText, whatsappText };
+  };
+
+  const postSend = async (payload: { channel: string; to: string; text: string; subject?: string }): Promise<{ sent: boolean; limited?: boolean; detail?: string }> => {
     try {
       const res = await fetch('/api/prospection/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: lead.name,
-          phone: lead.phone,
-          email: lead.email,
-          notes: lead.notes,
-        }),
+        body: JSON.stringify({ ...payload, key: user?.email || 'sistema' }),
       });
       const data = await safeJson(res);
       if (!res.ok) {
-        throw new Error(data.error || 'Falha no envio.');
+        if (res.status === 429) return { sent: false, limited: true, detail: data.error };
+        return { sent: false, detail: data.error };
       }
-      setToast(`Abordagem enviada para ${lead.name}.`);
+      return { sent: true };
     } catch (err: any) {
-      setToast(`Erro: ${friendlyFetchError(err, 'falha no envio.')}`);
-    } finally {
-      setSendingId(null);
-      setTimeout(() => setToast(null), 4000);
+      return { sent: false, detail: err?.message || 'servidor indisponível' };
     }
+  };
+
+  const sendApproach = async (lead: PipelineLead) => {
+    setSendingId(lead.id);
+    setToast(null);
+    const { emailSubject, emailText, whatsappText } = buildApproach(lead);
+    const results: string[] = [];
+
+    if (lead.phone) {
+      const r = await postSend({ channel: 'whatsapp', to: lead.phone, text: whatsappText });
+      results.push(`WhatsApp: ${r.sent ? 'enviado' : r.limited ? 'limite diário atingido' : 'falhou'}`);
+      if (r.limited) {
+        setToast(`Limite diário de prospecção atingido (5/dia). ${lead.name} foi marcado para amanhã.`);
+        setSendingId(null);
+        return;
+      }
+    }
+    if (lead.email) {
+      const r = await postSend({ channel: 'email', to: lead.email, subject: emailSubject, text: emailText });
+      results.push(`E-mail: ${r.sent ? 'enviado' : r.limited ? 'limite diário atingido' : 'falhou'}`);
+      if (r.limited) {
+        setToast(`Limite diário de prospecção atingido (5/dia).`);
+        setSendingId(null);
+        return;
+      }
+    }
+    setToast(`Abordagem para ${lead.name}: ${results.join(' · ')}`);
+    setTimeout(() => setToast(null), 4500);
+    setSendingId(null);
+  };
+
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  const sendBatch = async () => {
+    const stageLeads = byStage('prospeccao').filter((l) => l.phone || l.email);
+    if (stageLeads.length === 0) {
+      setToast('Nenhum lead com contato na etapa Prospecção.');
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    setBatchWorking(true);
+    setBatchFeedback(`Enviando ${stageLeads.length} lead(s) em lotes de 5…`);
+    let okCount = 0;
+    let failCount = 0;
+    let limited = false;
+
+    for (let i = 0; i < stageLeads.length; i += 5) {
+      const chunk = stageLeads.slice(i, i + 5);
+      setBatchFeedback(`Lote ${Math.floor(i / 5) + 1}/${Math.ceil(stageLeads.length / 5)} (${chunk.length} leads)…`);
+      for (const lead of chunk) {
+        const { emailSubject, emailText, whatsappText } = buildApproach(lead);
+        if (lead.phone) {
+          const r = await postSend({ channel: 'whatsapp', to: lead.phone, text: whatsappText });
+          if (r.limited) { limited = true; break; }
+          if (r.sent) okCount++; else failCount++;
+          await sleep(1500);
+        }
+        if (lead.email) {
+          const r = await postSend({ channel: 'email', to: lead.email, subject: emailSubject, text: emailText });
+          if (r.limited) { limited = true; break; }
+          if (r.sent) okCount++; else failCount++;
+          await sleep(1500);
+        }
+        setBatchFeedback(`Enviados: ${okCount} · Falhas: ${failCount}`);
+      }
+      if (limited) break;
+      if (i + 5 < stageLeads.length) {
+        setBatchFeedback('Aguardando 8s entre lotes (limite do Resend)…');
+        await sleep(8000);
+      }
+    }
+
+    setBatchWorking(false);
+    setBatchFeedback(null);
+    setToast(
+      limited
+        ? 'Prospecção em lote interrompida: limite diário atingido (5/dia).'
+        : `Lote concluído: ${okCount} enviados · ${failCount} falhas.`
+    );
+    setTimeout(() => setToast(null), 5000);
   };
 
   const byStage = (id: PipelineStageId) => leads.filter((l) => l.status === id);
@@ -330,8 +421,26 @@ export default function Admin() {
                   <span className="w-2 h-2 rounded-full" style={{ background: stage.dot }} />
                   {stage.number}. {stage.label}
                 </span>
-                <span className="text-[10px] font-mono text-[#d4c5ab]/60">{byStage(stage.id).length}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-[#d4c5ab]/60">{byStage(stage.id).length}</span>
+                  {stage.id === 'prospeccao' && (
+                    <button
+                      onClick={sendBatch}
+                      disabled={batchWorking || sendingId !== null}
+                      className="flex items-center gap-1 text-[10px] text-[#4ade80] border border-[#4ade80]/30 rounded-md px-2 py-1 hover:bg-[#4ade80]/10 disabled:opacity-50 cursor-pointer"
+                      title="Envia abordagem persuasiva por WhatsApp e e-mail em lotes de 5 (limite Resend)"
+                    >
+                      {batchWorking ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                      Enviar Lote (5 em 5)
+                    </button>
+                  )}
+                </div>
               </div>
+              {batchFeedback && stage.id === 'prospeccao' && (
+                <p className="text-[10px] font-mono text-[#4ade80]/90 mb-2 flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" /> {batchFeedback}
+                </p>
+              )}
 
               <div className="space-y-2">
                 {byStage(stage.id).map((lead) => (

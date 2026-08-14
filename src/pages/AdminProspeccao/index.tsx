@@ -35,14 +35,33 @@ interface ProspectorLead {
   created_at?: string | null;
 }
 
+const STORAGE_KEY = 'foco_prospector_status';
+
+function readLocalStatus(): Record<string, ProspectorStatus> {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function writeLocalStatus(map: Record<string, ProspectorStatus>) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+  } catch {
+    /* storage indisponível */
+  }
+}
+
 function normalizeLead(row: any): ProspectorLead {
+  const localStatus = readLocalStatus()[String(row.id)];
   return {
     id: String(row.id),
     name: row.name || 'Sem nome',
     phone: row.phone ?? row.whatsapp ?? null,
     email: row.email ?? null,
     notes: row.notes ?? null,
-    status: STAGE_ORDER.includes(row.status) ? row.status : 'novo',
+    status: localStatus ?? (STAGE_ORDER.includes(row.status) ? row.status : 'novo'),
     value: row.value ?? row.potential ?? row.faturamento ?? null,
     potential: row.potential ?? row.value ?? null,
     source: row.source ?? null,
@@ -98,17 +117,35 @@ export default function AdminProspeccao() {
     setMovingId(lead.id);
     setError(null);
     setSuccess(null);
+
+    // Atualização otimista + espelho local (sobrevive a constraint/env de RLS)
+    const localMap = readLocalStatus();
+    localMap[lead.id] = next;
+    writeLocalStatus(localMap);
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: next } : l)));
+    setSuccess(`Lead "${lead.name}" movido para "${STAGE_LABEL[next]}".`);
+    setTimeout(() => setSuccess(null), 3000);
+
     try {
       const { error: dbError } = await supabase
         .from('leads')
         .update({ status: next })
         .eq('id', lead.id);
-      if (dbError) throw new Error(dbError.message);
-      setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: next } : l)));
-      setSuccess(`Lead "${lead.name}" movido para "${STAGE_LABEL[next]}".`);
-      setTimeout(() => setSuccess(null), 3000);
+      if (dbError) {
+        if (/check constraint|leads_status_check/i.test(dbError.message)) {
+          setSuccess(
+            `"${lead.name}" salvo localmente: o banco (leads_status_check) não aceita o estágio "${STAGE_LABEL[next]}". Libere os status no SQL Editor para persistir.`
+          );
+          setTimeout(() => setSuccess(null), 6000);
+        } else {
+          setError(dbError.message || 'Erro ao atualizar o lead.');
+        }
+      }
     } catch (err: any) {
-      setError(err.message || 'Erro ao atualizar o lead.');
+      setSuccess(
+        `"${lead.name}" atualizado apenas localmente (Supabase indisponível: ${err?.message || 'erro'}).`
+      );
+      setTimeout(() => setSuccess(null), 6000);
     } finally {
       setMovingId(null);
     }
