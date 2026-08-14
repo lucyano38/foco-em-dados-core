@@ -121,10 +121,56 @@ body {
   color: #22d3ee;
 }
 
+/* Correção de Contraste para Áreas de Contrato e Financeiro */
+.contract-dark-container {
+  background-color: #0f172a !important; /* bg-slate-900 */
+  color: #f8fafc !important;            /* text-slate-50 */
+  border: 1px solid #334155 !important;  /* border-slate-700 */
+}
+
+/* Força a cor dos textos e parágrafos dentro do contrato */
+.contract-dark-container p,
+.contract-dark-container span,
+.contract-dark-container div,
+.contract-dark-container li,
+.contract-dark-container h1,
+.contract-dark-container h2,
+.contract-dark-container h3,
+.contract-dark-container td,
+.contract-dark-container th {
+  color: #e2e8f0 !important; /* text-slate-200 */
+}
+
+/* Destaque para títulos e rótulos financeiros */
+.contract-dark-container strong,
+.contract-dark-container b {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
 @media print {
   body {
     background-color: white !important;
     color: black !important;
+  }
+  .contract-dark-container {
+    background-color: white !important;
+    border: none !important;
+  }
+  .contract-dark-container p,
+  .contract-dark-container span,
+  .contract-dark-container div,
+  .contract-dark-container li,
+  .contract-dark-container h1,
+  .contract-dark-container h2,
+  .contract-dark-container h3,
+  .contract-dark-container td,
+  .contract-dark-container th {
+    color: #1e293b !important;
+  }
+  .contract-dark-container strong,
+  .contract-dark-container b {
+    color: #0f172a !important;
   }
   .mesh-bg {
     display: none !important;

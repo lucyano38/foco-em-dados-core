@@ -414,24 +414,24 @@ Foco em Dados — Luciano Tavares — focoemdados.com.br`;
         <>
           <div
             id="contrato-print"
-            className="glass-card p-10 rounded-2xl bg-white text-slate-900 max-w-[210mm] mx-auto"
+            className="contract-dark-container p-8 rounded-2xl shadow-xl max-w-4xl mx-auto my-6"
             style={{ fontFamily: 'Georgia, serif', minHeight: '297mm' }}
           >
-            <div className="border-b-2 border-slate-800 pb-4 mb-6 flex items-start justify-between">
+            <div className="border-b-2 border-slate-700 pb-4 mb-6 flex items-start justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">Minuta de Contrato — Foco em Dados</p>
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">Proposta de Desenvolvimento de Site</h3>
+                <p className="text-[10px] uppercase tracking-widest text-slate-400">Minuta de Contrato — Foco em Dados</p>
+                <h3 className="text-2xl font-bold text-white mt-1">Proposta de Desenvolvimento de Site</h3>
               </div>
-              <p className="text-xs text-slate-500 text-right">São Paulo, {new Date().toLocaleDateString('pt-BR')}</p>
+              <p className="text-xs text-slate-400 text-right">São Paulo, {new Date().toLocaleDateString('pt-BR')}</p>
             </div>
 
-            <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+            <p className="text-sm text-slate-300 mb-6 leading-relaxed">
               Entre <strong>Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
               <strong>{lead.name}</strong> — {lead.phone ? `tel. ${lead.phone}` : 'sem telefone'}
               {lead.email ? ` — ${lead.email}` : ''} — fica acordado o seguinte:
             </p>
 
-            <div className="space-y-4 text-[13px] text-slate-700 leading-relaxed">
+            <div className="space-y-4 text-[13px] text-slate-200 leading-relaxed">
               <p><strong>1. Escopo.</strong> Criação ou redesign de site profissional de alta conversão, integração com WhatsApp e dashboard de BI (conforme comparador Antes/Depois aprovado).</p>
               <p><strong>2. Prazo.</strong> Entrega em até 15 dias úteis após a aprovação do mockup.</p>
               <p><strong>3. Pagamento.</strong> {lead.value ? formatBRL(Number(lead.value)) : 'Valor a combinar'} — 50% na assinatura, 50% na entrega (PIX, cartão ou boleto).</p>
@@ -442,10 +442,10 @@ Foco em Dados — Luciano Tavares — focoemdados.com.br`;
               <p><strong>8. LGPD.</strong> Dados tratados conforme a Política de Privacidade disponível em focoemdados.com.br/politica-de-privacidade.</p>
             </div>
 
-            <div className="mt-10 pt-6 border-t border-slate-300 text-xs text-slate-600 space-y-1">
+            <div className="mt-10 pt-6 border-t border-slate-700 text-xs text-slate-400 space-y-1">
               <p>Contratante: ________________________________________</p>
               <p>Contratado: __________________________________________</p>
-              <p className="mt-4 text-[10px] text-slate-400">Documento gerado automaticamente pelo Prospector de Sites — focoemdados.com.br</p>
+              <p className="mt-4 text-[10px] text-slate-500">Documento gerado automaticamente pelo Prospector de Sites — focoemdados.com.br</p>
             </div>
           </div>
 
