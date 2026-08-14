@@ -82,6 +82,7 @@ export default function RedesignComparator() {
   const [result, setResult] = useState<ComparatorResult | null>(null);
   const [currentLead, setCurrentLead] = useState<RedesignRow | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorLog, setErrorLog] = useState<string | null>(null);
   const [view, setView] = useState<'antes' | 'depois'>('depois');
 
   const fetchProspects = async () => {
@@ -145,33 +146,38 @@ export default function RedesignComparator() {
   const generate = async (row: RedesignRow) => {
     setGeneratingId(row.id);
     setError(null);
+    setErrorLog(null);
     setCurrentLead(row);
     let serverDetail: string | null = null;
     try {
-      const res = await fetch('/api/auto-design', {
+      const res = await fetch('/api/nano-banana/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          request: {
-            companyName: row.name,
-            segment: row.segment || 'comércio local',
-            city: row.city || '',
-            uf: row.uf || '',
-            whatsapp: row.whatsapp || '',
-            hasWebsite: row.hasWebsite,
-            redesignGoal: 'modernizar presença digital e converter via WhatsApp',
-          },
+          companyName: row.name,
+          segment: row.segment || 'comércio local',
+          city: row.city || '',
+          uf: row.uf || '',
+          whatsapp: row.whatsapp || '',
+          hasWebsite: row.hasWebsite,
+          redesignGoal: 'modernizar presença digital e converter via WhatsApp',
         }),
         signal: AbortSignal.timeout(45000),
       });
-      const data = await safeJson(res);
+
       if (!res.ok) {
-        serverDetail = data.error || 'Falha ao gerar o redesign.';
-        throw new Error(serverDetail);
+        const errorData = await res.text();
+        setErrorLog(`Erro ${res.status}: ${errorData}`);
+        throw new Error(`Falha na geração: ${res.status}`);
       }
+      
+      const data = await safeJson(res);
       setResult({ designId: data.designId, html: data.html, generatedAt: data.generatedAt, model: data.model });
       setView('depois');
     } catch (err: any) {
+      if (!errorLog) {
+        setErrorLog("Erro de conexão: " + err.message);
+      }
       const offline = buildOfflineTemplate(row);
       setResult({ designId: `offline_${Date.now().toString(36)}`, html: offline, generatedAt: new Date().toISOString(), model: 'template-offline' });
       setView('depois');
@@ -209,6 +215,19 @@ export default function RedesignComparator() {
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
           {error.includes('falha') ? <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" /> : null}
           <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
+
+      {errorLog && (
+        <div className="bg-red-900/90 border border-red-500 text-white p-4 my-4 rounded-xl shadow-lg">
+          <h3 className="font-bold text-lg mb-2">⚠️ Erro Detectado:</h3>
+          <p className="text-sm font-mono break-all">{errorLog}</p>
+          <button 
+            onClick={() => setErrorLog(null)} 
+            className="mt-2 px-4 py-1 bg-red-600 rounded text-xs"
+          >
+            Fechar
+          </button>
         </div>
       )}
 
