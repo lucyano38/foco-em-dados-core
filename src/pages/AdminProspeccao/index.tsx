@@ -414,32 +414,47 @@ Foco em Dados — Luciano Tavares — focoemdados.com.br`;
         <>
           <div
             id="contrato-print"
-            className="contract-dark-container p-8 rounded-2xl shadow-xl max-w-4xl mx-auto my-6"
+            className="bg-[#0d1527] text-slate-100 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-4xl mx-auto my-6"
             style={{ fontFamily: 'Georgia, serif', minHeight: '297mm' }}
           >
-            <div className="border-b-2 border-slate-700 pb-4 mb-6 flex items-start justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-400">Minuta de Contrato — Foco em Dados</p>
-                <h3 className="text-2xl font-bold text-white mt-1">Proposta de Desenvolvimento de Site</h3>
-              </div>
-              <p className="text-xs text-slate-400 text-right">São Paulo, {new Date().toLocaleDateString('pt-BR')}</p>
+            <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+              <h1 className="text-xl font-bold tracking-wide text-blue-400 uppercase">
+                Minuta de Contrato — Foco em Dados
+              </h1>
+              <span className="text-slate-300 text-sm font-medium">
+                São Paulo, {new Date().toLocaleDateString('pt-BR')}
+              </span>
             </div>
 
-            <p className="text-sm text-slate-300 mb-6 leading-relaxed">
-              Entre <strong>Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
-              <strong>{lead.name}</strong> — {lead.phone ? `tel. ${lead.phone}` : 'sem telefone'}
-              {lead.email ? ` — ${lead.email}` : ''} — fica acordado o seguinte:
-            </p>
+            <h2 className="text-2xl font-bold text-white mb-6">
+              Proposta de Desenvolvimento de Site
+            </h2>
 
-            <div className="space-y-4 text-[13px] text-slate-200 leading-relaxed">
-              <p><strong>1. Escopo.</strong> Criação ou redesign de site profissional de alta conversão, integração com WhatsApp e dashboard de BI (conforme comparador Antes/Depois aprovado).</p>
-              <p><strong>2. Prazo.</strong> Entrega em até 15 dias úteis após a aprovação do mockup.</p>
-              <p><strong>3. Pagamento.</strong> {lead.value ? formatBRL(Number(lead.value)) : 'Valor a combinar'} — 50% na assinatura, 50% na entrega (PIX, cartão ou boleto).</p>
-              <p><strong>4. Revisões.</strong> 3 rodadas de ajustes inclusas; demais ajustes por hora técnica.</p>
-              <p><strong>5. Domínio e hospedagem.</strong> Custos de terceiros são de responsabilidade do cliente.</p>
-              <p><strong>6. Propriedade.</strong> Código e domínio passam ao cliente após o pagamento total.</p>
-              <p><strong>7. Suporte.</strong> 30 dias de suporte pós-entrega via WhatsApp oficial (11) 99441-1307.</p>
-              <p><strong>8. LGPD.</strong> Dados tratados conforme a Política de Privacidade disponível em focoemdados.com.br/politica-de-privacidade.</p>
+            <div className="space-y-4 text-slate-200 text-base leading-relaxed">
+              <p className="text-slate-200">
+                Entre <strong className="text-white font-semibold">Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
+                <strong className="text-white font-semibold">{lead.name}</strong>
+                {lead.phone ? ` — tel. ${lead.phone}` : ''}
+                {lead.email ? ` — ${lead.email}` : ''} — fica acordado o seguinte:
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <p><strong className="text-white">1. Escopo.</strong> <span className="text-slate-300">Criação ou redesign de site profissional de alta conversão, integração com WhatsApp e dashboard de BI (conforme comparador Antes/Depois aprovado).</span></p>
+
+                <p><strong className="text-white">2. Prazo.</strong> <span className="text-slate-300">Entrega em até 15 dias úteis após a aprovação do mockup.</span></p>
+
+                <p><strong className="text-white">3. Pagamento.</strong> <span className="text-slate-300">{lead.value ? formatBRL(Number(lead.value)) : 'Valor a combinar'} — 50% na assinatura, 50% na entrega (PIX, cartão ou boleto).</span></p>
+
+                <p><strong className="text-white">4. Revisões.</strong> <span className="text-slate-300">3 rodadas de ajustes inclusas; demais ajustes por hora técnica.</span></p>
+
+                <p><strong className="text-white">5. Domínio e hospedagem.</strong> <span className="text-slate-300">Custos de terceiros são de responsabilidade do cliente.</span></p>
+
+                <p><strong className="text-white">6. Propriedade.</strong> <span className="text-slate-300">Código e domínio passam ao cliente após o pagamento total.</span></p>
+
+                <p><strong className="text-white">7. Suporte.</strong> <span className="text-slate-300">30 dias de suporte pós-entrega via WhatsApp oficial (11) 99441-1307.</span></p>
+
+                <p><strong className="text-white">8. LGPD.</strong> <span className="text-slate-300">Dados tratados conforme a Política de Privacidade disponível em focoemdados.com.br/politica-de-privacidade.</span></p>
+              </div>
             </div>
 
             <div className="mt-10 pt-6 border-t border-slate-700 text-xs text-slate-400 space-y-1">
