@@ -430,7 +430,7 @@ Foco em Dados — Luciano Tavares — focoemdados.com.br`;
               Proposta de Desenvolvimento de Site
             </h2>
 
-            <div className="space-y-4 text-slate-200 text-base leading-relaxed">
+            <div className="prose prose-invert max-w-none text-slate-100 space-y-4 leading-relaxed">
               <p className="text-slate-200">
                 Entre <strong className="text-white font-semibold">Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
                 <strong className="text-white font-semibold">{lead.name}</strong>
