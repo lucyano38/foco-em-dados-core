@@ -35,11 +35,15 @@ export const LocationSearch: React.FC = () => {
           
           const data = await response.json();
 
-          const localLeads = data.filter((lead: Lead) => 
-            lead.state === 'SP' || lead.address?.includes('SP') || lead.address?.includes('São Paulo')
-          );
+          const leadsBrutos: Lead[] = Array.isArray(data) ? data : (data.leads || []);
 
-          setLeads(localLeads);
+          // FILTRO ESTREITO: Remove tudo que não for de SP (São Paulo)
+          const leadsFiltrados = leadsBrutos.filter((lead: Lead) => {
+            const local = `${lead.address || ''} ${lead.state || ''}`.toLowerCase();
+            return local.includes('sp') || local.includes('são paulo') || local.includes('itupeva');
+          });
+
+          setLeads(leadsFiltrados);
         } catch (err) {
           setErrorMsg('Erro ao buscar leads para a sua localização.');
           console.error(err);
