@@ -414,53 +414,62 @@ Foco em Dados — Luciano Tavares — focoemdados.com.br`;
         <>
           <div
             id="contrato-print"
-            className="bg-[#0d1527] text-slate-100 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-4xl mx-auto my-6"
-            style={{ fontFamily: 'Georgia, serif', minHeight: '297mm' }}
+            style={{
+              backgroundColor: '#000000',
+              color: '#ffffff',
+              padding: '30px',
+              border: '1px solid #ffffff',
+              borderRadius: '15px',
+              fontFamily: 'Georgia, serif',
+              maxWidth: '840px',
+              margin: '24px auto',
+              minHeight: '297mm'
+            }}
           >
-            <div className="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
-              <h1 className="text-xl font-bold tracking-wide text-blue-400 uppercase">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #555', paddingBottom: '16px', marginBottom: '16px' }}>
+              <h1 style={{ color: '#ffffff', fontSize: '20px', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
                 Minuta de Contrato — Foco em Dados
               </h1>
-              <span className="text-slate-300 text-sm font-medium">
+              <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: 500 }}>
                 São Paulo, {new Date().toLocaleDateString('pt-BR')}
               </span>
             </div>
 
-            <h2 className="text-2xl font-bold text-white mb-6">
+            <h2 style={{ color: '#ffffff', borderBottom: '1px solid #555', paddingBottom: '12px', fontSize: '24px', fontWeight: 700, margin: '0 0 24px 0' }}>
               Proposta de Desenvolvimento de Site
             </h2>
 
-            <div className="prose prose-invert max-w-none text-slate-100 space-y-4 leading-relaxed">
-              <p className="text-slate-200">
-                Entre <strong className="text-white font-semibold">Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
-                <strong className="text-white font-semibold">{lead.name}</strong>
+            <div style={{ color: '#e0e0e0', lineHeight: '1.6', fontSize: '16px' }}>
+              <p style={{ margin: '0 0 12px 0' }}>
+                Entre <strong style={{ color: '#ffffff' }}>Foco em Dados</strong> (Luciano Tavares, dev & IA) e{' '}
+                <strong style={{ color: '#ffffff' }}>{lead.name}</strong>
                 {lead.phone ? ` — tel. ${lead.phone}` : ''}
                 {lead.email ? ` — ${lead.email}` : ''} — fica acordado o seguinte:
               </p>
 
-              <div className="space-y-3 pt-2">
-                <p><strong className="text-white">1. Escopo.</strong> <span className="text-slate-300">Criação ou redesign de site profissional de alta conversão, integração com WhatsApp e dashboard de BI (conforme comparador Antes/Depois aprovado).</span></p>
+              <div style={{ marginTop: '8px' }}>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>1. Escopo.</strong> <span style={{ color: '#d8d8d8' }}>Criação ou redesign de site profissional de alta conversão, integração com WhatsApp e dashboard de BI (conforme comparador Antes/Depois aprovado).</span></p>
 
-                <p><strong className="text-white">2. Prazo.</strong> <span className="text-slate-300">Entrega em até 15 dias úteis após a aprovação do mockup.</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>2. Prazo.</strong> <span style={{ color: '#d8d8d8' }}>Entrega em até 15 dias úteis após a aprovação do mockup.</span></p>
 
-                <p><strong className="text-white">3. Pagamento.</strong> <span className="text-slate-300">{lead.value ? formatBRL(Number(lead.value)) : 'Valor a combinar'} — 50% na assinatura, 50% na entrega (PIX, cartão ou boleto).</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>3. Pagamento.</strong> <span style={{ color: '#d8d8d8' }}>{lead.value ? formatBRL(Number(lead.value)) : 'Valor a combinar'} — 50% na assinatura, 50% na entrega (PIX, cartão ou boleto).</span></p>
 
-                <p><strong className="text-white">4. Revisões.</strong> <span className="text-slate-300">3 rodadas de ajustes inclusas; demais ajustes por hora técnica.</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>4. Revisões.</strong> <span style={{ color: '#d8d8d8' }}>3 rodadas de ajustes inclusas; demais ajustes por hora técnica.</span></p>
 
-                <p><strong className="text-white">5. Domínio e hospedagem.</strong> <span className="text-slate-300">Custos de terceiros são de responsabilidade do cliente.</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>5. Domínio e hospedagem.</strong> <span style={{ color: '#d8d8d8' }}>Custos de terceiros são de responsabilidade do cliente.</span></p>
 
-                <p><strong className="text-white">6. Propriedade.</strong> <span className="text-slate-300">Código e domínio passam ao cliente após o pagamento total.</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>6. Propriedade.</strong> <span style={{ color: '#d8d8d8' }}>Código e domínio passam ao cliente após o pagamento total.</span></p>
 
-                <p><strong className="text-white">7. Suporte.</strong> <span className="text-slate-300">30 dias de suporte pós-entrega via WhatsApp oficial (11) 99441-1307.</span></p>
+                <p style={{ margin: '0 0 12px 0' }}><strong style={{ color: '#ffffff' }}>7. Suporte.</strong> <span style={{ color: '#d8d8d8' }}>30 dias de suporte pós-entrega via WhatsApp oficial (11) 99441-1307.</span></p>
 
-                <p><strong className="text-white">8. LGPD.</strong> <span className="text-slate-300">Dados tratados conforme a Política de Privacidade disponível em focoemdados.com.br/politica-de-privacidade.</span></p>
+                <p style={{ margin: 0 }}><strong style={{ color: '#ffffff' }}>8. LGPD.</strong> <span style={{ color: '#d8d8d8' }}>Dados tratados conforme a Política de Privacidade disponível em focoemdados.com.br/politica-de-privacidade.</span></p>
               </div>
             </div>
 
-            <div className="mt-10 pt-6 border-t border-slate-700 text-xs text-slate-400 space-y-1">
-              <p>Contratante: ________________________________________</p>
-              <p>Contratado: __________________________________________</p>
-              <p className="mt-4 text-[10px] text-slate-500">Documento gerado automaticamente pelo Prospector de Sites — focoemdados.com.br</p>
+            <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #555', color: '#d0d0d0', fontSize: '12px' }}>
+              <p style={{ margin: '0 0 4px 0' }}>Contratante: ________________________________________</p>
+              <p style={{ margin: '0 0 16px 0' }}>Contratado: __________________________________________</p>
+              <p style={{ margin: 0, fontSize: '10px', color: '#9a9a9a' }}>Documento gerado automaticamente pelo Prospector de Sites — focoemdados.com.br</p>
             </div>
           </div>
 
