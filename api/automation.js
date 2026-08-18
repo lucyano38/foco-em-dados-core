@@ -1,9 +1,9 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Configuração básica do Gemini
-const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function handleWhatsAppMessage(message: string, sender: string) {
+export async function handleWhatsAppMessage(message, sender) {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const context = `
