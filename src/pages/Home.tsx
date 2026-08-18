@@ -62,7 +62,7 @@ const SOLUTIONS = [
     subtitle: 'Captação ativa de clientes com abordagens personalizadas por IA e pontuação de oportunidade.',
     gradient: 'from-amber-400 to-purple-500',
     glow: 'shadow-purple-500/20',
-    cta: 'Prospectar R$ 39,90',
+    cta: 'Prospectar',
     includes: [
       'Busca segmentada por cidade, nicho e porte',
       'Abordagens personalizadas geradas por IA',
