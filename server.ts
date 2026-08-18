@@ -4,7 +4,6 @@ import multer from "multer";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { GoogleGenAI } from "@google/genai";
-import { createServer as createViteServer } from "vite";
 import { FieldValue } from "firebase-admin/firestore";
 import { db, auth } from "./src/lib/admin";
 import crypto from "crypto";
@@ -1656,6 +1655,7 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
 
   // Vite middleware for development (only when NODE_ENV=development)
   if (process.env.NODE_ENV === "development") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
