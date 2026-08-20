@@ -5,8 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
-import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, Users, FileText, DollarSign } from 'lucide-react'
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, ChevronsDown } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
 const PROSPECTION_PRICE_CENTS = 3990 // R$ 39,90
@@ -136,21 +135,6 @@ const PLANS = [
   },
 ]
 
-const AI_PIPELINE_DATA = [
-  { semana: 'S1', leads: 18, fechamentos: 1 },
-  { semana: 'S2', leads: 24, fechamentos: 2 },
-  { semana: 'S3', leads: 22, fechamentos: 2 },
-  { semana: 'S4', leads: 29, fechamentos: 3 },
-  { semana: 'S5', leads: 34, fechamentos: 4 },
-  { semana: 'S6', leads: 40, fechamentos: 5 },
-  { semana: 'S7', leads: 45, fechamentos: 6 },
-  { semana: 'S8', leads: 52, fechamentos: 7 },
-  { semana: 'S9', leads: 60, fechamentos: 8 },
-  { semana: 'S10', leads: 68, fechamentos: 9 },
-  { semana: 'S11', leads: 75, fechamentos: 11 },
-  { semana: 'S12', leads: 90, fechamentos: 14 },
-]
-
 const FUNNEL_STAGES = [
   { name: 'Discovery', desc: 'Descoberta e coleta de dados do lead', percent: '100%', count: 128, color: '#60a5fa' },
   { name: 'Abordagem', desc: 'Contato inicial e proposta de valor', percent: '75%', count: 96, color: '#ffc107' },
@@ -214,25 +198,26 @@ export default function Home() {
     <div className="w-full min-h-screen bg-[#121414] text-slate-100 font-sans">
       <div className="mesh-bg" />
 
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 backdrop-blur-xl bg-[#121414]/70">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-amber-400/15 shadow-[0_0_20px_rgba(250,189,0,0.1)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-[#5203d5] flex items-center justify-center shadow-[0_0_12px_rgba(255,193,7,0.3)]">
               <Database className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight">Foco em Dados</span>
+            <span className="font-[family-name:var(--font-display)] font-bold text-2xl tracking-tighter text-[#ffe4af]">Foco Completo</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
-            <a href="#solucoes" className="hover:text-white transition-colors">Soluções</a>
-            <a href="#funciona" className="hover:text-white transition-colors">Como funciona</a>
-            <Link to="/precos" className="hover:text-white transition-colors">Planos</Link>
-            <a href="#contato" className="hover:text-white transition-colors">Suporte</a>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+            <a href="#demo" className="hover:text-[#ffe4af] transition-colors border-b-2 border-transparent hover:border-[#ffc107] pb-0.5">Funções</a>
+            <a href="#solucoes" className="hover:text-[#ffe4af] transition-colors">Produtos</a>
+            <a href="#funil" className="hover:text-[#ffe4af] transition-colors">Pesquisa</a>
+            <Link to="/precos" className="hover:text-[#ffe4af] transition-colors">Preços</Link>
+            <a href="#funciona" className="hover:text-[#ffe4af] transition-colors">Recursos</a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
             {user ? (
               <Link
                 to="/app"
-                className="h-9 px-4 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-sm flex items-center gap-2 transition-all"
+                className="h-10 px-6 rounded-full bg-[#ffc107] hover:bg-[#ffca28] text-[#3f2e00] font-bold text-sm flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(250,189,0,0.25)] hover:scale-105 active:scale-95"
               >
                 <Database className="w-4 h-4" />
                 Dashboard
@@ -241,16 +226,15 @@ export default function Home() {
               <>
                 <Link
                   to="/login"
-                  className="h-9 px-4 rounded-lg border border-white/10 hover:border-white/20 text-sm font-medium transition-all flex items-center"
+                  className="text-sm font-medium text-slate-400 hover:text-[#ffe4af] transition-colors"
                 >
                   Entrar
                 </Link>
                 <Link
                   to="/login"
-                  className="h-9 px-4 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold text-sm flex items-center gap-2 transition-all"
+                  className="h-10 px-6 rounded-full bg-[#ffc107] hover:bg-[#ffca28] text-[#3f2e00] font-bold text-sm flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(250,189,0,0.25)] hover:scale-105 active:scale-95"
                 >
-                  Começar Grátis
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  Começar Agora
                 </Link>
               </>
             )}
@@ -259,148 +243,119 @@ export default function Home() {
       </header>
 
       <main>
-        {/* Hero Section com Background Místico Cyber 3D */}
-        <section 
-          className="pt-36 pb-20 px-4 relative overflow-hidden"
-          style={{ background: 'radial-gradient(circle at center, rgba(250, 189, 0, 0.2) 0%, rgba(82, 3, 213, 0.15) 50%, #121414 100%)' }}
+        {/* Hero Section — Portal Místico CSS */}
+        <section
+          className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden portal-bg"
         >
-          <div className="absolute inset-0 bg-[#121414]/40"></div>
+          <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-to-tr from-[#5203d5]/30 via-[#ffc107]/20 to-transparent blur-[100px] animate-portal"></div>
+            <div className="absolute w-[300px] h-[300px] rounded-full border border-[#ffc107]/20 animate-ping opacity-20"></div>
+          </div>
 
-          {/* Palavras flutuantes interativas — Mystic Tech */}
-          <span className="float-word hidden lg:inline-block top-[22%] left-[6%] px-4 py-2 rounded-full glassmorphism text-amber-300 text-xs font-bold tracking-wider">
-            HERMES AGENT
-          </span>
-          <span className="float-word-alt hidden lg:inline-block top-[28%] right-[7%] px-4 py-2 rounded-full glassmorphism text-purple-300 text-xs font-bold tracking-wider">
-            BI &amp; DATA PIPELINE
-          </span>
-          <span className="float-word-alt hidden lg:inline-block top-[58%] left-[9%] px-4 py-2 rounded-full glassmorphism text-fuchsia-300 text-xs font-bold tracking-wider">
-            PROSPECÇÃO B2B
-          </span>
-          <span className="float-word hidden lg:inline-block top-[62%] right-[8%] px-4 py-2 rounded-full glassmorphism text-amber-300 text-xs font-bold tracking-wider">
-            CRM KANBAN
-          </span>
-          <span className="float-word hidden lg:inline-block top-[40%] left-[3%] px-3 py-1.5 rounded-full border border-purple-500/30 text-purple-300 text-[10px] font-bold tracking-widest">
-            IA AUTÔNOMA 24/7
-          </span>
-          <span className="float-word-alt hidden lg:inline-block top-[46%] right-[3.5%] px-3 py-1.5 rounded-full border border-amber-500/30 text-amber-300 text-[10px] font-bold tracking-widest">
-            R$ 39,90 PROSPECÇÃO
-          </span>
-
-          <div className="max-w-5xl mx-auto text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-6 glassmorphism">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Prospecção, IA, Sites e BI — um único painel
+          <div className="relative z-20 px-6 md:px-16 text-center max-w-4xl mx-auto space-y-8">
+            <div className="space-y-4 animate-float">
+              <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold text-glow tracking-tight text-center">
+                Painel Central{' '}
+                <span className="text-[#ffe4af]">Foco Completo</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-slate-300/80 max-w-2xl mx-auto font-light leading-relaxed">
+                A sua esteira de prospecção profissional acelerada por inteligência
+                mística e tecnologia de ponta.
+              </p>
             </div>
-            <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-              Painel Central{' '}
-              <span className="bg-gradient-to-r from-amber-400 via-[#ffc107] to-[#cdbdff] bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(255,193,7,0.3)]">
-                Foco Completo
-              </span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Agente de IA autônomo (Luciano), BI & Data Pipeline, prospecção inteligente e CRM
-              Kanban — tudo em uma única plataforma. Sem setup, sem equipe técnica.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-4 flex-wrap">
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
               <Link
                 to={user ? '/app' : '/login'}
-                className="h-12 px-8 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 border border-amber-300/50"
+                className="bg-[#ffc107] text-[#3f2e00] px-10 py-5 rounded-full text-lg font-bold shadow-[0_0_30px_rgba(250,189,0,0.4)] hover:shadow-[0_0_50px_rgba(250,189,0,0.6)] hover:scale-105 transition-all active:scale-95 flex items-center gap-3"
               >
-                <Upload className="w-4 h-4" />
                 Começar de Graça
+                <Zap className="w-5 h-5" />
               </Link>
               <a
                 href="#demo"
-                className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
+                className="glass-panel px-10 py-5 rounded-full text-lg font-medium hover:bg-white/5 transition-all flex items-center gap-3 border border-white/10"
               >
-                <BarChart3 className="w-4 h-4 text-amber-300" />
                 Ver Demonstração
+                <PlayCircle className="w-5 h-5" />
               </a>
-              <a
-                href="#funil"
-                className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
-              >
-                Ver Como Funciona
-              </a>
+            </div>
+            <div className="pt-12 text-slate-400/60 flex flex-col items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest">Role para descobrir</span>
+              <ChevronsDown className="w-5 h-5 text-[#ffe4af] animate-bounce" />
             </div>
           </div>
         </section>
 
-        {/* Dashboard Global — Demonstração */}
-        <section id="demo" className="py-20 px-4 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,193,7,0.07)_0%,transparent_60%)]"></div>
-          <div className="max-w-6xl mx-auto relative z-10">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-5 glassmorphism">
-                <BarChart3 className="w-3.5 h-3.5" />
-                Painel Central Foco Completo
-              </div>
-              <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-bold tracking-tight">
-                Dashboard Global em{' '}
-                <span className="bg-gradient-to-r from-amber-400 to-[#cdbdff] bg-clip-text text-transparent">
-                  tempo real
-                </span>
-              </h2>
-              <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
-                Todas as áreas do seu negócio em um só lugar: captação, propostas,
-                receita recorrente e inteligência de IA.
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { icon: Users, label: 'Total de Leads', value: '128', delta: '+18%', color: '#ffc107' },
-                { icon: FileText, label: 'Propostas Ativas', value: '14', delta: '+5', color: '#cdbdff' },
-                { icon: DollarSign, label: 'Receita de Setups', value: 'R$ 47.400', delta: '+R$ 8.900', color: '#4ade80' },
-                { icon: TrendingUp, label: 'MRR', value: 'R$ 9.870', delta: '+12%', color: '#60a5fa' },
-              ].map((m) => (
-                <div key={m.label} className="glass-card p-6 rounded-2xl card-hover border border-white/10 bg-white/[0.03] backdrop-blur-xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center" style={{ color: m.color }}>
-                      <m.icon className="w-5 h-5" />
-                    </div>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">{m.label}</p>
+        {/* Dashboard Global — Demonstração (overlay sobre o hero) */}
+        <section id="demo" className="px-4 md:px-16 -mt-24 relative z-30 mb-24">
+          <div className="max-w-7xl mx-auto">
+            <div className="glass-panel rounded-[2rem] p-4 md:p-8 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ffc107] to-transparent opacity-50"></div>
+              <div className="flex flex-col lg:flex-row gap-8">
+                <div className="w-full lg:w-64 space-y-6 hidden md:block">
+                  <div className="h-10 bg-white/5 rounded-lg border border-amber-400/10 flex items-center px-4 gap-3">
+                    <div className="w-3 h-3 rounded-full bg-[#ffc107] animate-pulse"></div>
+                    <div className="h-2 w-24 bg-slate-400/30 rounded"></div>
                   </div>
-                  <p className="font-[family-name:var(--font-display)] text-3xl font-bold text-white">{m.value}</p>
-                  <p className="text-xs mt-2 font-medium" style={{ color: m.color }}>{m.delta} este mês</p>
+                  <div className="space-y-3">
+                    <div className="h-8 bg-[#ffc107]/10 rounded border border-[#ffc107]/20"></div>
+                    <div className="h-8 bg-white/5 rounded border border-white/5"></div>
+                    <div className="h-8 bg-white/5 rounded border border-white/5"></div>
+                    <div className="h-8 bg-white/5 rounded border border-white/5"></div>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex-1 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-semibold text-white">
+                      Dashboard Global
+                    </h2>
+                    <div className="flex gap-2">
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-amber-400/15 flex items-center justify-center">
+                        <Bell className="w-4 h-4 text-slate-300" />
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-amber-400/15 flex items-center justify-center">
+                        <Settings className="w-4 h-4 text-slate-300" />
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="mt-6 glass-card p-6 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h3 className="font-[family-name:var(--font-display)] font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[#ffc107]" />
-                    Inteligência de IA — pipeline
-                  </h3>
-                  <p className="text-xs text-[#d4c5ab] mt-1">Evolução da conversão de prospecção nos últimos 12 semanas.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                      { label: 'Total de Leads', value: '12,845', footer: '+14.2% este mês', footerColor: 'text-green-400', icon: TrendingUp },
+                      { label: 'Propostas Ativas', value: '342', footer: 'Conversão média 12%', footerColor: 'text-slate-400/60', icon: FileText },
+                      { label: 'Receita de Setups', value: 'R$ 84k', footer: 'Meta atingida', footerColor: 'text-green-400', icon: DollarSign },
+                      { label: 'MRR', value: 'R$ 256k', footer: 'Recorrência garantida', footerColor: 'text-slate-400/60', icon: TrendingUp },
+                    ].map((m, i) => (
+                      <div key={m.label} className={`glass-panel p-6 rounded-2xl glow-hover transition-all ${i === 3 ? 'border-[#ffc107]/40' : ''}`}>
+                        <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">{m.label}</span>
+                        <div className="text-3xl font-bold mt-2 text-[#ffe4af]">{m.value}</div>
+                        <div className={`text-xs mt-1 flex items-center gap-1 ${m.footerColor}`}>
+                          <m.icon className="w-3.5 h-3.5" />
+                          {m.footer}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden border border-amber-400/10 bg-gradient-to-b from-[#0d0e0f] via-[#121414] to-[#121414] p-6 flex flex-col justify-between">
+                    <div className="flex justify-between items-center border-b border-amber-400/10 pb-4">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#ffe4af]">Análise Preditiva em Tempo Real</span>
+                      <span className="text-xs text-green-400 flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        Ao Vivo
+                      </span>
+                    </div>
+                    <div className="flex items-end justify-between gap-2 h-48 pt-8 px-4">
+                      {[30, 50, 40, 75, 60, 95].map((h, i) => (
+                        <div
+                          key={i}
+                          className={`w-full rounded-t transition-all ${i === 5 ? 'bg-[#ffc107] shadow-[0_0_15px_rgba(255,193,7,0.5)]' : i % 2 === 0 ? 'bg-[#ffc107]/20 hover:bg-[#ffc107]/40' : 'bg-[#ffc107]/30 hover:bg-[#ffc107]/50'}`}
+                          style={{ height: `${h}%` }}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#ffc107] border border-amber-400/20 bg-amber-400/5 rounded-full px-3 py-1">
-                  +32% vs trimestre anterior
-                </span>
-              </div>
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={AI_PIPELINE_DATA}>
-                    <defs>
-                      <linearGradient id="goldFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#ffc107" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="#ffc107" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="portalFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#cdbdff" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="#cdbdff" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                    <XAxis dataKey="semana" stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={36} />
-                    <Tooltip contentStyle={{ background: '#121414', border: '1px solid rgba(255,193,7,0.2)', borderRadius: 12, fontSize: 12 }} labelStyle={{ color: '#ffc107' }} />
-                    <Area type="monotone" dataKey="leads" name="Leads" stroke="#ffc107" fill="url(#goldFill)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="fechamentos" name="Fechamentos" stroke="#cdbdff" fill="url(#portalFill)" strokeWidth={2} />
-                  </AreaChart>
-                </ResponsiveContainer>
               </div>
             </div>
           </div>
@@ -680,31 +635,27 @@ export default function Home() {
         </section>
       </main>
 
-      <footer id="contato" className="border-t border-white/5 py-12 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-500">
+      <footer id="contato" className="bg-[#0d0e0f] border-t border-amber-400/10 py-12 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-500">
           <div className="flex items-center gap-2">
-            <Database className="w-4 h-4 text-amber-400" />
-            <span className="font-semibold text-slate-300">Foco em Dados</span>
+            <Database className="w-4 h-4 text-[#ffe4af]" />
+            <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tighter text-[#ffe4af]">Foco Completo</span>
           </div>
-          <div className="flex items-center gap-6 flex-wrap justify-center">
-            <Link to="/privacidade" className="hover:text-slate-300 transition-colors">Privacidade</Link>
-            <Link to="/termos" className="hover:text-slate-300 transition-colors">Termos</Link>
+          <div className="flex items-center gap-8 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+            <Link to="/privacidade" className="hover:text-[#ffe4af] transition-colors">Privacidade</Link>
+            <Link to="/termos" className="hover:text-[#ffe4af] transition-colors">Termos</Link>
             <a
               href={WHATSAPP_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25d366]/10 border border-[#25d366]/30 text-[#4ade80] hover:bg-[#25d366]/20 transition-all"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#25d366]/10 border border-[#25d366]/30 text-[#4ade80] hover:bg-[#25d366]/20 transition-all"
             >
               <MessageCircle className="w-3.5 h-3.5" />
-              WhatsApp (11) 99441-1307
+              Suporte
             </a>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-300 hover:bg-white/10 hover:text-amber-200 transition-all"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              {CONTACT_EMAIL}
-            </a>
+          </div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+            © 2026 Foco Completo. Todos os direitos reservados.
           </div>
         </div>
       </footer>
