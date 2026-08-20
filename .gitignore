@@ -7,3 +7,4 @@ node_modules
 !.env.example
 __pycache__/
 workspace-temp/
+prospector.db
