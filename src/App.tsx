@@ -16,10 +16,14 @@ import ProtectedRouteMaster from './components/ProtectedRouteMaster'
 import AdminRoute from './components/AdminRoute'
 import SiteChat from './components/SiteChat'
 import CookieConsent from './components/CookieConsent'
+import AnimatedBackground from './components/AnimatedBackground'
+import WhatsAppButton from './components/WhatsAppButton'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#121414] text-[#e3e2e2] font-sans antialiased">
+    <div className="min-h-screen text-[#e3e2e2] font-sans antialiased">
+      <AnimatedBackground />
+      <WhatsAppButton />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/precos" element={<Pricing />} />
