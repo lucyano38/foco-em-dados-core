@@ -3,7 +3,7 @@ import { ArrowLeft, FileText, Lock, Scale, AlertOctagon, Mail, ShieldCheck } fro
 
 export default function TermsOfService({ onBack }: { onBack: () => void }) {
   return (
-    <div className="w-full min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="w-full min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 contract-dark-container">
       {/* Decorative gradient blur background */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-10 left-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl -z-10" />
