@@ -25,17 +25,17 @@ export default function Hero() {
         </div>
 
         <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-          <span className="text-glow">Seu painel central de</span>
+          <span className="text-glow">Painel Central</span>
           <br />
           <span className="bg-gradient-to-r from-[#fabd00] via-[#ffc107] to-[#cdbdff] bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(250,189,0,0.35)]">
-            Foco em Dados
+            Foco Completo
           </span>
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-[#d4c5ab] max-w-2xl mx-auto leading-relaxed">
-          Automação de processos com IA, criação de sites de alta conversão e
-          Business Intelligence profissional. Sua esteira de prospecção,
-          redesign e análise de dados pronta para rodar.
+          Automação com IA, prospecção ativa, sites de alta conversão e BI em um
+          único painel. Sua esteira de descoberta de clientes até o fechamento
+          pronta para rodar em minutos.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -47,11 +47,11 @@ export default function Hero() {
             Começar de Graça
           </Link>
           <a
-            href="#upload"
+            href="#demo"
             className="h-12 px-8 rounded-xl border border-[#fabd00]/20 hover:border-[#fabd00]/40 text-sm font-medium text-[#e3e2e2] flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
           >
             <BarChart3 className="w-4 h-4 text-[#fabd00]" />
-            Fazer Upload de Planilha
+            Ver Demonstração
           </a>
         </div>
 

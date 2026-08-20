@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { WHATSAPP_URL, CONTACT_EMAIL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
-import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle } from 'lucide-react'
+import { Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, Users, FileText, DollarSign } from 'lucide-react'
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
 const PROSPECTION_PRICE_CENTS = 3990 // R$ 39,90
@@ -135,6 +136,38 @@ const PLANS = [
   },
 ]
 
+const AI_PIPELINE_DATA = [
+  { semana: 'S1', leads: 18, fechamentos: 1 },
+  { semana: 'S2', leads: 24, fechamentos: 2 },
+  { semana: 'S3', leads: 22, fechamentos: 2 },
+  { semana: 'S4', leads: 29, fechamentos: 3 },
+  { semana: 'S5', leads: 34, fechamentos: 4 },
+  { semana: 'S6', leads: 40, fechamentos: 5 },
+  { semana: 'S7', leads: 45, fechamentos: 6 },
+  { semana: 'S8', leads: 52, fechamentos: 7 },
+  { semana: 'S9', leads: 60, fechamentos: 8 },
+  { semana: 'S10', leads: 68, fechamentos: 9 },
+  { semana: 'S11', leads: 75, fechamentos: 11 },
+  { semana: 'S12', leads: 90, fechamentos: 14 },
+]
+
+const FUNNEL_STAGES = [
+  { name: 'Discovery', desc: 'Descoberta e coleta de dados do lead', percent: '100%', count: 128, color: '#60a5fa' },
+  { name: 'Abordagem', desc: 'Contato inicial e proposta de valor', percent: '75%', count: 96, color: '#ffc107' },
+  { name: 'Qualificação', desc: 'Validação de necessidade e orçamento', percent: '48%', count: 61, color: '#cdbdff' },
+  { name: 'Proposta', desc: 'Envio de proposta sob medida', percent: '22%', count: 28, color: '#f472b6' },
+  { name: 'Fechamento', desc: 'Contrato assinado e onboarding', percent: '11%', count: 14, color: '#4ade80' },
+]
+
+const LEADS_TABLE = [
+  { name: 'Distribuidora Central Bebidas', segment: 'Distribuição', city: 'São Paulo/SP', value: 'R$ 5.900', stage: 'Negociação', badgeColor: '#ffc107' },
+  { name: 'Farmácia Vida + Saúde', segment: 'Farmácia', city: 'Itupeva/SP', value: 'R$ 6.800', stage: 'Fechado', badgeColor: '#4ade80' },
+  { name: 'Moda Bella Store', segment: 'Moda & Vestuário', city: 'Guarulhos/SP', value: 'R$ 2.900', stage: 'Abordagem', badgeColor: '#60a5fa' },
+  { name: 'Auto Peças Silva', segment: 'Automotivo', city: 'Campinas/SP', value: 'R$ 1.800', stage: 'Discovery', badgeColor: '#cdbdff' },
+  { name: 'Mercado Bom Preço', segment: 'Varejo', city: 'Osasco/SP', value: 'R$ 4.800', stage: 'Negociação', badgeColor: '#ffc107' },
+  { name: 'Loja Bella Calçados', segment: 'Calçados', city: 'Santos/SP', value: 'R$ 2.600', stage: 'Proposta', badgeColor: '#f472b6' },
+]
+
 export default function Home() {
   const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
@@ -256,15 +289,13 @@ export default function Home() {
           <div className="max-w-5xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-6 glassmorphism">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Sua loja com IA — sem programação
+              Prospecção, IA, Sites e BI — um único painel
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              IA, Automação e{' '}
-              <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-purple-500 bg-clip-text text-transparent">
-                Dados
+            <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+              Painel Central{' '}
+              <span className="bg-gradient-to-r from-amber-400 via-[#ffc107] to-[#cdbdff] bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(255,193,7,0.3)]">
+                Foco Completo
               </span>
-              <br />
-              para o seu negócio crescer
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
               Agente de IA autônomo (Luciano), BI & Data Pipeline, prospecção inteligente e CRM
@@ -276,23 +307,176 @@ export default function Home() {
                 className="h-12 px-8 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 border border-amber-300/50"
               >
                 <Upload className="w-4 h-4" />
-                Fazer Upload Grátis
+                Começar de Graça
               </Link>
               <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noreferrer"
+                href="#demo"
                 className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
               >
-                <MessageCircle className="w-4 h-4 text-amber-300" />
-                Falar no WhatsApp
+                <BarChart3 className="w-4 h-4 text-amber-300" />
+                Ver Demonstração
               </a>
               <a
-                href="#funciona"
+                href="#funil"
                 className="h-12 px-8 rounded-xl border border-amber-400/20 hover:border-amber-400/40 text-sm font-medium flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"
               >
                 Ver Como Funciona
               </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Dashboard Global — Demonstração */}
+        <section id="demo" className="py-20 px-4 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,193,7,0.07)_0%,transparent_60%)]"></div>
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-5 glassmorphism">
+                <BarChart3 className="w-3.5 h-3.5" />
+                Painel Central Foco Completo
+              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-bold tracking-tight">
+                Dashboard Global em{' '}
+                <span className="bg-gradient-to-r from-amber-400 to-[#cdbdff] bg-clip-text text-transparent">
+                  tempo real
+                </span>
+              </h2>
+              <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
+                Todas as áreas do seu negócio em um só lugar: captação, propostas,
+                receita recorrente e inteligência de IA.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { icon: Users, label: 'Total de Leads', value: '128', delta: '+18%', color: '#ffc107' },
+                { icon: FileText, label: 'Propostas Ativas', value: '14', delta: '+5', color: '#cdbdff' },
+                { icon: DollarSign, label: 'Receita de Setups', value: 'R$ 47.400', delta: '+R$ 8.900', color: '#4ade80' },
+                { icon: TrendingUp, label: 'MRR', value: 'R$ 9.870', delta: '+12%', color: '#60a5fa' },
+              ].map((m) => (
+                <div key={m.label} className="glass-card p-6 rounded-2xl card-hover border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center" style={{ color: m.color }}>
+                      <m.icon className="w-5 h-5" />
+                    </div>
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">{m.label}</p>
+                  </div>
+                  <p className="font-[family-name:var(--font-display)] text-3xl font-bold text-white">{m.value}</p>
+                  <p className="text-xs mt-2 font-medium" style={{ color: m.color }}>{m.delta} este mês</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 glass-card p-6 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h3 className="font-[family-name:var(--font-display)] font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#ffc107]" />
+                    Inteligência de IA — pipeline
+                  </h3>
+                  <p className="text-xs text-[#d4c5ab] mt-1">Evolução da conversão de prospecção nos últimos 12 semanas.</p>
+                </div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#ffc107] border border-amber-400/20 bg-amber-400/5 rounded-full px-3 py-1">
+                  +32% vs trimestre anterior
+                </span>
+              </div>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={AI_PIPELINE_DATA}>
+                    <defs>
+                      <linearGradient id="goldFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ffc107" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="#ffc107" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="portalFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#cdbdff" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="#cdbdff" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                    <XAxis dataKey="semana" stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={36} />
+                    <Tooltip contentStyle={{ background: '#121414', border: '1px solid rgba(255,193,7,0.2)', borderRadius: 12, fontSize: 12 }} labelStyle={{ color: '#ffc107' }} />
+                    <Area type="monotone" dataKey="leads" name="Leads" stroke="#ffc107" fill="url(#goldFill)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="fechamentos" name="Fechamentos" stroke="#cdbdff" fill="url(#portalFill)" strokeWidth={2} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Módulo de Prospecção & Conversão — inspirado no fluxo evoluaprospect */}
+        <section id="funil" className="py-20 px-4 relative overflow-hidden">
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold mb-5 glassmorphism">
+                <Target className="w-3.5 h-3.5" />
+                Prospecção &amp; Conversão
+              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-bold tracking-tight">
+                Do <span className="text-amber-300">Discovery</span> ao{' '}
+                <span className="text-[#cdbdff]">Fechamento</span>
+              </h2>
+              <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
+                Fluxo de captação ativa inspirado no evoluaprospect: cada lead avança
+                por etapas com abordagem personalizada por IA e pontuação de oportunidade.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {FUNNEL_STAGES.map((s, i) => (
+                <div key={s.name} className="glass-card p-5 rounded-2xl card-hover border border-white/10 bg-white/[0.03] backdrop-blur-xl relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-slate-950" style={{ background: s.color }}>
+                      {i + 1}
+                    </div>
+                    <span className="font-mono text-xs font-bold" style={{ color: s.color }}>{s.percent}%</span>
+                  </div>
+                  <h3 className="font-bold text-sm text-white">{s.name}</h3>
+                  <p className="text-[11px] text-[#d4c5ab] mt-1 leading-relaxed">{s.desc}</p>
+                  <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">{s.count}</p>
+                  <div className="mt-2 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: s.percent, background: s.color }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 glass-card rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl overflow-hidden">
+              <div className="flex items-center gap-2 px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+                <Database className="w-4 h-4 text-[#ffc107]" />
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-white">Tabela de Leads Prospectados</h3>
+                <span className="ml-auto text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">atualização automática</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab] border-b border-white/10">
+                      <th className="px-6 py-3 font-medium">Empresa</th>
+                      <th className="px-6 py-3 font-medium">Segmento</th>
+                      <th className="px-6 py-3 font-medium">Cidade</th>
+                      <th className="px-6 py-3 font-medium">Valor</th>
+                      <th className="px-6 py-3 font-medium">Etapa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {LEADS_TABLE.map((l) => (
+                      <tr key={l.name} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-3.5 font-semibold text-white">{l.name}</td>
+                        <td className="px-6 py-3.5 text-[#d4c5ab]">{l.segment}</td>
+                        <td className="px-6 py-3.5 text-[#d4c5ab]">{l.city}</td>
+                        <td className="px-6 py-3.5 font-mono text-amber-300">{l.value}</td>
+                        <td className="px-6 py-3.5">
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border" style={{ color: l.badgeColor, borderColor: `${l.badgeColor}40`, background: `${l.badgeColor}10` }}>
+                            {l.stage}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </section>
