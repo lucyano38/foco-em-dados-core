@@ -7,8 +7,24 @@ import BIExecutivePanel from '../components/BIExecutivePanel'
 import { WHATSAPP_URL } from '../lib/contact'
 import {
   Upload, Database, BarChart3, TrendingUp, LogOut,
-  FileText, AlertCircle, CheckCircle, X, Loader2, MessageCircle,
+  FileText, AlertCircle, CheckCircle, X, Loader2, MessageCircle, Users, DollarSign,
 } from 'lucide-react'
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+
+const DASH_PIPELINE_DATA = [
+  { semana: 'S1', leads: 18, fechamentos: 1 },
+  { semana: 'S2', leads: 24, fechamentos: 2 },
+  { semana: 'S3', leads: 22, fechamentos: 2 },
+  { semana: 'S4', leads: 29, fechamentos: 3 },
+  { semana: 'S5', leads: 34, fechamentos: 4 },
+  { semana: 'S6', leads: 40, fechamentos: 5 },
+  { semana: 'S7', leads: 45, fechamentos: 6 },
+  { semana: 'S8', leads: 52, fechamentos: 7 },
+  { semana: 'S9', leads: 60, fechamentos: 8 },
+  { semana: 'S10', leads: 68, fechamentos: 9 },
+  { semana: 'S11', leads: 75, fechamentos: 11 },
+  { semana: 'S12', leads: 90, fechamentos: 14 },
+]
 
 function UsageBar({ label, used, limit, percent }: {
   label: string; used: number; limit: number; percent: number
@@ -182,6 +198,60 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="grid lg:grid-cols-4 gap-4">
+          {[
+            { icon: Users, label: 'Total de Leads', value: '128', delta: '+18%', color: '#ffc107' },
+            { icon: FileText, label: 'Propostas Ativas', value: '14', delta: '+5', color: '#cdbdff' },
+            { icon: DollarSign, label: 'Receita de Setups', value: 'R$ 47.400', delta: '+R$ 8.900', color: '#4ade80' },
+            { icon: TrendingUp, label: 'MRR', value: 'R$ 9.870', delta: '+12%', color: '#60a5fa' },
+          ].map((m) => (
+            <div key={m.label} className="glass-card p-5 card-hover">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center" style={{ color: m.color }}>
+                  <m.icon className="w-4 h-4" />
+                </div>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">{m.label}</p>
+              </div>
+              <p className="font-[family-name:var(--font-display)] text-2xl font-bold text-white">{m.value}</p>
+              <p className="text-[11px] mt-1 font-medium" style={{ color: m.color }}>{m.delta} este mês</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-card p-6">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h2 className="font-[family-name:var(--font-display)] font-bold flex items-center gap-2 text-white">
+              <BarChart3 className="w-4 h-4 text-[#ffc107]" />
+              Inteligência de IA — pipeline de conversão
+            </h2>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#ffc107] border border-amber-400/20 bg-amber-400/5 rounded-full px-3 py-1">
+              +32% vs trimestre anterior
+            </span>
+          </div>
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={DASH_PIPELINE_DATA}>
+                <defs>
+                  <linearGradient id="dashGold" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffc107" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#ffc107" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="dashPortal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#cdbdff" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#cdbdff" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <XAxis dataKey="semana" stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis stroke="#64748b" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={36} />
+                <Tooltip contentStyle={{ background: '#121414', border: '1px solid rgba(255,193,7,0.2)', borderRadius: 12, fontSize: 12 }} labelStyle={{ color: '#ffc107' }} />
+                <Area type="monotone" dataKey="leads" name="Leads" stroke="#ffc107" fill="url(#dashGold)" strokeWidth={2} />
+                <Area type="monotone" dataKey="fechamentos" name="Fechamentos" stroke="#cdbdff" fill="url(#dashPortal)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className="flex items-start justify-between mb-2">
           <div>
             <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#ffe4af]">
