@@ -176,7 +176,7 @@ export default function SiteChat() {
       ) : (
         <button
           onClick={toggleChat}
-          className="btn-glow w-14 h-14 rounded-full flex items-center justify-center cursor-pointer"
+          className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center cursor-pointer"
           aria-label="Abrir chat"
         >
           <MessageCircle className="w-6 h-6" />
