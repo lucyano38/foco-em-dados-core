@@ -252,6 +252,17 @@ export default function Dashboard() {
           </div>
         </div>
 
+        <div className="glass-card p-6">
+          <img
+            src="/dashboard-analytics.png"
+            alt="Análise de IA em tempo real"
+            className="w-full h-auto object-cover rounded-2xl border border-outline-variant/30"
+          />
+          <p className="text-xs text-[#d4c5ab] mt-2 text-center">
+            Análise de IA em tempo real — Sincronizado com 15 fontes de dados do ecossistema
+          </p>
+        </div>
+
         <div className="flex items-start justify-between mb-2">
           <div>
             <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#ffe4af]">
