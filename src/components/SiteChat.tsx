@@ -16,6 +16,7 @@ export default function SiteChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [sessionId, setSessionId] = useState('');
 
   useEffect(() => {
@@ -45,7 +46,6 @@ export default function SiteChat() {
       signal: AbortSignal.timeout(9000),
     });
 
-    // Tenta direto no n8n primeiro; se falhar (CORS/rede), usa o proxy local.
     const results = await Promise.allSettled([direct, proxy]);
     const ok = results.find(
       (r) => r.status === 'fulfilled' && (r.value as Response).ok
@@ -64,32 +64,49 @@ export default function SiteChat() {
     throw new Error('n8n indisponível');
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
+  const appendBot = (text: string) => {
+    setMessages(prev => [...prev, { sender: 'bot', text }]);
+  };
 
-    const userMsg = input.trim();
+  const handleSend = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
     setInput('');
-    setMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
+    setMessages(prev => [...prev, { sender: 'user', text }]);
     setLoading(true);
 
     try {
       const payload = {
-        message: userMsg,
+        message: text,
         phone: sessionId || 'Visitante_Site',
         source: 'Site',
       };
       const data = await postToN8n(payload);
-      if (data && data.reply) {
-        setMessages(prev => [...prev, { sender: 'bot', text: data.reply }]);
+      const reply = typeof data === 'string' ? data : data?.reply;
+      if (reply && typeof reply === 'string') {
+        appendBot(reply);
+      } else if (reply && typeof reply === 'object') {
+        appendBot(String(reply));
       } else {
-        setMessages(prev => [...prev, { sender: 'bot', text: 'Desculpe, não consegui processar a resposta.' }]);
+        appendBot('Desculpe, não consegui processar a resposta.');
       }
     } catch (err) {
       console.error('Erro no SiteChat:', err);
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Ops, falha na conexão. Tente novamente ou nos chame no Telegram.' }]);
+      appendBot('Ops, falha na conexão. Tente novamente ou nos chame no Telegram.');
     } finally {
       setLoading(false);
+      try { inputRef.current?.focus(); } catch {}
     }
+  };
+
+  const toggleChat = () => {
+    setIsOpen(prev => {
+      if (!prev) {
+        setTimeout(() => inputRef.current?.focus(), 0);
+      }
+      return !prev;
+    });
   };
 
   return (
@@ -134,9 +151,15 @@ export default function SiteChat() {
 
           <div className="p-3 border-t border-white/10 flex gap-2 bg-[#18191c]">
             <input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Digite sua mensagem..."
               className="input-mystic flex-1 h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/50"
             />
@@ -152,7 +175,7 @@ export default function SiteChat() {
         </div>
       ) : (
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={toggleChat}
           className="btn-glow w-14 h-14 rounded-full flex items-center justify-center cursor-pointer"
           aria-label="Abrir chat"
         >
