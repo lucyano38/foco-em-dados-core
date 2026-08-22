@@ -3,11 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
-import ChatDemoModal from '../components/ChatDemoModal'
 import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
 import {
-  Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, ChevronsDown, Search, MapPin, Globe, MessageSquare, Send, Shield, X
+  Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, ChevronsDown, Search, MapPin, Globe, MessageSquare, Send, Shield
 } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
@@ -33,8 +32,6 @@ export default function Home() {
   useEffect(() => {
     document.title = 'Foco em Dados | Agente Luciano, BI, Prospecção e CRM — Inteligência para Empresas'
   }, [])
-
-  const [openChat, setOpenChat] = useState(false)
 
   const openProspectionCheckout = async () => {
     if (!user) {
@@ -78,23 +75,16 @@ export default function Home() {
     setProspectResult(null)
     setProspectLoading(true)
     try {
-      const payload = {
-        city: prospectForm.city,
-        niche: prospectForm.niche,
-        geo: true,
-        limit: 6,
-      }
-      const res = await fetch('/api/prospection/search', {
+      const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000),
+        body: JSON.stringify(prospectForm),
       })
       const data = await safeJson(res)
       if (!res.ok) {
         throw new Error(data?.error || 'Erro ao prospectar.')
       }
-      setProspectResult(`Prospecção concluída: ${data.total || 0} leads encontrados em "${prospectForm.city || 'sua região'}".`)
+      setProspectResult(JSON.stringify(data))
     } catch (err: any) {
       setProspectResult(err?.message || 'Erro inesperado.')
     } finally {
@@ -162,7 +152,8 @@ export default function Home() {
           <div className="relative z-20 px-6 md:px-16 text-center max-w-4xl mx-auto space-y-8">
             <div className="space-y-4 animate-float">
               <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold text-glow tracking-tight text-center">
-                Foco em Dados — Prospecção Inteligente, Automação e CRM Comercial
+                Painel Central{' '}
+                <span className="text-[#ffe4af]">Foco em Dados</span>
               </h1>
               <p className="text-xl md:text-2xl text-slate-300/80 max-w-2xl mx-auto font-light leading-relaxed">
                 Prospecção, CRM e atendimento inteligente em uma plataforma só.
@@ -215,8 +206,10 @@ export default function Home() {
                 />
               </div>
               <button
+                type="button"
                 onClick={handleProspect}
-                className="mt-4 w-full h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer pointer-events-auto"
+                disabled={prospectLoading}
+                className="mt-4 w-full h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer pointer-events-auto disabled:opacity-50"
               >
                 {prospectLoading ? 'Prospectando...' : 'Prospectar'}
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -342,22 +335,17 @@ export default function Home() {
         <section id="agente" className="py-20 px-4">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="glass-card p-6 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl flex flex-col items-center text-center">
-              <div className="w-full max-w-[260px] rounded-2xl border border-white/10 bg-[#121414] p-3 mb-4 text-left">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-[#4ade80]" />
-                  <div className="h-2 w-24 rounded bg-white/10" />
-                  <div className="ml-auto h-2 w-10 rounded bg-[#ffc107]/20" />
-                </div>
-                <div className="space-y-2">
-                  <div className="h-2 w-40 rounded bg-white/10" />
-                  <div className="h-2 w-32 rounded bg-white/5" />
-                  <div className="h-2 w-28 rounded bg-[#ffc107]/10" />
-                </div>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center mb-4">
+                <MessageSquare className="w-7 h-7 text-white" />
               </div>
               <p className="text-sm text-slate-300 mb-4">Atendimento automático integrado ao Telegram via n8n.</p>
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <button
-                  onClick={() => setOpenChat(true)}
+                  type="button"
+                  onClick={() => {
+                    const btn = document.getElementById('site-chat-open-btn');
+                    if (btn) btn.click();
+                  }}
                   className="h-10 rounded-lg bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer pointer-events-auto"
                 >
                   Abrir Chat do Agente
@@ -596,7 +584,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {openChat && <ChatDemoModal open={openChat} onClose={() => setOpenChat(false)} />}
     </div>
   )
 }

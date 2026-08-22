@@ -29,14 +29,12 @@ export default function CookieConsent() {
     setIsVisible(false);
   };
 
-  if (!isVisible) {
-    return null;
-  }
+  if (!isVisible) return null;
 
   return (
-    <div className="pointer-events-none fixed bottom-4 left-0 right-0 z-40 flex justify-center px-4">
+    <div className="pointer-events-none fixed bottom-4 left-4 right-4 z-40 flex justify-center">
       <div
-        className="glassmorphism rounded-2xl p-4 flex items-center gap-4 border border-outline-variant/40 pointer-events-auto max-w-xl w-full"
+        className="pointer-events-auto bg-[#201f21] p-4 rounded-2xl border border-[#3b494b]/40 flex items-center gap-4 max-w-xl w-full shadow-xl"
         role="dialog"
         aria-label="Aviso de cookies"
       >
@@ -50,12 +48,14 @@ export default function CookieConsent() {
           e <a href="/termos-de-uso" className="text-[#fabd00] hover:underline">Termos de Uso</a>.
         </p>
         <button
+          type="button"
           onClick={accept}
           className="btn-glow h-9 px-4 rounded-lg text-xs font-bold text-[#121414] whitespace-nowrap cursor-pointer"
         >
           Aceitar e Continuar
         </button>
         <button
+          type="button"
           onClick={accept}
           aria-label="Fechar aviso de cookies"
           className="text-[#d4c5ab]/60 hover:text-[#e3e2e2] transition-colors cursor-pointer shrink-0"

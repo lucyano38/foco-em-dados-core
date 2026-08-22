@@ -105,12 +105,13 @@ export default function SiteChat() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[9999] font-sans">
-      {isOpen ? (
-        <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
+    <>
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 z-[9999] w-[340px] h-[460px] glassmorphism rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
           <div className="bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] p-4 font-bold flex justify-between items-center">
             <span className="flex items-center gap-2">💬 Luciano · Foco em Dados</span>
             <button
+              type="button"
               onClick={() => setIsOpen(false)}
               className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
               aria-label="Fechar chat"
@@ -159,6 +160,7 @@ export default function SiteChat() {
               className="input-mystic flex-1 h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/50"
             />
             <button
+              type="button"
               onClick={handleSend}
               disabled={loading}
               className="btn-glow w-10 h-10 rounded-lg flex items-center justify-center disabled:opacity-50"
@@ -168,16 +170,16 @@ export default function SiteChat() {
             </button>
           </div>
         </div>
-      ) : (
-        <button
-          id="site-chat-open-btn"
-          onClick={toggleChat}
-          className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center"
-          aria-label="Abrir chat"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </button>
       )}
-    </div>
+      <button
+        type="button"
+        id="site-chat-open-btn"
+        onClick={toggleChat}
+        className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center pointer-events-auto"
+        aria-label="Abrir chat"
+      >
+        <MessageCircle className="w-6 h-6" />
+      </button>
+    </>
   );
 }
