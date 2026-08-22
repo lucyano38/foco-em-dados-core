@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2, Sparkles, AlertTriangle } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { safeJson, friendlyFetchError } from '../lib/safeFetch';
+import { PUBLIC_TUNNEL_URL } from '../lib/contact';
 
 export interface RedesignRow {
   id: string;
@@ -26,6 +27,7 @@ function buildOfflineTemplate(row: RedesignRow): string {
   const segment = row.segment || 'comércio local';
   const city = [row.city, row.uf].filter(Boolean).join(' - ') || 'Sua cidade';
   const wa = row.whatsapp ? `https://wa.me/${String(row.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent(`Olá! Vi a proposta da ${name} e quero saber mais.`)}` : '';
+  const demoUrl = PUBLIC_TUNNEL_URL;
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -65,7 +67,10 @@ function buildOfflineTemplate(row: RedesignRow): string {
       <div class="offer">Integração com WhatsApp</div>
       <div class="offer">Otimização para busca local (SEO)</div>
     </div>
-    ${wa ? `<a class="cta" href="${wa}">Chamar no WhatsApp</a>` : ''}
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      ${wa ? `<a class="cta" href="${wa}">Chamar no WhatsApp</a>` : ''}
+      <a class="cta" href="${demoUrl}" target="_blank" rel="noreferrer" style="background:linear-gradient(135deg,#7c3aed,${color})">Ver demo temporária</a>
+    </div>
     <div class="foot">
       <span>${name} — ${city}</span>
       <span>Demonstração temporária · Foco em Dados</span>
