@@ -13,7 +13,10 @@ const envValue = (key: string): string | undefined => {
 }
 const supabaseAnonKey =
   envValue('VITE_SUPABASE_ANON_KEY') ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvaWpiaXhpZnZib3N5dGh6bmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjk4MzksImV4cCI6MjA5OTk0NTgzOX0.mnX7iKNChokWSGnJm8iep58Cu_syKKOpr-ywwKt2hBs'
+  'eyJhbG...2hBs'
+
+export const SUPABASE_URL = supabaseUrl
+export const SUPABASE_PUBLISHABLE_KEY = supabaseAnonKey
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 

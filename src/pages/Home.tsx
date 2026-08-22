@@ -71,20 +71,41 @@ export default function Home() {
   const [prospectLoading, setProspectLoading] = useState(false)
   const [prospectResult, setProspectResult] = useState<string | null>(null)
 
+  const NICHOS = [
+    'Restaurante',
+    'Barbearia',
+    'Clínica odontológica',
+    'Clínica estética',
+    'Imobiliária',
+    'Academia',
+    'Padaria',
+    'E-commerce',
+    'Serviços locais',
+    'Profissional liberal',
+  ]
+
   const handleProspect = async () => {
     setProspectResult(null)
     setProspectLoading(true)
     try {
-      const res = await fetch('/api/leads', {
+      const payload = {
+        city: prospectForm.city.trim(),
+        segment: prospectForm.niche.trim(),
+        geo: true,
+        limit: 8,
+      }
+      const res = await fetch('/api/prospection/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prospectForm),
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000),
       })
       const data = await safeJson(res)
       if (!res.ok) {
         throw new Error(data?.error || 'Erro ao prospectar.')
       }
-      setProspectResult(JSON.stringify(data))
+      const total = Array.isArray(data.leads) ? data.leads.length : 0
+      setProspectResult(`Prospecção concluída: ${total} leads encontrados em "${payload.city || 'sua região'}".`)
     } catch (err: any) {
       setProspectResult(err?.message || 'Erro inesperado.')
     } finally {

@@ -11,6 +11,7 @@ import AdminAutomacao from './pages/AdminAutomacao'
 import Admin from './pages/Admin'
 import AdminProspeccao from './pages/AdminProspeccao'
 import PreviewProposta from './pages/PreviewProposta'
+import DashboardIndicadores from './pages/DashboardIndicadores'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedRouteMaster from './components/ProtectedRouteMaster'
 import AdminRoute from './components/AdminRoute'
@@ -26,6 +27,7 @@ export default function App() {
       <WhatsAppButton />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/indicadores" element={<DashboardIndicadores />} />
         <Route path="/precos" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
