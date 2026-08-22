@@ -24,7 +24,7 @@ export default function CookieConsent() {
     try {
       localStorage.setItem(COOKIE_KEY, 'true');
     } catch {
-      /* ignore */
+      // storage indisponível
     }
     setIsVisible(false);
   };
