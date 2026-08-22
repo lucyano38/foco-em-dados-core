@@ -9,12 +9,14 @@ export default function CookieConsent() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(COOKIE_KEY);
-      if (stored !== 'true') {
-        const timer = setTimeout(() => setIsVisible(true), 1200);
-        return () => clearTimeout(timer);
+      if (stored === 'true') {
+        setIsVisible(false);
+        return;
       }
+      const timer = setTimeout(() => setIsVisible(true), 1200);
+      return () => clearTimeout(timer);
     } catch {
-      /* storage indisponível */
+      setIsVisible(true);
     }
   }, []);
 
@@ -25,9 +27,6 @@ export default function CookieConsent() {
       /* ignore */
     }
     setIsVisible(false);
-    setTimeout(() => {
-      try { localStorage.removeItem(COOKIE_KEY); } catch {}
-    }, 0);
   };
 
   if (!isVisible) {

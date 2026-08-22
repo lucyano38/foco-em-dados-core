@@ -1361,49 +1361,44 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
   // Rota de proxy para o Chat do Site / n8n com fallback e alerta via Telegram
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, phone, source } = req.body || {};
-      const n8nUrl = "https://focoemdados2.app.n8n.cloud/webhook/site-chat";
-      
-      const n8nRes = await fetch(n8nUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, phone: phone || "Visitante_Site", source: source || "Site" }),
-        signal: AbortSignal.timeout(10000)
-      });
+      const body = req.body || {};
+      const { message, phone, source } = body;
 
-      if (n8nRes.ok) {
-        const data = await n8nRes.json();
-        return res.json(data);
-      } else {
-        const errorText = await n8nRes.text();
-        console.error("[n8n Chat Error]:", errorText);
-        
-        const botToken = process.env.TELEGRAM_BOT_TOKEN || "8716515024:AAH_IpZRBhHjZWCIvMoV-N7LJ6LXnu_ZEE8";
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: '5643486739',
-            text: `⚠️ *ALERTA: n8n CHAT FALHOU*\nStatus: ${n8nRes.status}\nErro: ${errorText}`
-          })
-        }).catch(() => {});
-
-        return res.json({ reply: "Recebi sua mensagem! Estou processando seu atendimento. Pode me chamar no Telegram se preferir." });
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: "Informe 'message'." });
       }
-    } catch (err: any) {
-      console.error("[Chat Proxy Exception]:", err);
-      
-      const botToken = process.env.TELEGRAM_BOT_TOKEN || "8716515024:AAH_IpZRBhHjZWCIvMoV-N7LJ6LXnu_ZEE8";
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: '5643486739',
-          text: `🚨 *EXCEÇÃO NO PROXY DE CHAT DO SITE*\nErro: ${err.message}`
-        })
-      }).catch(() => {});
 
-      return res.json({ reply: "No momento estou com uma instabilidade técnica. Pode nos chamar direto no Telegram?" });
+      const n8nUrl = "https://focoemdados2.app.n8n.cloud/webhook/site-chat";
+      const payload = {
+        message,
+        phone: String(phone || "Visitante_Site"),
+        source: String(source || "Site"),
+      };
+
+      let replyText: string | null = null;
+
+      try {
+        const n8nRes = await fetch(n8nUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(12000),
+        });
+
+        if (n8nRes.ok) {
+          const data = await n8nRes.json().catch(() => ({}));
+          replyText = typeof data === 'string' ? data : data?.reply || data?.answer || data?.text || null;
+        }
+      } catch {}
+
+      if (!replyText) {
+        replyText =
+          "Recebi sua mensagem! Estou processando seu atendimento. Pode me chamar no Telegram se preferir.";
+      }
+
+      res.json({ reply: replyText });
+    } catch (err: any) {
+      return res.status(500).json({ error: err?.message || "Erro no proxy de chat." });
     }
   });
 
