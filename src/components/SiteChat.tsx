@@ -17,7 +17,6 @@ export default function SiteChat() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
   const [sessionId, setSessionId] = useState('');
 
   useEffect(() => {
@@ -183,6 +182,7 @@ export default function SiteChat() {
         </div>
       ) : (
         <button
+          id="site-chat-open-btn"
           onClick={toggleChat}
           className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center cursor-pointer"
           aria-label="Abrir chat"

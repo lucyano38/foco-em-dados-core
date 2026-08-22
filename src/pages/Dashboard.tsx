@@ -253,14 +253,37 @@ export default function Dashboard() {
         </div>
 
         <div className="glass-card p-6">
-          <img
-            src="/dashboard-analytics.png"
-            alt="Análise de IA em tempo real"
-            className="w-full h-auto object-cover rounded-2xl border border-outline-variant/30"
-          />
-          <p className="text-xs text-[#d4c5ab] mt-2 text-center">
-            Análise de IA em tempo real — Sincronizado com 15 fontes de dados do ecossistema
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { label: 'Leads', value: '12,845', delta: '+14.2%' },
+              { label: 'MRR', value: 'R$ 256k', delta: '+12%' },
+              { label: 'Propostas', value: '342', delta: '+5' },
+            ].map((m) => (
+              <div key={m.label} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">{m.label}</p>
+                <p className="font-[family-name:var(--font-display)] text-2xl font-bold text-white mt-1">{m.value}</p>
+                <p className="text-[11px] text-[#4ade80]">{m.delta}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 h-44 w-full">
+            <svg viewBox="0 0 400 140" className="h-full w-full">
+              <defs>
+                <linearGradient id="glowGold2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffc107" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#ffc107" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="glowPortal2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#cdbdff" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#cdbdff" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d="M0,110 C40,95 70,80 110,72 C150,64 180,60 220,48 C260,36 290,40 330,24 C360,14 380,20 400,16 L400,140 L0,140 Z" fill="url(#glowGold2)" />
+              <path d="M0,120 C40,110 80,100 120,96 C160,92 200,80 240,76 C280,72 320,68 360,58 C380,54 390,52 400,50 L400,140 L0,140 Z" fill="url(#glowPortal2)" />
+              <polyline points="0,110 40,95 70,80 110,72 150,64 180,60 220,48 260,36 290,40 330,24 360,14 380,20 400,16" fill="none" stroke="#ffc107" strokeWidth="2.5" />
+              <polyline points="0,120 40,110 80,100 120,96 160,92 200,80 240,76 280,72 320,68 360,58 380,54 390,52 400,50" fill="none" stroke="#cdbdff" strokeWidth="2.5" />
+            </svg>
+          </div>
         </div>
 
         <div className="flex items-start justify-between mb-2">

@@ -1,23 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Cookie, X } from 'lucide-react';
 
-const COOKIE_KEY = 'cookies_accepted';
+const COOKIE_KEY = 'cookie_consent';
 
 export default function CookieConsent() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [accepted, setAccepted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(COOKIE_KEY);
       if (stored !== 'true') {
-        const timer = setTimeout(() => setIsOpen(true), 1200);
+        const timer = setTimeout(() => setIsVisible(true), 1200);
         return () => clearTimeout(timer);
-      } else {
-        setAccepted(true);
       }
     } catch {
-      /* storage indisponível — não exibe banner */
+      /* storage indisponível */
     }
   }, []);
 
@@ -27,19 +24,14 @@ export default function CookieConsent() {
     } catch {
       /* ignore */
     }
-    setAccepted(true);
-    setIsOpen(false);
-  };
-
-  const close = () => {
-    setIsOpen(false);
+    setIsVisible(false);
   };
 
   return (
-    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-[9998] w-[calc(100%-2rem)] max-w-2xl ${!isOpen || accepted ? 'pointer-events-none' : ''}`}>
-      {isOpen && !accepted ? (
+    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl ${!isVisible ? 'pointer-events-none' : ''}`}>
+      {isVisible ? (
         <div
-          className="glassmorphism rounded-2xl px-5 py-4 flex items-center gap-4 pointer-events-auto"
+          className="glassmorphism rounded-2xl p-4 flex items-center gap-4 border border-outline-variant/40 pointer-events-auto"
           role="dialog"
           aria-label="Aviso de cookies"
         >
@@ -59,7 +51,7 @@ export default function CookieConsent() {
             Aceitar e Continuar
           </button>
           <button
-            onClick={close}
+            onClick={accept}
             aria-label="Fechar aviso de cookies"
             className="text-[#d4c5ab]/60 hover:text-[#e3e2e2] transition-colors cursor-pointer shrink-0"
           >

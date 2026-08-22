@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
@@ -6,7 +6,7 @@ import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
 import {
-  Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, ChevronsDown, Search, MapPin, Globe, MessageSquare, Send, Shield
+  Upload, BarChart3, TrendingUp, Database, ArrowRight, Sparkles, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, ChevronsDown, Search, MapPin, Globe, MessageSquare, Send, Shield, X
 } from 'lucide-react'
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string
@@ -25,8 +25,6 @@ const PIPELINE_STAGES = [
   { name: 'Fechado', color: '#34d399' },
 ]
 
-const ANALYTICS_IMAGE = '/dashboard-analytics.png'
-
 export default function Home() {
   const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
@@ -34,6 +32,8 @@ export default function Home() {
   useEffect(() => {
     document.title = 'Foco em Dados | Agente Luciano, BI, Prospecção e CRM — Inteligência para Empresas'
   }, [])
+
+  const [openChat, setOpenChat] = useState(false)
 
   const openProspectionCheckout = async () => {
     if (!user) {
@@ -69,8 +69,29 @@ export default function Home() {
     }
   }
 
-  const openChat = () => {
-    document.getElementById('site-chat-open-btn')?.click()
+  const [prospectForm, setProspectForm] = useState({ city: '', niche: '' })
+  const [prospectLoading, setProspectLoading] = useState(false)
+  const [prospectResult, setProspectResult] = useState<string | null>(null)
+
+  const handleProspect = async () => {
+    setProspectResult(null)
+    setProspectLoading(true)
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prospectForm),
+      })
+      const data = await safeJson(res)
+      if (!res.ok) {
+        throw new Error(data?.error || 'Erro ao prospectar.')
+      }
+      setProspectResult(JSON.stringify(data))
+    } catch (err: any) {
+      setProspectResult(err?.message || 'Erro inesperado.')
+    } finally {
+      setProspectLoading(false)
+    }
   }
 
   return (
@@ -83,7 +104,7 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-[#5203d5] flex items-center justify-center shadow-[0_0_12px_rgba(255,193,7,0.3)]">
               <Database className="w-4 h-4 text-white" />
             </div>
-            <span className="font-[family-name:var(--font-display)] font-bold text-2xl tracking-tighter text-[#ffe4af]">Foco Completo</span>
+            <span className="font-[family-name:var(--font-display)] font-bold text-2xl tracking-tighter text-[#ffe4af]">Foco em Dados</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
             <a href="#prospeccao" className="hover:text-[#ffe4af] transition-colors border-b-2 border-transparent hover:border-[#ffc107] pb-0.5">Prospecção</a>
@@ -124,11 +145,6 @@ export default function Home() {
       <main>
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden portal-bg">
-          <img
-            src={ANALYTICS_IMAGE}
-            alt="Foco em Dados — análise de dados"
-            className="absolute inset-0 w-full h-full object-cover opacity-35"
-          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-[#121414]"></div>
           <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
             <div className="w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-to-tr from-[#5203d5]/30 via-[#ffc107]/20 to-transparent blur-[100px] animate-portal"></div>
@@ -139,7 +155,7 @@ export default function Home() {
             <div className="space-y-4 animate-float">
               <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold text-glow tracking-tight text-center">
                 Painel Central{' '}
-                <span className="text-[#ffe4af]">Foco Completo</span>
+                <span className="text-[#ffe4af]">Foco em Dados</span>
               </h1>
               <p className="text-xl md:text-2xl text-slate-300/80 max-w-2xl mx-auto font-light leading-relaxed">
                 Prospecção, CRM e atendimento inteligente em uma plataforma só.
@@ -178,16 +194,29 @@ export default function Home() {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <input placeholder="Cidade ou região" className="input-mystic h-10 px-3 text-sm" />
-                <input placeholder="Nicho ou CNAE" className="input-mystic h-10 px-3 text-sm" />
+                <input
+                  placeholder="Cidade ou região"
+                  className="input-mystic h-10 px-3 text-sm"
+                  value={prospectForm.city}
+                  onChange={(e) => setProspectForm((f) => ({ ...f, city: e.target.value }))}
+                />
+                <input
+                  placeholder="Nicho ou CNAE"
+                  className="input-mystic h-10 px-3 text-sm"
+                  value={prospectForm.niche}
+                  onChange={(e) => setProspectForm((f) => ({ ...f, niche: e.target.value }))}
+                />
               </div>
               <button
-                onClick={openProspectionCheckout}
-                className="mt-4 w-full h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                onClick={handleProspect}
+                className="mt-4 w-full h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer pointer-events-auto"
               >
-                Prospectar
+                {prospectLoading ? 'Prospectando...' : 'Prospectar'}
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
+              {prospectResult && (
+                <p className="mt-3 text-[11px] font-mono text-[#d4c5ab] whitespace-pre-wrap">{prospectResult}</p>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -228,11 +257,40 @@ export default function Home() {
             </div>
 
             <div className="order-1 md:order-2">
-              <img
-                src={ANALYTICS_IMAGE}
-                alt="Análise de IA em tempo real"
-                className="w-full h-auto object-cover rounded-3xl border border-outline-variant/30"
-              />
+              <div className="glass-card p-5 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: 'Leads', value: '12,845', delta: '+14.2%' },
+                    { label: 'MRR', value: 'R$ 256k', delta: '+12%' },
+                    { label: 'Propostas', value: '342', delta: '+5' },
+                  ].map((m) => (
+                    <div key={m.label} className="rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">{m.label}</p>
+                      <p className="font-[family-name:var(--font-display)] text-xl font-bold text-white mt-1">{m.value}</p>
+                      <p className="text-[11px] text-[#4ade80]">{m.delta}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 h-44 w-full">
+                  <svg viewBox="0 0 400 140" className="h-full w-full">
+                    <defs>
+                      <linearGradient id="glowGold" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ffc107" stopOpacity="0.45" />
+                        <stop offset="100%" stopColor="#ffc107" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="glowPortal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#cdbdff" stopOpacity="0.35" />
+                        <stop offset="100%" stopColor="#cdbdff" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,110 C40,95 70,80 110,72 C150,64 180,60 220,48 C260,36 290,40 330,24 C360,14 380,20 400,16 L400,140 L0,140 Z" fill="url(#glowGold)" />
+                    <path d="M0,120 C40,110 80,100 120,96 C160,92 200,80 240,76 C280,72 320,68 360,58 C380,54 390,52 400,50 L400,140 L0,140 Z" fill="url(#glowPortal)" />
+                    <polyline points="0,110 40,95 70,80 110,72 150,64 180,60 220,48 260,36 290,40 330,24 360,14 380,20 400,16" fill="none" stroke="#ffc107" strokeWidth="2.5" />
+                    <polyline points="0,120 40,110 80,100 120,96 160,92 200,80 240,76 280,72 320,68 360,58 380,54 390,52 400,50" fill="none" stroke="#cdbdff" strokeWidth="2.5" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -283,8 +341,8 @@ export default function Home() {
               <p className="text-sm text-slate-300 mb-4">Atendimento automático integrado ao Telegram via n8n.</p>
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <button
-                  onClick={openChat}
-                  className="h-10 rounded-lg bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  onClick={() => setOpenChat(true)}
+                  className="h-10 rounded-lg bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer pointer-events-auto"
                 >
                   Abrir Chat do Agente
                 </button>
@@ -521,6 +579,18 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {openChat && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="glassmorphism p-6 w-full max-w-md rounded-2xl relative">
+            <button onClick={() => setOpenChat(false)} className="absolute top-4 right-4 text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+            <p className="font-bold mb-2">Chat do Agente</p>
+            <p className="text-xs text-[#d4c5ab]">Use o botão flutuante do SiteChat para enviar mensagens.</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
