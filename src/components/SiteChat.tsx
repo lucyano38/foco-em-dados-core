@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 
-const N8N_WEBHOOK_URL = 'https://focoemdados2.app.n8n.cloud/webhook/site-chat';
-
 interface Message {
   sender: 'user' | 'bot';
   text: string;
@@ -43,41 +41,28 @@ export default function SiteChat() {
   }, []);
 
   const postToBackend = useCallback(async (payload: Record<string, unknown>) => {
-    const withTimeout = (input: RequestInfo, init?: RequestInit) => {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), 9000);
-      return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(id));
-    };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
 
-    const direct = withTimeout(N8N_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
 
-    const proxy = withTimeout('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+      clearTimeout(timeout);
 
-    const results = await Promise.allSettled([direct, proxy]);
-    const ok = results.find(
-      (r) => r.status === 'fulfilled' && (r.value as Response).ok
-    );
-
-    if (ok) {
-      const data = await (ok as PromiseFulfilledResult<Response>).value.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
       return data;
+    } catch (err) {
+      clearTimeout(timeout);
+      throw err;
     }
-
-    const first = results[0];
-    if (first.status === 'fulfilled') {
-      const data = await (first as PromiseFulfilledResult<Response>).value.json().catch(() => ({}));
-      return data;
-    }
-
-    throw new Error('n8n indisponível');
   }, []);
 
   const handleSend = async () => {
@@ -95,17 +80,20 @@ export default function SiteChat() {
         source: 'Site',
       };
       const data = await postToBackend(payload);
-      const reply = typeof data === 'string' ? data : data?.reply;
+
+      const reply =
+        typeof data === 'string' ? data : data?.reply || data?.answer || data?.text;
+
       if (reply && typeof reply === 'string') {
         appendBot(reply);
       } else if (reply && typeof reply === 'object') {
-        appendBot(String(reply));
+        appendBot(JSON.stringify(reply));
       } else {
         appendBot('Desculpe, não consegui processar a resposta.');
       }
     } catch (err) {
       console.error('Erro no SiteChat:', err);
-      appendBot('Ops, falha na conexão. Tente novamente ou nos chame no Telegram.');
+      appendBot('Ops, falha na conexão. Tente novamente ou nos chame no WhatsApp/Telegram.');
     } finally {
       setLoading(false);
       try { inputRef.current?.focus(); } catch {}
@@ -117,14 +105,14 @@ export default function SiteChat() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[9999] font-sans pointer-events-auto">
+    <div className="fixed bottom-5 right-5 z-[9999] font-sans">
       {isOpen ? (
-        <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4 pointer-events-auto">
+        <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
           <div className="bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] p-4 font-bold flex justify-between items-center">
             <span className="flex items-center gap-2">💬 Luciano · Foco em Dados</span>
             <button
               onClick={() => setIsOpen(false)}
-              className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center cursor-pointer transition-colors"
+              className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
               aria-label="Fechar chat"
             >
               <X className="w-4 h-4" />
@@ -173,7 +161,7 @@ export default function SiteChat() {
             <button
               onClick={handleSend}
               disabled={loading}
-              className="btn-glow w-10 h-10 rounded-lg flex items-center justify-center disabled:opacity-50 cursor-pointer"
+              className="btn-glow w-10 h-10 rounded-lg flex items-center justify-center disabled:opacity-50"
               aria-label="Enviar mensagem"
             >
               <Send className="w-4 h-4" />
@@ -184,7 +172,7 @@ export default function SiteChat() {
         <button
           id="site-chat-open-btn"
           onClick={toggleChat}
-          className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center cursor-pointer"
+          className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center"
           aria-label="Abrir chat"
         >
           <MessageCircle className="w-6 h-6" />
