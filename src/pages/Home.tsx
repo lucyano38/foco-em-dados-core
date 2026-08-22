@@ -59,7 +59,7 @@ const SOLUTIONS = [
     icon: Target,
     tag: 'CAPTAÇÃO DE CLIENTES',
     name: 'Prospecção Inteligente',
-    subtitle: 'Captação ativa de clientes com abordagens personalizadas por IA e pontuação de oportunidade.',
+    subtitle: 'Ferramenta de captação externa: busca empresas em Google Maps, redes e CNAE, gera leads qualificados e envia para o CRM.',
     gradient: 'from-amber-400 to-purple-500',
     glow: 'shadow-purple-500/20',
     cta: 'Prospectar R$ 39,90',
@@ -77,7 +77,7 @@ const SOLUTIONS = [
     icon: Kanban,
     tag: 'GESTÃO DE VENDAS',
     name: 'CRM Comercial',
-    subtitle: 'Pipeline de vendas organizado em 5 etapas com histórico unificado de conversas.',
+    subtitle: 'Painel de acompanhamento do pipeline: propostas, follow-ups, negociação e fechamento com histórico unificado.',
     gradient: 'from-fuchsia-500 to-amber-400',
     glow: 'shadow-amber-500/20',
     cta: 'Abrir Pipeline',
@@ -247,6 +247,12 @@ export default function Home() {
         <section
           className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden portal-bg"
         >
+          <img
+            src="/dashboard-analytics.png"
+            alt="Foco em Dados — análise de dados"
+            className="absolute inset-0 w-full h-full object-cover opacity-35"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-[#121414]"></div>
           <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
             <div className="w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-to-tr from-[#5203d5]/30 via-[#ffc107]/20 to-transparent blur-[100px] animate-portal"></div>
             <div className="absolute w-[300px] h-[300px] rounded-full border border-[#ffc107]/20 animate-ping opacity-20"></div>
@@ -380,6 +386,12 @@ export default function Home() {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="md:col-span-2 lg:col-span-5 glass-card p-5 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]">
+                <p className="text-xs font-bold text-[#ffe4af] uppercase tracking-wider mb-2">Prospecção Inteligente</p>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Ferramenta de captação externa: busca empresas em Google Maps, redes e CNAE, gera leads qualificados e envia para o CRM.
+                </p>
+              </div>
               {FUNNEL_STAGES.map((s, i) => (
                 <div key={s.name} className="glass-card p-5 rounded-2xl card-hover border border-white/10 bg-white/[0.03] backdrop-blur-xl relative">
                   <div className="flex items-center justify-between mb-3">
@@ -400,37 +412,23 @@ export default function Home() {
 
             <div className="mt-10 glass-card rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl overflow-hidden">
               <div className="flex items-center gap-2 px-6 py-4 border-b border-white/10 bg-white/[0.02]">
-                <Database className="w-4 h-4 text-[#ffc107]" />
-                <h3 className="font-[family-name:var(--font-display)] font-bold text-white">Tabela de Leads Prospectados</h3>
-                <span className="ml-auto text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">atualização automática</span>
+                <Kanban className="w-4 h-4 text-[#ffc107]" />
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-white">CRM Comercial — Acompanhamento</h3>
+                <span className="ml-auto text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">propostas, follow-ups e fechamento</span>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab] border-b border-white/10">
-                      <th className="px-6 py-3 font-medium">Empresa</th>
-                      <th className="px-6 py-3 font-medium">Segmento</th>
-                      <th className="px-6 py-3 font-medium">Cidade</th>
-                      <th className="px-6 py-3 font-medium">Valor</th>
-                      <th className="px-6 py-3 font-medium">Etapa</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {LEADS_TABLE.map((l) => (
-                      <tr key={l.name} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                        <td className="px-6 py-3.5 font-semibold text-white">{l.name}</td>
-                        <td className="px-6 py-3.5 text-[#d4c5ab]">{l.segment}</td>
-                        <td className="px-6 py-3.5 text-[#d4c5ab]">{l.city}</td>
-                        <td className="px-6 py-3.5 font-mono text-amber-300">{l.value}</td>
-                        <td className="px-6 py-3.5">
-                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border" style={{ color: l.badgeColor, borderColor: `${l.badgeColor}40`, background: `${l.badgeColor}10` }}>
-                            {l.stage}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-300">
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs font-bold text-[#ffe4af] uppercase tracking-wider mb-2">Propostas</p>
+                  <p>Envie valores de setup e mensalidades com histórico claro.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs font-bold text-[#ffe4af] uppercase tracking-wider mb-2">Follow-ups</p>
+                  <p>Controle retornos e propostas estagnadas para não perder vendas.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs font-bold text-[#ffe4af] uppercase tracking-wider mb-2">Fechamento</p>
+                  <p>Gere minuta A4 e documento protegido para o cliente final.</p>
+                </div>
               </div>
             </div>
           </div>
