@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 
 const N8N_WEBHOOK_URL = 'https://focoemdados2.app.n8n.cloud/webhook/site-chat';
@@ -17,6 +17,7 @@ export default function SiteChat() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [sessionId, setSessionId] = useState('');
 
   useEffect(() => {
@@ -32,41 +33,53 @@ export default function SiteChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const postToN8n = async (payload: Record<string, unknown>) => {
-    const direct = fetch(N8N_WEBHOOK_URL, {
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [isOpen]);
+
+  const appendBot = useCallback((text: string) => {
+    setMessages(prev => [...prev, { sender: 'bot', text }]);
+  }, []);
+
+  const postToBackend = useCallback(async (payload: Record<string, unknown>) => {
+    const withTimeout = (input: RequestInfo, init?: RequestInit) => {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 9000);
+      return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(id));
+    };
+
+    const direct = withTimeout(N8N_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(9000),
     });
-    const proxy = fetch('/api/chat', {
+
+    const proxy = withTimeout('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(9000),
     });
 
     const results = await Promise.allSettled([direct, proxy]);
     const ok = results.find(
       (r) => r.status === 'fulfilled' && (r.value as Response).ok
-    ) as PromiseFulfilledResult<Response> | undefined;
+    );
 
     if (ok) {
-      const data = await ok.value.json().catch(() => ({}));
+      const data = await (ok as PromiseFulfilledResult<Response>).value.json().catch(() => ({}));
       return data;
     }
 
     const first = results[0];
     if (first.status === 'fulfilled') {
-      const data = await first.value.json().catch(() => ({}));
+      const data = await (first as PromiseFulfilledResult<Response>).value.json().catch(() => ({}));
       return data;
     }
-    throw new Error('n8n indisponível');
-  };
 
-  const appendBot = (text: string) => {
-    setMessages(prev => [...prev, { sender: 'bot', text }]);
-  };
+    throw new Error('n8n indisponível');
+  }, []);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -82,7 +95,7 @@ export default function SiteChat() {
         phone: sessionId || 'Visitante_Site',
         source: 'Site',
       };
-      const data = await postToN8n(payload);
+      const data = await postToBackend(payload);
       const reply = typeof data === 'string' ? data : data?.reply;
       if (reply && typeof reply === 'string') {
         appendBot(reply);
@@ -101,12 +114,7 @@ export default function SiteChat() {
   };
 
   const toggleChat = () => {
-    setIsOpen(prev => {
-      if (!prev) {
-        setTimeout(() => inputRef.current?.focus(), 0);
-      }
-      return !prev;
-    });
+    setIsOpen(prev => !prev);
   };
 
   return (

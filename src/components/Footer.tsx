@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Database, MessageCircle, Mail, Phone, Shield, Globe, MapPin, FileText, Send } from 'lucide-react'
 
-import { CONTACT_EMAIL, WHATSAPP_URL } from '../lib/contact'
+import { CONTACT_EMAIL, WHATSAPP_URL, TELEGRAM_URL } from '../lib/contact'
 
 export default function Footer() {
   return (
@@ -35,7 +35,7 @@ export default function Footer() {
 
           <div className="space-y-4">
             <p className="text-[10px] font-mono uppercase tracking-widest text-[#fabd00]/70">
-              Atendimento
+              Atendimento & Automação
             </p>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -58,12 +58,12 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://t.me/focoemdados"
+                  href={TELEGRAM_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[#d4c5ab] hover:text-[#60a5fa] transition-colors inline-flex items-center gap-2"
                 >
-                  <Send className="w-3.5 h-3.5" /> Telegram
+                  <Send className="w-3.5 h-3.5" /> Telegram n8n
                 </a>
               </li>
             </ul>
