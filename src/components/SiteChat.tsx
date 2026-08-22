@@ -118,9 +118,9 @@ export default function SiteChat() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[9999] font-sans">
+    <div className="fixed bottom-5 right-5 z-[9999] font-sans pointer-events-auto">
       {isOpen ? (
-        <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
+        <div className="glassmorphism w-[340px] h-[460px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4 pointer-events-auto">
           <div className="bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] p-4 font-bold flex justify-between items-center">
             <span className="flex items-center gap-2">💬 Luciano · Foco em Dados</span>
             <button
