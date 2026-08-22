@@ -1595,6 +1595,39 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
     }
   });
 
+  app.post("/api/prospection/auto", async (req, res) => {
+    try {
+      const lead = req.body?.lead || null;
+      if (!lead || !lead.name) {
+        return res.status(400).json({ error: "Envie o lead para prospecção automática." });
+      }
+
+      const request = {
+        companyName: String(lead.name),
+        segment: String((lead as any).segment || lead.notes?.split('·')[0]?.trim() || 'comércio local'),
+        city: String((lead as any).city || ''),
+        uf: String((lead as any).uf || ''),
+        whatsapp: String(lead.phone || lead.email || ''),
+        hasWebsite: Boolean(lead.hasWebsite),
+        redesignGoal: 'modernizar presença digital e converter via WhatsApp',
+      };
+
+      const design = await generateRedesignPage(request);
+      designStore.set(design.designId, { request, html: design.html, createdAt: Date.now() });
+
+      let publicUrl: string | null = null;
+      try {
+        const funnel = await publishTailscaleFunnel(design.html);
+        publicUrl = funnel.publicUrl;
+      } catch {}
+
+      res.json({ success: true, designId: design.designId, publicUrl, generatedAt: design.generatedAt });
+    } catch (err: any) {
+      console.error("[prospection/auto] Erro:", err);
+      res.status(500).json({ error: err.message || "Erro na prospecção automática." });
+    }
+  });
+
   // ----- INTEGRAÇÃO WAHA PLUS (webhooks do WhatsApp) -----
   app.get("/api/waha/status", (req, res) => {
     const status = getWahaStatus();

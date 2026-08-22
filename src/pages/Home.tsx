@@ -78,16 +78,23 @@ export default function Home() {
     setProspectResult(null)
     setProspectLoading(true)
     try {
-      const res = await fetch('/api/leads', {
+      const payload = {
+        city: prospectForm.city,
+        niche: prospectForm.niche,
+        geo: true,
+        limit: 6,
+      }
+      const res = await fetch('/api/prospection/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prospectForm),
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000),
       })
       const data = await safeJson(res)
       if (!res.ok) {
         throw new Error(data?.error || 'Erro ao prospectar.')
       }
-      setProspectResult(JSON.stringify(data))
+      setProspectResult(`Prospecção concluída: ${data.total || 0} leads encontrados em "${prospectForm.city || 'sua região'}".`)
     } catch (err: any) {
       setProspectResult(err?.message || 'Erro inesperado.')
     } finally {

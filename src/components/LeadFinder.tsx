@@ -18,7 +18,7 @@ export interface LeadForPipeline {
   created_at: string
 }
 
-const CITY_SUGGESTIONS = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Curitiba', 'Florianópolis', 'Salvador', 'Recife', 'Goiânia']
+const CITY_SUGGESTIONS = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Curitiba', 'Florianópolis', 'Salvador', 'Recife', 'Goiânia', 'São Luís', 'Caxias do Sul', 'Brasília']
 
 interface LeadFinderProps {
   onAddToPipeline?: (lead: LeadForPipeline) => void
@@ -100,11 +100,11 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault()
     const cityText = city.trim()
-    if (!cityText) {
+    if (!cityText && !geo) {
       setError('Digite uma cidade ou ative o GPS para buscar leads.')
       return
     }
-    runSearch({ city: cityText, segment: segment === 'todos' ? undefined : segment, geo, limit: 10, query: cityText })
+    runSearch({ city: cityText || 'Sua Cidade', segment: segment === 'todos' ? undefined : segment, geo, limit: 10, query: cityText })
   }
 
   const addLead = (lead: MockLead) => {
@@ -251,7 +251,7 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
             )}
             <span className="ml-auto text-xs text-[#d4c5ab]">
               <strong className="text-[#ffe4af]">{leads.length}</strong> empresas em{' '}
-              <strong className="text-[#60a5fa]">{city.trim()}</strong>
+              <strong className="text-[#60a5fa]">{city.trim() || 'sua região'}</strong>
             </span>
           </div>
 
@@ -328,7 +328,7 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
       {!ready && !searching && (
         <div className="mt-5 rounded-xl border border-dashed border-[#4f4632]/40 p-6 text-center text-xs text-[#d4c5ab]/50">
           <Search className="w-5 h-5 mx-auto mb-2 text-[#d4c5ab]/40" />
-          Informe a cidade desejada (ou ative o GPS) e selecione o segmento para encontrar empresas qualificadas.
+          Informe a cidade desejada, selecione o nicho ou ative o GPS para encontrar empresas qualificadas.
         </div>
       )}
     </div>

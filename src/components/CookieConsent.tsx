@@ -25,6 +25,9 @@ export default function CookieConsent() {
       /* ignore */
     }
     setIsVisible(false);
+    setTimeout(() => {
+      try { localStorage.removeItem(COOKIE_KEY); } catch {}
+    }, 0);
   };
 
   if (!isVisible) {

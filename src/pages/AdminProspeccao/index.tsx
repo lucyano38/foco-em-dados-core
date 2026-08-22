@@ -3,6 +3,7 @@ import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import RedesignComparator from '../../components/RedesignComparator';
+import RedesignContractPanel from '../../components/RedesignContractPanel';
 import {
   Database, ShieldCheck, ArrowLeft, LayoutDashboard, Kanban, GitCompareArrows,
   FileText, Users, Target, TrendingUp, Loader2, CheckCircle2, AlertTriangle, MoveRight, Eye, MessageCircle, Download,
@@ -318,7 +319,7 @@ export default function AdminProspeccao() {
 
         {tab === 'comparator' && <RedesignComparator />}
 
-        {tab === 'contracts' && <ContractsPanel leads={leads} />}
+        {tab === 'contracts' && <RedesignContractPanel leads={leads} />}
       </main>
     </div>
   );
