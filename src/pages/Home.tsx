@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
+import ChatDemoModal from '../components/ChatDemoModal'
 import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
 import {
@@ -334,8 +335,17 @@ export default function Home() {
         <section id="agente" className="py-20 px-4">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="glass-card p-6 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center mb-4">
-                <MessageSquare className="w-7 h-7 text-white" />
+              <div className="w-full max-w-[260px] rounded-2xl border border-white/10 bg-[#121414] p-3 mb-4 text-left">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-[#4ade80]" />
+                  <div className="h-2 w-24 rounded bg-white/10" />
+                  <div className="ml-auto h-2 w-10 rounded bg-[#ffc107]/20" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-2 w-40 rounded bg-white/10" />
+                  <div className="h-2 w-32 rounded bg-white/5" />
+                  <div className="h-2 w-28 rounded bg-[#ffc107]/10" />
+                </div>
               </div>
               <p className="text-sm text-slate-300 mb-4">Atendimento automático integrado ao Telegram via n8n.</p>
               <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -579,17 +589,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {openChat && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glassmorphism p-6 w-full max-w-md rounded-2xl relative">
-            <button onClick={() => setOpenChat(false)} className="absolute top-4 right-4 text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">
-              <X className="w-5 h-5" />
-            </button>
-            <p className="font-bold mb-2">Chat do Agente</p>
-            <p className="text-xs text-[#d4c5ab]">Use o botão flutuante do SiteChat para enviar mensagens.</p>
-          </div>
-        </div>
-      )}
+      {openChat && <ChatDemoModal open={openChat} onClose={() => setOpenChat(false)} />}
     </div>
   )
 }
