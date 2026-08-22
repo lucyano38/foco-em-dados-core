@@ -57,6 +57,7 @@ function tryParseNumber(val: any): number | null {
 async function startServer() {
   const app = express();
   app.use(cors());
+  app.use(express.json({ limit: '1mb' }));
   const PORT = process.env.PORT || 8080;
 
   // Lazy init Gemini
