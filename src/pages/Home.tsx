@@ -154,8 +154,7 @@ export default function Home() {
           <div className="relative z-20 px-6 md:px-16 text-center max-w-4xl mx-auto space-y-8">
             <div className="space-y-4 animate-float">
               <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold text-glow tracking-tight text-center">
-                Painel Central{' '}
-                <span className="text-[#ffe4af]">Foco em Dados</span>
+                Foco em Dados — Prospecção Inteligente, Automação e CRM Comercial
               </h1>
               <p className="text-xl md:text-2xl text-slate-300/80 max-w-2xl mx-auto font-light leading-relaxed">
                 Prospecção, CRM e atendimento inteligente em uma plataforma só.
