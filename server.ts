@@ -1392,8 +1392,20 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
       } catch {}
 
       if (!replyText) {
-        replyText =
-          "Recebi sua mensagem! Estou processando seu atendimento. Pode me chamar no Telegram se preferir.";
+        try {
+          const { chatHermes, DEFAULT_MODEL } = await import("./src/lib/hermes");
+          const aiResult = await chatHermes({
+            messages: [
+              { role: "system", content: "Você é o atendimento da Foco em Dados." },
+              { role: "user", content: message },
+            ],
+            model: DEFAULT_MODEL,
+          });
+          replyText = aiResult.reply;
+        } catch (err: any) {
+          console.error("OpenRouter chat fallback error:", err?.message || err);
+          replyText = "Recebi sua mensagem! Estou processando seu atendimento. Pode me chamar no Telegram se preferir.";
+        }
       }
 
       res.json({ reply: replyText });
