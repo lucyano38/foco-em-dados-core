@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Módulo Integrado de Prospecção Externa — Foco Completo
+Módulo Integrado de Prospecção Externa — Foco em dados 
 Busca empresas no Google Maps, Redes Sociais (Instagram/Facebook) e por CNAE,
 e insere automaticamente no CRM local (prospector.db) no status 'novo'.
 """
