@@ -1,0 +1,9 @@
+{
+  "contratante": {
+    "nome": "{{NOME_PRESTADOR}}",
+    "cpfCnpj": "{{CPF_CNPJ_PRESTADOR}}",
+    "cpfCnpjLabel": "{{CPF_CNPJ_PRESTADOR_LABEL}}",
+    "endereco": "{{ENDERECO_PRESTADOR}}",
+    "cidadeUf": "{{CIDADE_UF_PRESTADOR}}"
+  }
+}
