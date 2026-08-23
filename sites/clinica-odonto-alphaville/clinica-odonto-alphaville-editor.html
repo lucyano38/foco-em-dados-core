@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clínica Odonto Prime Alphaville — Odontologia & Estética</title>
+<meta name="description" content="Clínica Odonto Prime Alphaville: odontologia e estética em Barueri/SP com nota 4.9/5. Agende pelo WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;color:#1f2937;background:#fff;line-height:1.6;font-size:16px;overflow-x:hidden}
+  img{max-width:100%;height:auto;display:block}
+  a{color:inherit;text-decoration:none}
+  .container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  .site-header{position:sticky;top:0;z-index:50;background:#0b1220;border-bottom:1px solid #e5e7eb33}
+  .site-header .container{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#fff;letter-spacing:.2px}
+  .logo span{color:#facc15}
+  .nav{display:none;gap:22px}
+  .nav a{color:#e5e7eb;font-size:13px;font-weight:500;opacity:.9}
+  .nav a:hover{opacity:1;color:#fff}
+  .header-cta{display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:0 10px 20px #16a34a33}
+  .header-cta:hover{background:#15803d}
+
+  /* Hero */
+  .hero{position:relative;padding:80px 0 70px;background:linear-gradient(180deg,#0b1220 0%,#0f1a2a 100%);color:#fff;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,#facc1533,transparent 40%),radial-gradient(circle at 80% 100%,#3b82f622,transparent 45%);pointer-events:none}
+  .hero .container{position:relative;display:grid;grid-template-columns:1fr;gap:32px;align-items:center}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5.5vw,52px);line-height:1.1;font-weight:700;max-width:720px}
+  .hero h1 em{font-style:normal;color:#facc15}
+  .hero p{color:#cbd5e1;max-width:560px;font-size:15px;margin-top:16px}
+  .hero-cta{display:inline-flex;align-items:center;gap:8px;background:#facc15;color:#0b1220;padding:14px 20px;border-radius:999px;font-weight:700;margin-top:22px;box-shadow:0 12px 30px #0003}
+  .hero-cta:hover{background:#fbbf24}
+  .hero-proof{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;color:#e5e7eb;font-size:13px}
+  .hero-proof strong{color:#facc15}
+
+  /* Sections */
+  .section{padding:70px 0}
+  .section + .section{border-top:1px solid #f3f4f6}
+  .section h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3.6vw,32px);color:#0b1220;margin-bottom:10px}
+  .section p.lead{color:#6b7280;max-width:680px;font-size:15px}
+  .section.alt{background:#fafafa}
+
+  /* Services */
+  .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:28px}
+  .service{background:#fff;border:1px solid #f3f4f6;border-radius:18px;padding:22px;box-shadow:0 8px 24px #0b12200d}
+  .service h3{font-size:15px;font-weight:700;color:#0b1220;margin-bottom:6px}
+  .service p{color:#6b7280;font-size:13.5px}
+
+  /* About */
+  .about-grid{display:grid;grid-template-columns:1fr;gap:24px;margin-top:28px;align-items:center}
+  .about-card{background:#0b1220;color:#fff;border-radius:18px;padding:22px;border:1px solid #e5e7eb22}
+  .about-card h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:8px}
+  .about-card p{color:#cbd5e1;font-size:14px}
+  .about-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:16px}
+  .about-meta div{background:#ffffff0d;border:1px solid #e5e7eb1a;border-radius:14px;padding:14px;text-align:center}
+  .about-meta strong{display:block;color:#facc15;font-size:18px}
+  .about-meta span{color:#94a3b8;font-size:12px}
+
+  /* Testimonials */
+  .reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}
+  .review{background:#fff;border:1px solid #f3f4f6;border-radius:18px;padding:18px;box-shadow:0 8px 24px #0b12200d}
+  .review-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .review-header strong{color:#0b1220;font-size:14px}
+  .review-header span{color:#6b7280;font-size:12px}
+  .stars{color:#facc15;font-size:14px}
+  .review p{color:#374151;font-size:13.5px}
+
+  /* Contact */
+  .contact{background:#0b1220;color:#fff;padding:70px 0;margin-top:10px}
+  .contact h2{color:#fff;font-family:'Playfair Display',serif;font-size:clamp(24px,3.6vw,32px);margin-bottom:10px}
+  .contact p.lead{color:#cbd5e1;max-width:640px;font-size:15px}
+  .contact-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:28px}
+  .contact-card{background:#ffffff0d;border:1px solid #e5e7eb22;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:6px}
+  .contact-card a{color:#facc15;font-weight:600;font-size:14px}
+  .contact-card span{color:#cbd5e1;font-size:13px}
+
+  /* Footer */
+  .site-footer{border-top:1px solid #f3f4f6;padding:28px 0;color:#6b7280;font-size:12.5px}
+  .site-footer .container{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+
+  /* WA floating */
+  .wa-float{position:fixed;right:18px;bottom:18px;z-index:50;background:#16a34a;color:#fff;padding:12px 16px;border-radius:999px;font-weight:700;box-shadow:0 14px 28px #0003;display:inline-flex;align-items:center;gap:8px}
+
+  /* Responsive */
+  @media(min-width:768px){
+    .nav{display:flex}
+    .hero .container{grid-template-columns:1fr 1fr}
+    .about-grid{grid-template-columns:1fr 1fr}
+    .contact-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  }
+  @media(min-width:1024px){
+    .site-header .container{height:72px}
+    .logo{font-size:20px}
+    .hero{padding:100px 0 90px}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="logo">Odonto <span>Prime</span> Alphaville</div>
+    <nav class="nav" aria-label="Primária">
+      <a href="#servicos">Serviços</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#avaliacoes">Avaliações</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <a class="header-cta" href="https://wa.me/5511988776655?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20avalia%C3%A7%C3%A3o%20na%20Odonto%20Prime%20Alphaville." target="_blank" rel="noreferrer">Agendar no WhatsApp</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <h1>Odontologia e estética com <em>resultado previsível</em> para quem valoriza o sorriso.</h1>
+      <p>Atendimento humanizado, tecnologia e planejamento visual do sorriso em Barueri/SP — sem surpresas, sem pressa.</p>
+      <a class="hero-cta" href="https://wa.me/5511988776655?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20avalia%C3%A7%C3%A3o%20na%20Odonto%20Prime%20Alphaville." target="_blank" rel="noreferrer">Agendar avaliação pelo WhatsApp</a>
+      <div class="hero-proof" aria-label="Prova social">
+        <span class="stars">★ 4.9</span>
+        <span>·</span>
+        <span><strong>142</strong> avaliações</span>
+        <span>·</span>
+        <span><strong>Barueri / SP</strong></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="servicos" class="section">
+  <div class="container">
+    <h2>Serviços</h2>
+    <p class="lead">Tratamentos completos em odontologia estética e funcional, com foco em resultado, conforto e acompanhamento próximo.</p>
+    <div class="services">
+      <div class="service">
+        <h3>Estética dental</h3>
+        <p>Lentes de contato, facetas e clareamento com avaliação visual prévia e fidelidade ao formato do seu rosto.</p>
+      </div>
+      <div class="service">
+        <h3>Implantes e reabilitação</h3>
+        <p>Protocolo de implantes, coroas e reabilitações com planejamento digital e menor tempo de cicatrização.</p>
+      </div>
+      <div class="service">
+        <h3>Ortodontia</h3>
+        <p>Alinhadores ortodônticos e aparelhos fixos com controle de movimentação e monitoramento do resultado.</p>
+      </div>
+      <div class="service">
+        <h3>Clínica geral</h3>
+        <p>Prevenção, limpeza, restaurações e cuidados diários com acompanhamento contínuo da saúde bucal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sobre" class="section alt">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <h2>Sobre a clínica</h2>
+        <p class="lead">Referência em odontologia e estética em Barueri/SP, com atendimento próximo, equipe estável e gestão clínica baseada em dados e protocolos.</p>
+        <div class="about-meta">
+          <div><strong>4.9</strong><span>Nota média</span></div>
+          <div><strong>142</strong><span>Avaliações</span></div>
+          <div><strong>Barueri / SP</strong><span>Região de atendimento</span></div>
+          <div><strong>WhatsApp</strong><span>Resposta rápida</span></div>
+        </div>
+      </div>
+      <div class="about-card">
+        <h3>Por que a Odonto Prime Alphaville?</h3>
+        <p>Atendimento baseado em evidências, transparência no planejamento e foco em resultado estético funcional. Cada caso é apresentado com clareza antes do início.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="avaliacoes" class="section">
+  <div class="container">
+    <h2>Avaliações</h2>
+    <p class="lead">O que pacientes destacam sobre a experiência na clínica.</p>
+    <div class="reviews">
+      <div class="review">
+        <div class="review-header"><strong>Paciente</strong><span>★ 5</span></div>
+        <p>Atendimento muito humano e resultado excelente no sorriso.</p>
+      </div>
+      <div class="review">
+        <div class="review-header"><strong>Paciente</strong><span>★ 5</span></div>
+        <p>Clínica organizada, equipe pontual e acompanhamento próximo.</p>
+      </div>
+      <div class="review">
+        <div class="review-header"><strong>Paciente</strong><span>★ 4</span></div>
+        <p>Bom planejamento estético e explicação clara do tratamento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contato" class="contact">
+  <div class="container">
+    <h2>Agende sua avaliação</h2>
+    <p class="lead">Resposta rápida pelo WhatsApp, com pré-agendamento e orientação inicial sem custo.</p>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <span>WhatsApp</span>
+        <a href="https://wa.me/5511988776655?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20avalia%C3%A7%C3%A3o%20na%20Odonto%20Prime%20Alphaville." target="_blank" rel="noreferrer">(11) 98877-6655</a>
+      </div>
+      <div class="contact-card">
+        <span>E-mail</span>
+        <a href="mailto:contato@odontoprimealphaville.com.br">contato@odontoprimealphaville.com.br</a>
+      </div>
+      <div class="contact-card">
+        <span>Localização</span>
+        <span>Barueri / SP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <span>© Clínica Odonto Prime Alphaville — Odontologia & Estética</span>
+    <span>Redesign Foco em Dados</span>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/5511988776655?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20avalia%C3%A7%C3%A3o%20na%20Odonto%20Prime%20Alphaville." target="_blank" rel="noreferrer">Agendar no WhatsApp</a>
+
+<!-- PROSPECTOR-EDITOR-START -->
+<style id="pe-style">
+#pe-bar{position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;color:#fff;font:14px/1 -apple-system,Segoe UI,Roboto,sans-serif;display:flex;align-items:center;gap:16px;padding:10px 16px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#pe-bar button{background:#22c55e;color:#fff;border:0;border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer}
+#pe-bar button:hover{background:#16a34a}
+body{margin-top:44px !important}
+.pe-hover{outline:2px dashed #22c55e !important;outline-offset:2px;cursor:pointer}
+[contenteditable="true"]:focus{outline:2px solid #3b82f6 !important;outline-offset:2px}
+</style>
+<div id="pe-bar">
+  <strong>Modo edição</strong>
+  <span>Clique em textos para editar · clique em imagens para trocar</span>
+  <button id="pe-export" type="button">Exportar página</button>
+</div>
+<input type="file" id="pe-file" accept="image/*" style="display:none">
+<script id="pe-script">
+(function(){
+  var TEXT='h1,h2,h3,h4,h5,h6,p,li,a,span,button,td,th,figcaption,blockquote,strong,em';
+  document.querySelectorAll(TEXT).forEach(function(el){
+    if(el.closest('#pe-bar'))return;
+    if(el.children.length===0||el.childElementCount<=1){
+      el.addEventListener('click',function(e){
+        if(el.tagName==='A'||el.tagName==='BUTTON')e.preventDefault();
+        el.setAttribute('contenteditable','true');el.focus();
+      });
+      el.addEventListener('mouseenter',function(){el.classList.add('pe-hover')});
+      el.addEventListener('mouseleave',function(){el.classList.remove('pe-hover')});
+      el.addEventListener('blur',function(){el.removeAttribute('contenteditable')});
+    }
+  });
+  var fileInput=document.getElementById('pe-file'),currentImg=null;
+  document.querySelectorAll('img').forEach(function(img){
+    img.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();currentImg=img;fileInput.click()});
+    img.addEventListener('mouseenter',function(){img.classList.add('pe-hover')});
+    img.addEventListener('mouseleave',function(){img.classList.remove('pe-hover')});
+  });
+  fileInput.addEventListener('change',function(){
+    var f=fileInput.files[0];if(!f||!currentImg)return;
+    var r=new FileReader();
+    r.onload=function(){currentImg.src=r.result;if(currentImg.srcset)currentImg.removeAttribute('srcset')};
+    r.readAsDataURL(f);fileInput.value='';
+  });
+  document.getElementById('pe-export').addEventListener('click',function(){
+    var doc=document.documentElement.cloneNode(true);
+    ['#pe-bar','#pe-style','#pe-script','#pe-file'].forEach(function(s){var n=doc.querySelector(s);if(n)n.remove()});
+    doc.querySelectorAll('[contenteditable]').forEach(function(n){n.removeAttribute('contenteditable')});
+    doc.querySelectorAll('.pe-hover').forEach(function(n){n.classList.remove('pe-hover')});
+    var html='<!DOCTYPE html>\n'+doc.outerHTML;
+    var blob=new Blob([html],{type:'text/html'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='index.html';a.click();
+  });
+})();
+</script>
+<!-- PROSPECTOR-EDITOR-END -->
+
+</body>
+</html>

@@ -45,7 +45,14 @@
 </div>
 <p class="hint">Dica: para editar uma página, abra o arquivo <b>[cliente]-editor.html</b> na pasta sites/[cliente]/.</p>
 <script>
-var CLIENTES=__CLIENTES__;
+var CLIENTES=[
+  {"nome":"Clínica Odonto Prime Alphaville","slug":"clinica-odonto-alphaville","old":null,"motivo":"Site Flash desatualizado"},
+  {"nome":"Martins & Associados Advocacia","slug":"escritorio-advocacia-martins","old":null,"motivo":"Design dos anos 2010 e lentidão"},
+  {"nome":"Lúmina Arquitetura & Interiores","slug":"studio-arquitetura-lumina","old":null,"motivo":"Wix genérico com domínio gratuito"},
+  {"nome":"Vortex Centro Automotivo Premium","slug":"auto-mecanica-vortex","old":null,"motivo":"Sem site próprio, apenas Facebook"},
+  {"nome":"Bistrô Terroir & Vinhos","slug":"bistro-terroir-gastronomia","old":null,"motivo":"Cardápio em PDF e sem reservas online"},
+  {"nome":"Espaço Zen Pilates & Fisioterapia","slug":"espaco-zen-fisioterapia","old":null,"motivo":"Sem SSL, sem fotos reais e sem grade de horários"}
+];
 var tabs=document.getElementById('tabs');
 CLIENTES.forEach(function(c,i){
   var b=document.createElement('button');b.className='tab'+(i===0?' on':'');b.textContent=c.nome;
