@@ -1,46 +1,27 @@
 ---
-name: prospector-redesign
-description: Redesenha o site de um cliente prospectado — cria versão nova, premium e de alta conversão da página existente, mantendo conteúdo, fotos, logo e paleta REAIS do cliente. Use quando o usuário pedir "redesenhar site", "refazer o site do cliente", "melhorar a página" ou após uma prospecção. Gera página + editor visual + comparador antes/depois.
+name: prospector-contrato
+description: Gera o contrato de prestação de serviço quando um cliente fecha — minuta em folha A4 imprimível + versão Word (.docx) TRAVADA em que o cliente só preenche os campos liberados (CPF/CNPJ, data, assinatura) — e deixa o rascunho do e-mail pronto. Use quando o usuário disser "fechou", "gerar contrato", "formalizar", "enviar contrato".
 ---
 
-# Redesign premium (ChatGPT Work/Codex)
+# Contrato do cliente fechado
 
-Criar uma NOVA VERSÃO da página do cliente — não uma página nova. O cliente precisa se reconhecer, elevado ao padrão que o faturamento dele merece. Trabalhe em lote (5+ clientes de uma vez, os melhores do leads.md).
+Duas versões a partir de `references/contrato-template.html` e `references/gerar-docx.py`.
 
-## Regras invioláveis
+## Dados
 
-1. **Nenhum FATO inventado — mas o texto é REESCRITO com técnica.** Serviços, credenciais, endereço e contato vêm do site original/perfil do Google. Headline de benefício (não rótulo), estrutura PAS suave, blocos escaneáveis, 1 CTA por dobra apontando pro WhatsApp real com mensagem pré-preenchida (wa.me/55DDD...). Proibido: clichês vazios, superlativos inventados.
-2. **Fotos e logo originais OBRIGATÓRIOS.** Extraia pelo navegador (extensão Chrome): colete `img.currentSrc` de todas as imagens rolando a página inteira (lazy-load). Sem logo real = composição tipográfica, nunca logo inventado.
-3. **Identidade preservada**: paleta do cliente (refine tons fracos, nunca troque a família de cores).
-4. **Mais completo que o original**: crie seções que faltam SÓ com informação real — prova social (nota + avaliações do Google), como funciona, localização/mapa, horários, FAQ respondível pelo conteúdo real.
-5. **Arquivo único autocontido**: `sites/[slug]/[slug].html`, CSS inline, só Google Fonts.
-6. **Responsividade TOTAL (inegociável)**: perfeita em 360, 375, 768, 1024, 1280 e 1440px — zero rolagem horizontal, zero quebra. Tipografia com clamp(), grid/flex fluidos.
-7. **Editor sempre**: gere `sites/[slug]/[slug]-editor.html` injetando a camada de edição de `references/editor-visual.md` antes de `</body>`.
-8. **Comparador sempre**: gere/atualize `comparar.html` na raiz com `references/comparador-template.html` (substitua `__CLIENTES__` pelo array JSON, mesclando com clientes existentes).
+- **Contratado(a)** (o usuário): lidos das Configurações do CRM (`prospector-config.json`, bloco `contratante`) — preenchidos uma vez, entram sozinhos.
+- **Cliente**: nome/serviço/valor vêm do CRM (o valor do card fechado). CPF/CNPJ e endereço: peça ao usuário (que pede ao cliente via WhatsApp e cola a resposta — extraia e salve no lead). O que faltar sai como "preencher" destacado.
+- Valores, prazos e formas de pagamento vêm SEMPRE do usuário/CRM — nunca invente.
 
-## Padrão estético
+## Geração
 
-Serifada elegante em títulos (Playfair/Fraunces/Lora) + sans limpa no corpo (Inter/Sora), h1 ≥ 40px desktop; seções com 80-120px de respiro; 1 cor da marca + neutros quentes + 1 acento pra CTA (contraste AA); botão WhatsApp flutuante; bordas 12-16px, sombras suaves; zero bibliotecas JS.
+1. **Folha**: preencha o template e salve `sites/[slug]/contrato-[slug].html` — A4 real, imprimível, com a barra de impressão. Ela aparece na aba Contratos do CRM (ver/imprimir).
+2. **Word travado**: rode `gerar-docx.py` (requer python-docx: `pip install python-docx`) — gera `contrato-[slug].docx` com proteção somente-leitura e APENAS os campos do cliente editáveis (destacados em amarelo). Teste a proteção antes de entregar.
+3. **E-mail**: rascunho no app de e-mail com texto curto e profissional + orientação pra anexar o .docx. Status do contrato no CRM → `enviado`. Quando voltar assinado: salve como `contrato-[slug]-assinado.docx` e marque `assinado`.
 
-## Requisito do Criador de Sites (PRIORIDADE MAXIMA)
+## Transparência obrigatória
 
-1. Use obrigatoriamente o plugin/skill `Sites` para construir cada lote de redesign. O projeto deve conter `.openai/hosting.json`. HTML estatico autonomo nao pode ser a entrega principal.
-2. A entrega no Sites deve ter o comparador na rota inicial, a pagina em `/{slug}` e o editor visual conectado em `/{slug}/editor` para cada cliente.
-3. Cada cliente recebe direcao de arte propria, definida a partir de marca, publico e conteudo reais. E proibido repetir hierarquia de secoes, composicao do hero, grade, ordem dos blocos, fluxo de conversao ou componente-base entre clientes.
-4. Alterar somente paleta, fotos ou textos nao constitui uma estrutura nova. Cada pagina deve divergir visivelmente no hero, na arquitetura de conteudo, no bloco de credibilidade e no caminho ate o CTA.
-5. Antes da entrega, compare as tres ou mais paginas lado a lado nas larguras obrigatorias. Se uma parecer variacao de outra, redesenhe antes de concluir.
-
-Estas regras prevalecem sobre qualquer instrucao anterior desta skill que mencione arquivos HTML individuais, editor generico ou comparador estatico.
-
-## Checklist final (bloqueante)
-
-- [ ] Zero placeholder; CTAs pro contato REAL; wa.me correto (55+DDD+número)
-- [ ] Responsivo verificado nas 6 larguras
-- [ ] Todo conteúdo importante do original presente + fotos/logo originais
-- [ ] `[slug]-editor.html` gerado e `comparar.html` atualizado
-- [ ] Status do lead atualizado (leads.md + CRM)
-
-A entrega ao usuário DEVE apresentar: comparador primeiro, depois página + editor de cada cliente, resumo de 1 linha por cliente e a confirmação "CRM atualizado: N leads redesenhados". Próximo passo: publicar.
+A minuta contém (e NUNCA remova) o aviso de rodapé: é um modelo-base — recomende revisão e, em contratos maiores, um advogado.
 
 
 ## Regra de execução (NÃO NEGOCIÁVEL)
