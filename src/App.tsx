@@ -19,6 +19,7 @@ import SiteChat from './components/SiteChat'
 import CookieConsent from './components/CookieConsent'
 import AnimatedBackground from './components/AnimatedBackground'
 import WhatsAppButton from './components/WhatsAppButton'
+import ComparadorRedesign from './components/ComparadorRedesign'
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/indicadores" element={<DashboardIndicadores />} />
+        <Route path="/comparador" element={<ComparadorRedesign />} />
         <Route path="/precos" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
