@@ -15,6 +15,8 @@ const CLIENTES: ClientRow[] = [
   { id: '3', nome: 'Barbearia Navalha de Ouro', slug: 'barbearia-navalha-de-ouro', old: 'https://example.com' },
 ];
 
+const DEMO_BASE = 'https://capitol-tobacco-outstanding-jewelry.trycloudflare.com/sites';
+
 export default function ComparadorRedesign() {
   const [activeId, setActiveId] = useState<string>(CLIENTES[0]?.id ?? '');
   const cliente = useMemo(() => CLIENTES.find((c) => c.id === activeId) || null, [activeId]);
@@ -24,7 +26,7 @@ export default function ComparadorRedesign() {
     setActiveId((prev) => (CLIENTES.some((c) => c.id === prev) ? prev : CLIENTES[0].id));
   }, []);
 
-  const novoUrl = cliente ? `${PUBLIC_TUNNEL_URL}/sites/${cliente.slug}/${cliente.slug}.html` : '#';
+  const novoUrl = cliente ? `${DEMO_BASE}/${cliente.slug}/${cliente.slug}.html` : '#';
 
   return (
     <div className="space-y-4">
