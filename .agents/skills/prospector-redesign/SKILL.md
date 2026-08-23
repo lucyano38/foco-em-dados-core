@@ -3,7 +3,7 @@ name: prospector-redesign
 description: Redesenha o site de um cliente prospectado — cria versão nova, premium e de alta conversão da página existente, mantendo conteúdo, fotos, logo e paleta REAIS do cliente. Use quando o usuário pedir "redesenhar site", "refazer o site do cliente", "melhorar a página" ou após uma prospecção. Gera página + editor visual + comparador antes/depois.
 ---
 
-# Redesign premium (ChatGPT Work/Codex)
+# Redesign premium (Gemini/Sistema próprio)
 
 Criar uma NOVA VERSÃO da página do cliente — não uma página nova. O cliente precisa se reconhecer, elevado ao padrão que o faturamento dele merece. Trabalhe em lote (5+ clientes de uma vez, os melhores do leads.md).
 
@@ -22,13 +22,13 @@ Criar uma NOVA VERSÃO da página do cliente — não uma página nova. O client
 
 Serifada elegante em títulos (Playfair/Fraunces/Lora) + sans limpa no corpo (Inter/Sora), h1 ≥ 40px desktop; seções com 80-120px de respiro; 1 cor da marca + neutros quentes + 1 acento pra CTA (contraste AA); botão WhatsApp flutuante; bordas 12-16px, sombras suaves; zero bibliotecas JS.
 
-## Requisito do Criador de Sites (PRIORIDADE MAXIMA)
+## Requisito da Publicação (PRIORIDADE MAXIMA)
 
-1. Use obrigatoriamente o plugin/skill `Sites` para construir cada lote de redesign. O projeto deve conter `.openai/hosting.json`. HTML estatico autonomo nao pode ser a entrega principal.
-2. A entrega no Sites deve ter o comparador na rota inicial, a pagina em `/{slug}` e o editor visual conectado em `/{slug}/editor` para cada cliente.
+1. Publique no seu sistema/alojamento próprio ou em hospedagem compatível. HTML estático autocontido pode ser a entrega principal.
+2. A entrega deve ter o comparador como referência, a página em `sites/[slug]/[slug].html` e o editor visual em `sites/[slug]/[slug]-editor.html` para cada cliente.
 3. Cada cliente recebe direcao de arte propria, definida a partir de marca, publico e conteudo reais. E proibido repetir hierarquia de secoes, composicao do hero, grade, ordem dos blocos, fluxo de conversao ou componente-base entre clientes.
 4. Alterar somente paleta, fotos ou textos nao constitui uma estrutura nova. Cada pagina deve divergir visivelmente no hero, na arquitetura de conteudo, no bloco de credibilidade e no caminho ate o CTA.
-5. Antes da entrega, compare as tres ou mais paginas lado a lado nas larguras obrigatorias. Se uma parecer variacao de outra, redesenhe antes de concluir.
+5. Antes de publicar, valide as tres ou mais paginas lado a lado nas larguras obrigatorias. Se uma parecer variacao de outra, redesenhe antes de publicar.
 
 Estas regras prevalecem sobre qualquer instrucao anterior desta skill que mencione arquivos HTML individuais, editor generico ou comparador estatico.
 
