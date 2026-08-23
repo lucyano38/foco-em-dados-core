@@ -2,12 +2,8 @@
 
 - nome: Clínica Odonto Prime Alphaville
   slug: clinica-odonto-alphaville
-  status: redesenhado
-  origem: Indicação
-  cidade: Barueri / SP
-  segmento: Odontologia & Estética
-  contratoStatus: enviado
-  dataProposta: 2026-08-05
+  status: publicado
+  url: https://www.focoemdados.com.br/sites/clinica-odonto-alphaville/clinica-odonto-alphaville.html
   site_antigo: https://www.odontoprimealphaville.com.br
   whatsapp: "5511988776655"
   email: contato@odontoprimealphaville.com.br

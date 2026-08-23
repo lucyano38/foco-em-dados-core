@@ -1,0 +1,21 @@
+[
+  {
+    "id": "clinica-odonto-alphaville",
+    "nome": "Clínica Odonto Prime Alphaville",
+    "nicho": "Odontologia & Estética",
+    "cidade": "Barueri / SP",
+    "nota": 4.9,
+    "avaliacoes": 142,
+    "status": "publicado",
+    "valor": 1200,
+    "manutencao": 190,
+    "pago": 1,
+    "contratoStatus": "assinado",
+    "dataProposta": "2026-08-05",
+    "motivo": "Site Flash desatualizado, sem adaptação para mobile e sem botão direto de agendamento via WhatsApp.",
+    "email": "contato@odontoprimealphaville.com.br",
+    "whatsapp": "5511988776655",
+    "site_antigo": "https://www.odontoprimealphaville.com.br",
+    "url": "https://www.focoemdados.com.br/sites/clinica-odonto-alphaville/clinica-odonto-alphaville.html"
+  }
+]
