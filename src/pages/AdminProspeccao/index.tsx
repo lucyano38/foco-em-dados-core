@@ -85,6 +85,7 @@ export default function AdminProspeccao() {
   const [movingId, setMovingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [selectedContractLead, setSelectedContractLead] = useState<string>('');
 
   useEffect(() => {
     document.title = 'Prospector de Sites | Admin Foco em Dados';
@@ -308,6 +309,16 @@ export default function AdminProspeccao() {
                             <MessageCircle className="w-3 h-3" />
                           </a>
                         )}
+                        <button
+                          onClick={() => {
+                            setTab('contracts');
+                            setSelectedContractLead(lead.id);
+                          }}
+                          title="Gerar contrato"
+                          className="p-1 rounded-md bg-[#ffc107]/10 hover:bg-[#ffc107]/20 border border-[#ffc107]/30 text-[#ffc107]"
+                        >
+                          <FileText className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -319,7 +330,7 @@ export default function AdminProspeccao() {
 
         {tab === 'comparator' && <RedesignComparator />}
 
-        {tab === 'contracts' && <ContractPanel lead={leads[0] || null} />}
+        {tab === 'contracts' && <ContractPanel lead={leads.find((l) => l.id === selectedContractLead) || leads[0] || null} />}
       </main>
     </div>
   );
