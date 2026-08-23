@@ -13,7 +13,7 @@
   manutencao: 190
   pago: 1
   contratoStatus: assinado
-  dataProposta: 2026-08-05
+  dataProposta: "2026-08-05"
   motivo: Site Flash desatualizado, sem adaptação para mobile e sem botão direto de agendamento via WhatsApp.
 - nome: Martins & Associados Advocacia
   slug: escritorio-advocacia-martins
@@ -30,7 +30,7 @@
   manutencao: 250
   pago: 0
   contratoStatus: enviado
-  dataProposta: 2026-08-14
+  dataProposta: "2026-08-14"
   motivo: Design corporativo antigo dos anos 2010, lentidão de carregamento e sem formulário de consulta rápida.
 - nome: Lúmina Arquitetura & Interiores
   slug: studio-arquitetura-lumina
@@ -47,7 +47,7 @@
   manutencao: 150
   pago: 0
   contratoStatus: pendente
-  dataProposta: 2026-08-16
+  dataProposta: "2026-08-16"
   motivo: Site em Wix genérico com domínio gratuito e portfólio pesado com imagens não otimizadas.
 - nome: Vortex Centro Automotivo Premium
   slug: auto-mecanica-vortex
@@ -64,7 +64,7 @@
   manutencao: 120
   pago: 0
   contratoStatus: pendente
-  dataProposta: 2026-08-12
+  dataProposta: "2026-08-12"
   motivo: Sem site próprio, apenas página desatualizada do Facebook sem tabela de serviços nem localização clara.
 - nome: Bistrô Terroir & Vinhos
   slug: bistro-terroir-gastronomia
