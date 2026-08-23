@@ -332,6 +332,10 @@ export default function Home() {
               <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
                 <div className="h-full rounded-full bg-gradient-to-r from-[#ffc107] to-[#5203d5]" style={{ width: '64%' }}></div>
               </div>
+              <Link to="/admin" className="mt-4 w-full h-10 rounded-lg bg-gradient-to-r from-amber-400 to-purple-500 hover:from-amber-300 hover:to-purple-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all">
+                Abrir CRM
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
             <div className="space-y-4">
