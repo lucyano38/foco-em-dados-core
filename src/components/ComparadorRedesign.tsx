@@ -10,9 +10,12 @@ export interface ClientRow {
 }
 
 const CLIENTES: ClientRow[] = [
-  { id: '1', nome: 'Moda Bella Store', slug: 'moda-bella-store', old: 'https://example.com' },
-  { id: '2', nome: 'Padaria Pão Dourado', slug: 'pao-dourado', old: null, motivo: 'Sem site ativo' },
-  { id: '3', nome: 'Barbearia Navalha de Ouro', slug: 'barbearia-navalha-de-ouro', old: 'https://example.com' },
+  { id: '1', nome: 'Clínica Odonto Prime Alphaville', slug: 'clinica-odonto-alphaville', old: null, motivo: 'Site Flash desatualizado' },
+  { id: '2', nome: 'Martins & Associados Advocacia', slug: 'escritorio-advocacia-martins', old: 'https://www.martinsadv.com.br', motivo: '' },
+  { id: '3', nome: 'Bistrô Terroir & Vinhos', slug: 'bistro-terroir-gastronomia', old: null, motivo: 'Sem redesign pronto' },
+  { id: '4', nome: 'Lúmina Arquitetura', slug: 'studio-arquitetura-lumina', old: null, motivo: 'Sem redesign pronto' },
+  { id: '5', nome: 'Vortex Centro Automotivo', slug: 'auto-mecanica-vortex', old: null, motivo: 'Sem site próprio' },
+  { id: '6', nome: 'Espaço Zen Pilates', slug: 'espaco-zen-fisioterapia', old: null, motivo: 'Sem redesign pronto' },
 ];
 
 const DEMO_BASE = 'https://capitol-tobacco-outstanding-jewelry.trycloudflare.com/sites';
