@@ -20,6 +20,7 @@ import CookieConsent from './components/CookieConsent'
 import AnimatedBackground from './components/AnimatedBackground'
 import WhatsAppButton from './components/WhatsAppButton'
 import ComparadorRedesign from './components/ComparadorRedesign'
+import ProspeccaoCnae from './pages/ProspeccaoCnae'
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/indicadores" element={<DashboardIndicadores />} />
         <Route path="/comparador" element={<ComparadorRedesign />} />
+        <Route path="/prospeccao" element={<ProspeccaoCnae />} />
         <Route path="/precos" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
