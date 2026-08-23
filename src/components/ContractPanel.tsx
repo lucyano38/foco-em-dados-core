@@ -10,7 +10,7 @@ type Lead = {
   value?: number;
   status: string;
   source?: string;
-  created_at: string;
+  created_at?: string;
 };
 
 type ContractData = {
