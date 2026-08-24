@@ -17,6 +17,13 @@ const LUCIANO_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURICompon
 const PROSPECTION_CHECKOUT_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero ativar a Prospecção Inteligente por R$ 39,90.')}`
 const FREE_PLAN_WHATSAPP_URL = `https://wa.me/5511994411307?text=${encodeURIComponent('Olá Luciano, quero iniciar no plano Gratuito')}`
 
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
 const PIPELINE_STAGES = [
   { name: 'Novo', color: '#60a5fa' },
   { name: 'Redesenhado', color: '#a78bfa' },
@@ -267,10 +274,14 @@ export default function Home() {
               <div key={role.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col transition hover:border-[#D97706]/40 hover:shadow-[0_0_30px_rgba(217,119,6,0.12)]">
                 <h3 className="text-lg font-bold text-[#FFFBEB]">{role.title}</h3>
                 <p className="text-sm text-slate-300/80 mt-2">{role.desc}</p>
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(role.whatsapp_message)}`} target="_blank" rel="noreferrer" className="mt-6 h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection(role.title.includes('Diretor') || role.title.includes('Dono') ? 'resultados' : role.title.includes('Marketing') || role.title.includes('Vendas') ? 'solucoes' : 'setores')}
+                  className="mt-6 h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-sm font-bold flex items-center justify-center gap-2 transition-all"
+                >
                   {role.cta}
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </button>
               </div>
             ))}
           </div>
