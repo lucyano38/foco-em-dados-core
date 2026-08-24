@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Send } from 'lucide-react';
 import { TELEGRAM_URL } from '../lib/contact';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
 
 interface Message {
   from: 'user' | 'bot';
@@ -103,18 +105,20 @@ export default function ChatDemoModal({ open, onClose }: { open: boolean; onClos
 
         <div className="p-3 border-t border-white/10 flex flex-wrap gap-2">
           {QUICK_PROMPTS.map((q) => (
-            <button
+            <Button
               key={q}
+              variant="secondary"
+              size="sm"
               onClick={() => send(q)}
-              className="h-8 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-[#e3e2e2] transition-colors"
+              className="h-8 px-3 rounded-xl text-xs"
             >
               {q}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="p-3 border-t border-white/10 flex gap-2">
-          <input
+          <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -124,16 +128,18 @@ export default function ChatDemoModal({ open, onClose }: { open: boolean; onClos
               }
             }}
             placeholder="Digite sua mensagem..."
-            className="flex-1 h-10 px-3 text-sm text-[#e3e2e2] bg-[#0f1113] border border-white/10 rounded-xl placeholder:text-[#d4c5ab]/60 outline-none focus:border-[#ffc107]/40"
+            className="flex-1"
           />
-          <button
+          <Button
+            type="button"
+            size="sm"
             onClick={() => send(input)}
             disabled={typing}
-            className="btn-glow w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-50"
             aria-label="Enviar mensagem"
+            className="w-10 h-10"
           >
             <Send className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-3 pt-0">

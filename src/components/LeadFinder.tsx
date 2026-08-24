@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { SEGMENTS, generateMockLeads, type MockLead, type LeadSearchParams } from '../services/mockLeadSearch'
 import { safeJson } from '../lib/safeFetch'
+import { Button } from './ui/Button'
 
 export interface LeadForPipeline {
   id: string
@@ -196,14 +197,14 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
         </div>
 
         <div className="flex items-end">
-          <button
+          <Button
             type="submit"
             disabled={searching}
-            className="btn-glow h-10 px-6 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="h-10 px-6 rounded-xl text-sm"
           >
             {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
             Buscar Leads
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -309,14 +310,16 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
                     </a>
                   )}
                   {onAddToPipeline && (
-                    <button
+                    <Button
+                      variant="primary"
+                      size="sm"
                       onClick={() => addLead(lead)}
                       disabled={added.has(lead.id)}
-                      className="ml-auto btn-glow h-8 px-3 rounded-lg text-[11px] flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                      className="ml-auto h-8 px-3 text-[11px]"
                     >
                       {added.has(lead.id) ? <CheckCircle2 className="w-3 h-3" /> : <UserPlus className="w-3 h-3" />}
                       {added.has(lead.id) ? 'Adicionado' : 'Adicionar ao Pipeline'}
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

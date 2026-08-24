@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, Rocket, ArrowDown, BarChart3 } from 'lucide-react';
 import FloatingWords from './FloatingWords';
+import { Button } from './ui/Button';
 
 export default function Hero() {
   return (
@@ -39,13 +40,12 @@ export default function Hero() {
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/login"
-            className="btn-glow h-12 px-8 rounded-xl text-sm flex items-center gap-2"
-          >
-            <Rocket className="w-4 h-4" />
-            Começar de Graça
-          </Link>
+          <Button asChild size="lg" className="h-12 px-8 text-sm">
+            <Link to="/login">
+              <Rocket className="w-4 h-4" />
+              Começar de Graça
+            </Link>
+          </Button>
           <a
             href="#demo"
             className="h-12 px-8 rounded-xl border border-[#fabd00]/20 hover:border-[#fabd00]/40 text-sm font-medium text-[#e3e2e2] flex items-center gap-2 transition-all bg-white/5 backdrop-blur-xl"

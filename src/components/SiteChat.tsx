@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -146,7 +148,7 @@ export default function SiteChat() {
           </div>
 
           <div className="p-3 border-t border-white/10 flex gap-2 bg-[#18191c]">
-            <input
+            <Input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -157,17 +159,17 @@ export default function SiteChat() {
                 }
               }}
               placeholder="Digite sua mensagem..."
-              className="input-mystic flex-1 h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/50"
+              className="flex-1"
             />
-            <button
+            <Button
               type="button"
               onClick={handleSend}
               disabled={loading}
-              className="btn-glow w-10 h-10 rounded-lg flex items-center justify-center disabled:opacity-50"
+              className="w-10 h-10"
               aria-label="Enviar mensagem"
             >
               <Send className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}
