@@ -34,7 +34,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // na própria página via detectSessionInUrl.
 export const signInWithProvider = async (provider: 'google' | 'github') => {
   const options: any = {
-    redirectTo: `${window.location.origin}/dashboard`,
+    redirectTo: `${window.location.origin}/auth/callback`,
   }
   // queryParams são específicos do Google; GitHub ignora, mas evitamos enviar
   if (provider === 'google') {
