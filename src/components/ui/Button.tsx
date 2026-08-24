@@ -5,7 +5,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'tertiary'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 const baseClasses =
-  'inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50'
+  'inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black'
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:

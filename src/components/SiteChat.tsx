@@ -115,7 +115,7 @@ export default function SiteChat() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
+              className="w-7 h-7 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               aria-label="Fechar chat"
             >
               <X className="w-4 h-4" />
@@ -177,7 +177,7 @@ export default function SiteChat() {
         type="button"
         id="site-chat-open-btn"
         onClick={toggleChat}
-        className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center pointer-events-auto"
+        className="btn-glow fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center pointer-events-auto cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
         aria-label="Abrir chat"
       >
         <MessageCircle className="w-6 h-6" />

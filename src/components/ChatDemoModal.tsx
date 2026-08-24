@@ -73,7 +73,7 @@ export default function ChatDemoModal({ open, onClose }: { open: boolean; onClos
             <p className="text-xs font-bold text-[#ffe4af] uppercase tracking-wider">Demonstração</p>
             <p className="text-sm text-[#e3e2e2]">Simulação do Agente Luciano</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center" aria-label="Fechar">
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black" aria-label="Fechar">
             <X className="w-4 h-4 text-[#d4c5ab]" />
           </button>
         </div>
@@ -147,7 +147,7 @@ export default function ChatDemoModal({ open, onClose }: { open: boolean; onClos
             href={TELEGRAM_URL}
             target="_blank"
             rel="noreferrer"
-            className="block w-full text-center h-10 rounded-xl bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] text-xs font-bold"
+            className="block w-full text-center h-10 rounded-xl bg-gradient-to-r from-[#fabd00] to-[#ffc107] text-[#121414] text-xs font-bold cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             Abrir Telegram
           </a>

@@ -159,7 +159,7 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
           <div className="flex flex-wrap gap-1.5">
             {CITY_SUGGESTIONS.slice(0, 4).map((c) => (
               <button key={c} type="button" onClick={() => setCity(c)}
-                className="text-[10px] text-[#60a5fa]/80 hover:text-[#60a5fa] border border-[#60a5fa]/20 rounded-full px-2 py-0.5 cursor-pointer">
+                className="text-[10px] text-[#60a5fa]/80 hover:text-[#60a5fa] border border-[#60a5fa]/20 rounded-full px-2 py-0.5 cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107]">
                 {c}
               </button>
             ))}
@@ -304,7 +304,7 @@ export default function LeadFinder({ onAddToPipeline }: LeadFinderProps) {
                     <a
                       href={`https://wa.me/${lead.whatsapp}`}
                       target="_blank" rel="noreferrer"
-                      className="text-[10px] text-[#4ade80]/80 hover:text-[#4ade80] flex items-center gap-1"
+                      className="text-[10px] text-[#4ade80]/80 hover:text-[#4ade80] flex items-center gap-1 cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107]"
                     >
                       <Phone className="w-3 h-3" /> WhatsApp
                     </a>
