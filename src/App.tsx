@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom'
-import { useState } from 'react'
 import Home from './pages/Home'
 import Pricing from './pages/Pricing'
 import Dashboard from './pages/Dashboard'
@@ -25,8 +24,6 @@ import ProspeccaoCnae from './pages/ProspeccaoCnae'
 import OpenSquadMonitor from './pages/OpenSquadMonitor'
 
 export default function App() {
-  const [cookieVisible, setCookieVisible] = useState(false)
-
   return (
     <div className="min-h-screen text-[#e3e2e2] font-sans antialiased bg-[#0B1220]">
       <AnimatedBackground />
@@ -79,7 +76,7 @@ export default function App() {
         <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
       </Routes>
       <SiteChat />
-      <CookieConsent isVisible={cookieVisible} onChangeVisible={setCookieVisible} />
+      <CookieConsent />
     </div>
   )
 }
