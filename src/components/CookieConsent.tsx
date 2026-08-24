@@ -1,22 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Cookie, X } from 'lucide-react';
+import { useEffect } from 'react';
+import { Cookie } from 'lucide-react';
 
 const COOKIE_KEY = 'cookie_accepted';
 
-export default function CookieConsent() {
-  const [isVisible, setIsVisible] = useState(false);
-
+export default function CookieConsent({ isVisible, onChangeVisible }: { isVisible: boolean; onChangeVisible: (visible: boolean) => void }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(COOKIE_KEY);
       if (stored === 'true') {
-        setIsVisible(false);
+        onChangeVisible(false);
         return;
       }
-      const timer = setTimeout(() => setIsVisible(true), 1200);
+      const timer = setTimeout(() => onChangeVisible(true), 1200);
       return () => clearTimeout(timer);
     } catch {
-      setIsVisible(true);
+      onChangeVisible(true);
     }
   }, []);
 
@@ -26,7 +24,7 @@ export default function CookieConsent() {
     } catch {
       // storage indisponível
     }
-    setIsVisible(false);
+    onChangeVisible(false);
   };
 
   useEffect(() => {
