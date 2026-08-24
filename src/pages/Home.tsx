@@ -438,32 +438,6 @@ export default function Home() {
 
         <VideoShowcase />
 
-        <section className="py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-4">Tudo que o varejista precisa</h2>
-            <p className="text-slate-400 text-center mb-12 max-w-xl mx-auto">
-              Funcionalidades pensadas para lojas físicas e e-commerces.
-            </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { icon: Upload, title: 'Upload de Planilhas', desc: 'Arraste seu CSV ou Excel. A IA analisa automaticamente seus dados.' },
-                { icon: BarChart3, title: 'Dashboard Inteligente', desc: 'Visualize receita, ticket médio, top produtos e tendências.' },
-                { icon: TrendingUp, title: 'Previsão de Vendas', desc: 'Projeções para os próximos 30 dias com base no histórico.' },
-                { icon: Sparkles, title: 'Insights por IA', desc: 'Alertas automáticos de oportunidade, risco e sazonalidade.' },
-              ].map((f) => (
-                <div key={f.title} className="glass-card p-6 rounded-3xl">
-                  <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4">
-                    <f.icon className="w-5 h-5 text-cyan-400" />
-                  </div>
-                  <h3 className="font-semibold mb-1">{f.title}</h3>
-                  <p className="text-sm text-slate-400">{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Upload de Planilha + Pipeline + Stripe */}
         <section className="py-20 px-4 relative">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">Envie sua planilha de prospecção</h2>
