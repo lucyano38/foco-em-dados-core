@@ -240,7 +240,7 @@ export default function SpreadsheetUpload() {
               className="w-full h-12 rounded-xl btn-glow text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              Processar Gratuitamente
+              {user ? 'Processar Gratuitamente' : 'Processar sem login'}
             </button>
           ) : (
             <div className="space-y-3">
@@ -249,7 +249,7 @@ export default function SpreadsheetUpload() {
                 <div className="text-sm">
                   <p className="text-[#ffe4af] font-semibold">Planilha com mais de {MAX_FREE_ROWS} linhas</p>
                   <p className="text-[#d4c5ab] text-xs mt-1">
-                    Para processamento em massa, é necessário login e pagamento único de{' '}
+                    Faça login para processamento em massa por{' '}
                     <strong className="text-[#fabd00]">R$ 39,90</strong>.
                   </p>
                 </div>

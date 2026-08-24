@@ -49,9 +49,9 @@ const INDUSTRIES = [
 ]
 
 const ROLES = [
-  { title: 'Diretor / Dono', desc: 'Decisão rápida com dados unificados.', cta: 'Quero ver o painel' },
-  { title: 'Marketing / Vendas', desc: 'Leads qualificados, pipeline e conversão.', cta: 'Ver funil de vendas' },
-  { title: 'Operações / BI', desc: 'Dashboards, alertas e automação.', cta: 'Conhecer o BI' },
+  { title: 'Diretor / Dono', desc: 'Decisão rápida com dados unificados.', cta: 'Quero ver o painel', whatsapp_message: 'Olá! Gostaria de saber mais sobre as automações e redesign da Foco em Dados.' },
+  { title: 'Marketing / Vendas', desc: 'Leads qualificados, pipeline e conversão.', cta: 'Ver funil de vendas', whatsapp_message: 'Olá! Gostaria de ativar a Prospecção Inteligente e aumentar minha geração de leads.' },
+  { title: 'Operações / BI', desc: 'Dashboards, alertas e automação.', cta: 'Conhecer o BI', whatsapp_message: 'Olá! Gostaria de saber mais sobre dashboards, automações e integração de dados.' },
 ]
 
 export default function Home() {
@@ -267,7 +267,7 @@ export default function Home() {
               <div key={role.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col transition hover:border-[#D97706]/40 hover:shadow-[0_0_30px_rgba(217,119,6,0.12)]">
                 <h3 className="text-lg font-bold text-[#FFFBEB]">{role.title}</h3>
                 <p className="text-sm text-slate-300/80 mt-2">{role.desc}</p>
-                <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="mt-6 h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(role.whatsapp_message)}`} target="_blank" rel="noreferrer" className="mt-6 h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-sm font-bold flex items-center justify-center gap-2 transition-all">
                   {role.cta}
                   <ArrowRight className="w-4 h-4" />
                 </a>
@@ -409,10 +409,31 @@ export default function Home() {
               <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
                 <div className="h-full rounded-full bg-gradient-to-r from-[#D97706] to-[#1E40AF]" style={{ width: '64%' }}></div>
               </div>
-              <Link to="/admin" className="mt-4 w-full h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-xs flex items-center justify-center gap-2 transition-all">
-                Abrir CRM
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              {user && isAdmin ? (
+                <Link
+                  to="/admin"
+                  className="mt-4 w-full h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  Abrir CRM
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : user ? (
+                <Link
+                  to="/app"
+                  className="mt-4 w-full h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  Abrir app
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="mt-4 w-full h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  Entrar para acessar o CRM
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
 
             <div className="space-y-4">

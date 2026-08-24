@@ -8,6 +8,11 @@ export default function CookieConsent() {
 
   useEffect(() => {
     try {
+      if (typeof window !== 'undefined' && window.location.search.includes('cookies=off')) {
+        localStorage.setItem(COOKIE_KEY, 'dismissed');
+        setIsVisible(false);
+        return;
+      }
       const stored = localStorage.getItem(COOKIE_KEY);
       if (stored === 'dismissed') {
         setIsVisible(false);
