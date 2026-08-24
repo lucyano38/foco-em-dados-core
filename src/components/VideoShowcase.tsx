@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const VIDEOS = [
   { src: '/media/video1.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Do caos à decisão em segundos' },
@@ -9,6 +9,15 @@ const VIDEOS = [
 
 export default function VideoShowcase() {
   const [index, setIndex] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const prev = () => setIndex((i) => (i === 0 ? VIDEOS.length - 1 : i - 1))
   const next = () => setIndex((i) => (i === VIDEOS.length - 1 ? 0 : i + 1))
@@ -28,7 +37,7 @@ export default function VideoShowcase() {
             <video
               key={VIDEOS[index].src}
               className="w-full h-auto"
-              autoPlay
+              autoPlay={!reducedMotion}
               loop
               muted
               playsInline
@@ -46,14 +55,14 @@ export default function VideoShowcase() {
                 <button
                   type="button"
                   onClick={prev}
-                  className="pointer-events-auto h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-semibold backdrop-blur-md transition-colors"
+                  className="pointer-events-auto h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-semibold backdrop-blur-md transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
                   Anterior
                 </button>
                 <button
                   type="button"
                   onClick={next}
-                  className="pointer-events-auto h-9 px-3 rounded-full bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] text-xs font-bold transition-colors"
+                  className="pointer-events-auto h-9 px-3 rounded-full bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] text-xs font-bold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc107] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
                   Próximo
                 </button>
