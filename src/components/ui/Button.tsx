@@ -1,4 +1,5 @@
-import { cn } from '../lib/utils'
+import { cn } from '../../lib/utils'
+import * as React from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary'
 type ButtonSize = 'sm' | 'md' | 'lg'
@@ -24,18 +25,20 @@ const sizeClasses: Record<ButtonSize, string> = {
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
+  asChild?: boolean
 }
 
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  className,
-  ...props
-}: ButtonProps) {
-  return (
-    <button
-      className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)}
-      {...props}
-    />
-  )
-}
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = 'primary', size = 'md', className, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? 'span' : 'button'
+    return (
+      <Comp
+        ref={ref}
+        className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)}
+        {...props}
+      />
+    )
+  }
+)
+
+Button.displayName = 'Button'
