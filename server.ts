@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import { fileURLToPath } from "url";
 import multer from "multer";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -20,6 +21,14 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
+
+const __dirname = (() => {
+  try {
+    return path.dirname(fileURLToPath(import.meta.url))
+  } catch {
+    return process.cwd()
+  }
+})();
 
 function tryParseNumber(val: any): number | null {
   if (val === null || val === undefined || val === '') return null;

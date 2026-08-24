@@ -19,6 +19,7 @@ import SiteChat from './components/SiteChat'
 import CookieConsent from './components/CookieConsent'
 import AnimatedBackground from './components/AnimatedBackground'
 import WhatsAppButton from './components/WhatsAppButton'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import ComparadorRedesign from './components/ComparadorRedesign'
 import ProspeccaoCnae from './pages/ProspeccaoCnae'
 import OpenSquadMonitor from './pages/OpenSquadMonitor'
@@ -26,57 +27,59 @@ import OpenSquadMonitor from './pages/OpenSquadMonitor'
 export default function App() {
   return (
     <div className="min-h-screen text-[#e3e2e2] font-sans antialiased bg-[#0B1220]">
-      <AnimatedBackground />
-      <WhatsAppButton />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/indicadores" element={<DashboardIndicadores />} />
-        <Route path="/comparador" element={<ComparadorRedesign />} />
-        <Route path="/prospeccao" element={<ProspeccaoCnae />} />
-        <Route path="/monitor" element={<OpenSquadMonitor />} />
-        <Route path="/precos" element={<Pricing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
-        <Route path="/politica-de-privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
-        <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
-        <Route path="/termos-de-uso" element={<TermsOfService onBack={() => window.history.back()} />} />
+      <ErrorBoundary>
+        <AnimatedBackground />
+        <WhatsAppButton />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/indicadores" element={<DashboardIndicadores />} />
+          <Route path="/comparador" element={<ComparadorRedesign />} />
+          <Route path="/prospeccao" element={<ProspeccaoCnae />} />
+          <Route path="/monitor" element={<OpenSquadMonitor />} />
+          <Route path="/precos" element={<Pricing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
+          <Route path="/termos" element={<TermsOfService onBack={() => window.history.back()} />} />
+          <Route path="/termos-de-uso" element={<TermsOfService onBack={() => window.history.back()} />} />
 
-        <Route path="/preview/:id" element={<PreviewProposta />} />
+          <Route path="/preview/:id" element={<PreviewProposta />} />
 
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <Admin />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
 
-        <Route
-          path="/admin/prospeccao"
-          element={
-            <AdminRoute>
-              <AdminProspeccao />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="/admin/prospeccao"
+            element={
+              <AdminRoute>
+                <AdminProspeccao />
+              </AdminRoute>
+            }
+          />
 
-        <Route
-          path="/admin/automacao"
-          element={
-            <ProtectedRouteMaster>
-              <AdminAutomacao />
-            </ProtectedRouteMaster>
-          }
-        />
+          <Route
+            path="/admin/automacao"
+            element={
+              <ProtectedRouteMaster>
+                <AdminAutomacao />
+              </ProtectedRouteMaster>
+            }
+          />
 
-        <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
-      </Routes>
-      <SiteChat />
-      <CookieConsent />
+          <Route path="*" element={<NotFound onBack={() => window.history.back()} />} />
+        </Routes>
+        <SiteChat />
+        <CookieConsent />
+      </ErrorBoundary>
     </div>
   )
 }
