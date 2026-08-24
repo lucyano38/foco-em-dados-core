@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
+import VideoShowcase from '../components/VideoShowcase'
 import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
 import {
@@ -434,6 +435,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <VideoShowcase />
 
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">

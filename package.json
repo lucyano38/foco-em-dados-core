@@ -10,19 +10,21 @@
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build && node .tmp_esbuild_build.mjs",
-  "prebuild": "node .tmp_copy_static.mjs",
+    "prebuild": "node .tmp_copy_static.mjs",
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/gateway": "^4.0.62",
     "@google/genai": "^2.4.0",
     "@google/generative-ai": "^0.24.1",
     "@stripe/stripe-js": "^9.9.0",
     "@supabase/supabase-js": "^2.110.7",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
+    "ai": "^7.0.77",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
