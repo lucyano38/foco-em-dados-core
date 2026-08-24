@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import SpreadsheetUpload from '../components/SpreadsheetUpload'
 import VideoShowcase from '../components/VideoShowcase'
-import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL } from '../lib/contact'
+import { WHATSAPP_URL, CONTACT_EMAIL, TELEGRAM_URL, WHATSAPP_NUMBER } from '../lib/contact'
 import { safeJson } from '../lib/safeFetch'
 import {
   Upload, BarChart3, TrendingUp, Database, ArrowRight, Check, Bot, Target, Kanban, Workflow, Mail, MessageCircle, FileText, DollarSign, Zap, PlayCircle, Bell, Settings, Search, MapPin, Globe, MessageSquare, Send, Shield, Phone, Linkedin, Twitter
