@@ -25,7 +25,7 @@ import OpenSquadMonitor from './pages/OpenSquadMonitor'
 
 export default function App() {
   return (
-    <div className="min-h-screen text-[#e3e2e2] font-sans antialiased">
+    <div className="min-h-screen text-[#e3e2e2] font-sans antialiased bg-[#0B1220]">
       <AnimatedBackground />
       <WhatsAppButton />
       <Routes>

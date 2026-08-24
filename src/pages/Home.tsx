@@ -38,7 +38,7 @@ const METRICS = [
   { label: 'Leads Ativos', value: '12.8k', delta: '+14.2%', icon: Target },
   { label: 'MRR', value: 'R$ 256k', delta: '+12%', icon: TrendingUp },
   { label: 'Propostas', value: '342', delta: '+5', icon: FileText },
-  { label: 'Empresas Atendidas', value: '850+', delta: '+22', icon: Building2 },
+  { label: 'Empresas Atendidas', value: '850+', delta: '+22', icon: Target },
 ]
 
 const INDUSTRIES = [

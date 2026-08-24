@@ -10,6 +10,7 @@ const VIDEOS = [
 export default function VideoShowcase() {
   const [index, setIndex] = useState(0)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -19,14 +20,23 @@ export default function VideoShowcase() {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  const prev = () => setIndex((i) => (i === 0 ? VIDEOS.length - 1 : i - 1))
-  const next = () => setIndex((i) => (i === VIDEOS.length - 1 ? 0 : i + 1))
+  const handleError = () => setError('Não foi possível carregar o vídeo.')
+  const clearError = () => setError(null)
+
+  const prev = () => {
+    clearError()
+    setIndex((i) => (i === 0 ? VIDEOS.length - 1 : i - 1))
+  }
+  const next = () => {
+    clearError()
+    setIndex((i) => (i === VIDEOS.length - 1 ? 0 : i + 1))
+  }
 
   return (
-    <section className="relative py-20 px-4">
+    <section className="relative py-20 px-4 bg-[#0B1220]">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-extrabold tracking-tight text-glow">
+          <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-extrabold tracking-tight text-[#FFFBEB]">
             {VIDEOS[index].title}
           </h2>
           <p className="mt-3 text-base sm:text-lg text-[#d4c5ab]">{VIDEOS[index].sub}</p>
@@ -34,16 +44,32 @@ export default function VideoShowcase() {
 
         <div className="relative mx-auto max-w-4xl">
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_0_40px_rgba(250,189,0,0.08)]">
-            <video
-              key={VIDEOS[index].src}
-              className="w-full h-auto"
-              autoPlay={!reducedMotion}
-              loop
-              muted
-              playsInline
-            >
-              <source src={VIDEOS[index].src} type="video/mp4" />
-            </video>
+            {!error ? (
+              <video
+                key={VIDEOS[index].src}
+                className="w-full h-auto"
+                autoPlay={!reducedMotion}
+                loop
+                muted
+                playsInline
+                onError={handleError}
+              >
+                <source src={VIDEOS[index].src} type="video/mp4" />
+              </video>
+            ) : (
+              <div className="flex min-h-[260px] w-full items-center justify-center rounded-3xl bg-slate-900/90 p-6 text-center text-slate-200">
+                <div>
+                  <p className="text-sm font-medium">{error}</p>
+                  <button
+                    type="button"
+                    onClick={clearError}
+                    className="mt-3 inline-flex h-9 px-4 rounded-full bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-xs font-bold cursor-pointer"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
