@@ -8,6 +8,7 @@ import {
 } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase, isSupabaseConfigured, signInWithProvider } from '../lib/supabase'
+import { useLocalAuth, type LocalUser } from '../hooks/useLocalAuth'
 
 interface Profile {
   id: string
@@ -166,6 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
   const [loading, setLoading] = useState(true)
+  const local = useLocalAuth()
 
   const isAdmin = Boolean(
     user &&
@@ -178,7 +180,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(currentUser)
     if (currentUser) {
       try {
-        // Google/email: garante o registro na tabela profiles antes de carregar o plano
         const profileRow = await ensureProfileExists(currentUser)
         const result = await fetchProfile(currentUser.id)
         setProfile(profileRow ?? result.profile)
@@ -189,12 +190,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(null)
         setPlan(null)
       }
+    } else if (local.user) {
+      setUser({
+        id: 'local-session',
+        email: local.user.email,
+        user_metadata: {
+          name: local.user.name,
+          full_name: local.user.name,
+        },
+      } as unknown as User)
+      setProfile({
+        id: 'local-session',
+        name: local.user.name,
+        email: local.user.email,
+        store_name: null,
+        segment: null,
+        plan_id: null,
+        plan_tier: null,
+        subscription_status: null,
+        avatar_url: null,
+        role: local.user.role,
+        referral_code: null,
+        affiliate_enabled: false,
+        affiliate_balance: 0,
+        lines_consumed: 0,
+        dashboards_created: 0,
+        marketplaces_connected: 0,
+        created_at: null,
+        updated_at: null,
+      })
+      setPlan({
+        id: 'local-plan',
+        name: 'Local',
+        tier: 'local',
+        price_monthly: 0,
+        price_yearly: 0,
+        limits_dashboards: 1,
+        limits_rows: 100,
+        limits_marketplaces: 0,
+        limits_chatbots: 1,
+        limits_api_calls: 100,
+        limits_storage_mb: 100,
+        features_json: ['local_fallback'],
+        is_active: true,
+      } as Plan)
     } else {
       setProfile(null)
       setPlan(null)
     }
     setLoading(false)
-  }, [])
+  }, [local.user])
 
   useEffect(() => {
     setLoading(true)
