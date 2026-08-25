@@ -19,6 +19,7 @@ import SiteChat from './components/SiteChat'
 import CookieConsent from './components/CookieConsent'
 import AnimatedBackground from './components/AnimatedBackground'
 import WhatsAppButton from './components/WhatsAppButton'
+import Header from './components/Header'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import ComparadorRedesign from './components/ComparadorRedesign'
 import ProspeccaoCnae from './pages/ProspeccaoCnae'
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <div className="min-h-screen text-[#e3e2e2] font-sans antialiased bg-[#0B1220]">
       <ErrorBoundary>
+        <Header />
         <AnimatedBackground />
         <WhatsAppButton />
         <Routes>

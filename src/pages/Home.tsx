@@ -56,9 +56,9 @@ const INDUSTRIES = [
 ]
 
 const ROLES = [
-  { title: 'Diretor / Dono', desc: 'Decisão rápida com dados unificados.', cta: 'Quero ver o painel', whatsapp_message: 'Olá! Gostaria de saber mais sobre as automações e redesign da Foco em Dados.' },
-  { title: 'Marketing / Vendas', desc: 'Leads qualificados, pipeline e conversão.', cta: 'Ver funil de vendas', whatsapp_message: 'Olá! Gostaria de ativar a Prospecção Inteligente e aumentar minha geração de leads.' },
-  { title: 'Operações / BI', desc: 'Dashboards, alertas e automação.', cta: 'Conhecer o BI', whatsapp_message: 'Olá! Gostaria de saber mais sobre dashboards, automações e integração de dados.' },
+  { title: 'Diretor / Dono', desc: 'Decisão rápida com dados unificados.', cta: 'Quero ver o painel', section: 'resultados' },
+  { title: 'Marketing / Vendas', desc: 'Leads qualificados, pipeline e conversão.', cta: 'Ver funil de vendas', section: 'solucoes' },
+  { title: 'Operações / BI', desc: 'Dashboards, alertas e automação.', cta: 'Conhecer o BI', section: 'setores' },
 ]
 
 export default function Home() {
@@ -142,44 +142,6 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen bg-[#0B1220] text-slate-100 font-sans">
       <div className="mesh-bg" />
-
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0B1220]/70 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D97706] to-[#1E40AF] flex items-center justify-center shadow-[0_0_12px_rgba(217,119,6,0.25)]">
-              <Database className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-[family-name:var(--font-display)] font-bold text-2xl tracking-tighter text-[#FFFBEB]">Foco em Dados</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#solucoes" className="hover:text-[#FFFBEB] transition-colors border-b-2 border-transparent hover:border-[#D97706] pb-0.5">Soluções</a>
-            <a href="#setores" className="hover:text-[#FFFBEB] transition-colors">Setores</a>
-            <a href="#resultados" className="hover:text-[#FFFBEB] transition-colors">Resultados</a>
-            <Link to="/precos" className="hover:text-[#FFFBEB] transition-colors">Preços</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            {user ? (
-              <Link
-                to="/app"
-                className="h-10 px-5 rounded-full bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-sm flex items-center gap-2 transition-all shadow-[0_0_18px_rgba(217,119,6,0.35)] hover:scale-105 active:scale-95"
-              >
-                <Database className="w-4 h-4" />
-                Acessar Painel
-              </Link>
-            ) : (
-              <>
-                <Link to="/login" className="text-sm font-medium text-slate-300 hover:text-[#FFFBEB] transition-colors">Entrar</Link>
-                <Link
-                  to="/login"
-                  className="h-10 px-5 rounded-full bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] font-bold text-sm flex items-center gap-2 transition-all shadow-[0_0_18px_rgba(217,119,6,0.35)] hover:scale-105 active:scale-95"
-                >
-                  Começar Agora
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
 
       <main>
         {/* Hero */}
@@ -276,7 +238,7 @@ export default function Home() {
                 <p className="text-sm text-slate-300/80 mt-2">{role.desc}</p>
                 <button
                   type="button"
-                  onClick={() => scrollToSection(role.title.includes('Diretor') || role.title.includes('Dono') ? 'resultados' : role.title.includes('Marketing') || role.title.includes('Vendas') ? 'solucoes' : 'setores')}
+                  onClick={() => scrollToSection(role.section)}
                   className="mt-6 h-10 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-[#0B1220] text-sm font-bold flex items-center justify-center gap-2 transition-all"
                 >
                   {role.cta}

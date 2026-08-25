@@ -326,53 +326,53 @@ export default function ContractPanel({ lead, onBack }: { lead?: Lead | null; on
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-[#ffe4af] flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#fabd00]" />
+          <h2 className="text-lg font-bold text-[#3f3f3f] flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#B45309]" />
             Contrato de Prestação de Serviços
           </h2>
-          <p className="text-[11px] text-[#d4c5ab] mt-1">Preencha os campos obrigatórios e gere a minuta em HTML/PDF A4.</p>
+          <p className="text-[11px] text-[#6b6b6b] mt-1">Preencha os campos obrigatórios e gere a minuta em HTML/PDF A4.</p>
         </div>
         {onBack && (
-          <button onClick={onBack} className="h-9 px-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-[#e3e2e2]">
+          <button onClick={onBack} className="h-9 px-4 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] hover:bg-[#EFECE5] text-xs font-semibold text-[#3f3f3f]">
             Voltar
           </button>
         )}
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-sm text-red-300">{error}</div>
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 text-sm text-[#3f3f3f]">{error}</div>
       )}
       {copyOk && (
-        <div className="bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-xl p-4 text-sm text-[#4ade80]">{copyOk}</div>
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 text-sm text-[#3f3f3f]">{copyOk}</div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="glass-card p-4 rounded-2xl space-y-3">
-          <p className="text-xs font-semibold text-[#ffe4af] uppercase tracking-wider">Dados do cliente</p>
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Nome do cliente/negócio" value={form.nome_cliente} onChange={(e) => update('nome_cliente', e.target.value)} />
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 space-y-3">
+          <p className="text-xs font-semibold text-[#3f3f3f] uppercase tracking-wider">Dados do cliente</p>
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Nome do cliente/negócio" value={form.nome_cliente} onChange={(e) => update('nome_cliente', e.target.value)} />
           <div className="grid grid-cols-2 gap-3">
-            <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="CPF/CNPJ" value={form.cpf_cnpj_cliente} onChange={(e) => update('cpf_cnpj_cliente', e.target.value)} />
-            <select className="input-mystic w-full h-9 px-3 text-xs" value={form.cpf_cnpj_cliente_label} onChange={(e) => update('cpf_cnpj_cliente_label', e.target.value)}>
+            <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="CPF/CNPJ" value={form.cpf_cnpj_cliente} onChange={(e) => update('cpf_cnpj_cliente', e.target.value)} />
+            <select className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] focus:outline-none focus:border-[#B45309]" value={form.cpf_cnpj_cliente_label} onChange={(e) => update('cpf_cnpj_cliente_label', e.target.value)}>
               <option value="inscrito(a) no CPF">CPF</option>
               <option value="inscrita no CNPJ">CNPJ</option>
             </select>
           </div>
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Endereço" value={form.endereco_cliente} onChange={(e) => update('endereco_cliente', e.target.value)} />
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Cidade/UF" value={form.cidade_uf_cliente} onChange={(e) => update('cidade_uf_cliente', e.target.value)} />
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="URL do site atual" value={form.url_site_antigo} onChange={(e) => update('url_site_antigo', e.target.value)} />
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="URL da página publicada" value={form.url_publicada} onChange={(e) => update('url_publicada', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Endereço" value={form.endereco_cliente} onChange={(e) => update('endereco_cliente', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Cidade/UF" value={form.cidade_uf_cliente} onChange={(e) => update('cidade_uf_cliente', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="URL do site atual" value={form.url_site_antigo} onChange={(e) => update('url_site_antigo', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="URL da página publicada" value={form.url_publicada} onChange={(e) => update('url_publicada', e.target.value)} />
         </div>
 
-        <div className="glass-card p-4 rounded-2xl space-y-3">
-          <p className="text-xs font-semibold text-[#ffe4af] uppercase tracking-wider">Valor e prazo</p>
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 space-y-3">
+          <p className="text-xs font-semibold text-[#3f3f3f] uppercase tracking-wider">Valor e prazo</p>
           <div className="grid grid-cols-2 gap-3">
-            <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Valor (R$)" value={form.valor} onChange={(e) => update('valor', e.target.value)} />
-            <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Valor por extenso" value={form.valor_extenso} onChange={(e) => update('valor_extenso', e.target.value)} />
+            <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Valor (R$)" value={form.valor} onChange={(e) => update('valor', e.target.value)} />
+            <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Valor por extenso" value={form.valor_extenso} onChange={(e) => update('valor_extenso', e.target.value)} />
           </div>
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Forma de pagamento" value={form.forma_pagamento} onChange={(e) => update('forma_pagamento', e.target.value)} />
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Prazo de entrega" value={form.prazo_entrega} onChange={(e) => update('prazo_entrega', e.target.value)} />
-          <input className="input-mystic w-full h-9 px-3 text-xs" placeholder="Rodadas de ajustes" value={form.rodadas_ajustes} onChange={(e) => update('rodadas_ajustes', e.target.value)} />
-          <label className="flex items-center gap-2 text-xs text-[#e3e2e2]">
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Forma de pagamento" value={form.forma_pagamento} onChange={(e) => update('forma_pagamento', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Prazo de entrega" value={form.prazo_entrega} onChange={(e) => update('prazo_entrega', e.target.value)} />
+          <input className="w-full h-9 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-xs text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]" placeholder="Rodadas de ajustes" value={form.rodadas_ajustes} onChange={(e) => update('rodadas_ajustes', e.target.value)} />
+          <label className="flex items-center gap-2 text-xs text-[#3f3f3f]">
             <input type="checkbox" checked={!!form.clausula_manutencao} onChange={(e) => update('clausula_manutencao', e.target.checked ? `<h2>Cláusula 4ª — Da manutenção mensal</h2><p>O CONTRATANTE contrata ainda o serviço de manutenção mensal da página (hospedagem, pequenas atualizações de texto/imagens e suporte), pelo valor de R$ ___ mensais, com vigência a partir da publicação e renovação automática mensal.</p>` : '')} />
             Incluir cláusula de manutenção
           </label>
@@ -380,27 +380,27 @@ export default function ContractPanel({ lead, onBack }: { lead?: Lead | null; on
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <button onClick={generate} className="btn-glow h-10 px-5 rounded-lg text-xs font-bold flex items-center gap-2">
+        <button onClick={generate} className="h-10 px-5 rounded-lg bg-[#B45309] hover:bg-[#92400E] text-xs font-bold flex items-center gap-2 text-white">
           <FileText className="w-3.5 h-3.5" />
           Gerar Contrato
         </button>
-        <button onClick={downloadHtml} disabled={!html} className="h-10 px-5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-semibold text-[#e3e2e2] disabled:opacity-50 flex items-center gap-2">
+        <button onClick={downloadHtml} disabled={!html} className="h-10 px-5 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] hover:bg-[#EFECE5] text-xs font-semibold text-[#3f3f3f] disabled:opacity-50 flex items-center gap-2">
           <Download className="w-3.5 h-3.5" />
           Baixar HTML
         </button>
-        <button onClick={copyEmail} className="h-10 px-5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-semibold text-[#e3e2e2] flex items-center gap-2">
+        <button onClick={copyEmail} className="h-10 px-5 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] hover:bg-[#EFECE5] text-xs font-semibold text-[#3f3f3f] flex items-center gap-2">
           Abrir rascunho no Gmail
         </button>
       </div>
 
       {html && (
-        <div className="glass-card rounded-2xl border border-white/10 overflow-hidden">
-          <div className="bg-white/[0.04] border-b border-white/10 px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]">
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] overflow-hidden">
+          <div className="border-b border-[#DAD6CD] px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-[#6b6b6b]">
             Pré-visualização — use Ctrl+P para salvar como PDF
           </div>
           <iframe srcDoc={html} title="Pré-visualização do contrato" className="w-full h-[520px] bg-white" sandbox="allow-scripts allow-same-origin" />
         </div>
       )}
     </div>
-  );
+  )
 }

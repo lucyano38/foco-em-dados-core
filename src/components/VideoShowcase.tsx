@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react'
 
-const VIDEOS = [
-  { src: '/media/video1.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Do caos à decisão em segundos', orientation: 'landscape' },
-  { src: '/media/video2.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Automação que trabalha por você', orientation: 'landscape' },
-  { src: '/media/video3.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Pipeline de prospecção inteligente', orientation: 'portrait' },
-  { src: '/media/video4.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Sites de alta conversão', orientation: 'portrait' },
+type MediaKind = 'local' | 'embed'
+
+interface MediaItem {
+  kind: MediaKind
+  src: string
+  title: string
+  sub: string
+}
+
+const MEDIA: MediaItem[] = [
+  { kind: 'local', src: '/media/video1.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Do caos à decisão em segundos' },
+  { kind: 'local', src: '/media/video2.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Automação que trabalha por você' },
+  { kind: 'local', src: '/media/video3.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Pipeline de prospecção inteligente' },
+  { kind: 'local', src: '/media/video4.mp4', title: 'SEUS DADOS TÊM UMA HISTÓRIA', sub: 'Sites de alta conversão' },
 ]
 
 export default function VideoShowcase() {
@@ -32,8 +41,7 @@ export default function VideoShowcase() {
     setIndex((i) => (i === VIDEOS.length - 1 ? 0 : i + 1))
   }
 
-  const current = VIDEOS[index]
-  const isPortrait = current.orientation === 'portrait'
+  const current = MEDIA[index]
 
   return (
     <section className="relative py-20 px-4 bg-[#0B1220]">
@@ -45,21 +53,32 @@ export default function VideoShowcase() {
           <p className="mt-3 text-base sm:text-lg text-[#d4c5ab]">{current.sub}</p>
         </div>
 
-        <div className="relative mx-auto max-w-4xl">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_0_40px_rgba(250,189,0,0.08)]">
+        <div className="relative mx-auto max-w-2xl">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_0_40px_rgba(250,189,0,0.08)]">
             {!error ? (
-              <div className={`relative w-full ${isPortrait ? 'max-w-xs sm:max-w-sm' : 'max-w-3xl'} mx-auto`}>
-                <video
-                  key={current.src}
-                  className="w-full h-auto rounded-3xl"
-                  autoPlay={!reducedMotion}
-                  loop
-                  muted
-                  playsInline
-                  onError={handleError}
-                >
-                  <source src={current.src} type="video/mp4" />
-                </video>
+              <div className="relative w-full aspect-video">
+                {current.kind === 'local' ? (
+                  <video
+                    key={current.src}
+                    className="absolute inset-0 h-full w-full rounded-3xl object-cover"
+                    autoPlay={!reducedMotion}
+                    loop
+                    muted
+                    playsInline
+                    onError={handleError}
+                  >
+                    <source src={current.src} type="video/mp4" />
+                  </video>
+                ) : (
+                  <iframe
+                    src={current.src}
+                    title={current.title}
+                    className="absolute inset-0 h-full w-full rounded-3xl"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                    onError={handleError}
+                  />
+                )}
               </div>
             ) : (
               <div className="flex min-h-[260px] w-full items-center justify-center rounded-3xl bg-slate-900/90 p-6 text-center text-slate-200">
@@ -80,7 +99,7 @@ export default function VideoShowcase() {
 
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
               <span className="text-xs font-mono text-[#ffe4af]/80">
-                {index + 1} / {VIDEOS.length}
+                {index + 1} / {MEDIA.length}
               </span>
               <div className="flex items-center gap-2">
                 <button

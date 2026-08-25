@@ -27,6 +27,15 @@
   --color-border-subtle: rgba(255, 255, 255, 0.06);
   --color-border-default: rgba(255, 255, 255, 0.1);
   --color-border-hover: rgba(255, 255, 255, 0.15);
+
+  /* OpenSquad UI — Warm Parchment / Soft Charcoal */
+  --color-bg: #F4F1EA;
+  --color-rail: #E7E4DB;
+  --color-nest: #FFFFFF;
+  --color-stage: #EFECE5;
+  --color-panel: #FFFFFF;
+  --color-border: #DAD6CD;
+  --color-primary: #B45309;
 }
 
 body {

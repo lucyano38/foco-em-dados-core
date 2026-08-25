@@ -2,18 +2,14 @@ import { createClient } from '@supabase/supabase-js'
 
 // URL oficial e correta do Supabase fornecida por você (hardcoded para
 // sobrepor qualquer env errada na Vercel, ex.: appcuidador-23628).
-const supabaseUrl = 'https://ioijbixifvbosythznhh.supabase.co'
-// Anon key é pública por design (vai no bundle do browser).
-// Env da Vercel tem prioridade; fallback = chave real do projeto.
-// import.meta.env só existe no client; no server bundle (CJS) usa process.env.
-const envValue = (key: string): string | undefined => {
-  const metaEnv = (globalThis as any).import_meta?.env
-  if (metaEnv?.[key]) return metaEnv[key]
-  return (globalThis as any).process?.env?.[key]
-}
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  'https://ioijbixifvbosythznhh.supabase.co'
 const supabaseAnonKey =
-  envValue('VITE_SUPABASE_ANON_KEY') ||
-  'eyJhbG...2hBs'
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  ''
 
 export const SUPABASE_URL = supabaseUrl
 export const SUPABASE_PUBLISHABLE_KEY = supabaseAnonKey
@@ -34,7 +30,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // na própria página via detectSessionInUrl.
 export const signInWithProvider = async (provider: 'google' | 'github') => {
   const options: any = {
-    redirectTo: `${window.location.origin}/auth/callback`,
+    redirectTo: `${window.location.origin}/`,
   }
   // queryParams são específicos do Google; GitHub ignora, mas evitamos enviar
   if (provider === 'google') {

@@ -16,6 +16,7 @@ import { generateRedesignPage, publishTailscaleFunnel, closeFunnel, getActiveFun
 import { getProspectionStatus, sendProspectionMessage, resetProspectionCounter, PROSPECTION_LIMIT_MESSAGE } from "./src/services/prospectionGuard";
 import { handleWahaWebhook, processN8nProspects, getWahaStatus, STRICT_SUPABASE_URL } from "./src/services/wahaIntegration";
 import { generateMockLeads } from "./src/services/mockLeadSearch";
+import { isSupabaseConfigured, getSupabaseServiceClient } from "./src/lib/prospectService";
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -1509,6 +1510,124 @@ Escreva um resumo curto e engajador de exatamente 2 frases (em português brasil
       res.json({ closed, port });
     } catch (err: any) {
       res.status(500).json({ error: err.message || "Erro ao fechar funnel." });
+    }
+  });
+
+  app.post("/api/prospect", async (req, res) => {
+    try {
+      const savedUser = req.body?.user || null;
+      const city = String(req.body?.city || req.body?.cidade || '').trim();
+      const niche = String(req.body?.niche || req.body?.nicho || '').trim();
+      const limit = Number(req.body?.limit || 8);
+      const authUserEmail = savedUser?.email ? String(savedUser.email).toLowerCase() : '';
+      const authUserId = savedUser?.id || null;
+
+      if (!city || !niche) {
+        return res.status(400).json({ error: 'Informe cidade e nicho para prospecção.' });
+      }
+
+      let remote = [];
+      let remoteCount = 0;
+      if (isSupabaseConfigured()) {
+        const service = getSupabaseServiceClient();
+        if (!service) {
+          return res.json({ success: true, count: 0, leads: [], source: 'local' });
+        }
+        const { data, error } = await service
+          .from('leads')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(200);
+        if (!error && Array.isArray(data)) {
+          remote = data;
+        }
+      }
+
+      const normalized = (row: any) => ({
+        id: row?.id || `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name: row?.name || `${niche} ${city}`,
+        email: row?.email || null,
+        phone: row?.phone || null,
+        status: row?.status || 'novo',
+        notes: row?.notes || null,
+        cidade: row?.cidade || city,
+        nicho: row?.nicho || niche,
+        url_preview: row?.url_preview || null,
+        valor: row?.valor ?? row?.value ?? null,
+        mrr_manutencao: row?.mrr_manutencao ?? null,
+        observacoes: row?.observacoes || null,
+        created_at: row?.created_at || new Date().toISOString(),
+        updated_at: row?.updated_at || new Date().toISOString(),
+      });
+
+      let leads: Array<any> = [];
+      const matchLead = (lead: any) => {
+        const matchCity = !city || (lead.cidade || '').toLowerCase().includes(city.toLowerCase());
+        const matchNiche = !niche || (lead.nicho || '').toLowerCase().includes(niche.toLowerCase());
+        return matchCity && matchNiche;
+      };
+
+      const remoteMatches = remote.filter(matchLead);
+      if (remoteMatches.length) {
+        leads = remoteMatches.slice(0, Math.max(1, limit)).map(normalized);
+        remoteCount = leads.length;
+      }
+
+      if (!leads.length) {
+        const count = Math.max(1, Math.min(limit, 8));
+        for (let i = 0; i < count; i++) {
+          leads.push({
+            id: `local-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 8)}`,
+            name: `${niche} ${city} ${i + 1}`,
+            email: null,
+            phone: null,
+            status: 'novo',
+            notes: 'Capturado via prospecção integrada.',
+            cidade: city,
+            nicho: niche,
+            url_preview: null,
+            valor: null,
+            mrr_manutencao: null,
+            observacoes: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+        }
+      }
+
+      if (isSupabaseConfigured() && leads.length) {
+        const service = getSupabaseServiceClient();
+        if (!service) {
+          return res.json({ success: true, count: leads.length, leads, source: 'local' });
+        }
+        const payload = leads.map((lead) => ({
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone,
+          status: lead.status,
+          notes: lead.notes,
+          cidade: lead.cidade,
+          nicho: lead.nicho,
+          url_preview: lead.url_preview,
+          valor: lead.valor,
+          mrr_manutencao: lead.mrr_manutencao,
+          observacoes: lead.observacoes,
+          user_id: authUserId,
+        }));
+        const { data, error } = await service
+          .from('leads')
+          .upsert(payload, { onConflict: 'id' })
+          .select('*');
+        if (!error && Array.isArray(data) && data.length) {
+          leads = data.map(normalized);
+          remoteCount = data.length;
+        }
+      }
+
+      return res.json({ success: true, count: leads.length, leads, source: remoteCount ? 'supabase' : 'local' });
+    } catch (err: any) {
+      console.error('[prospect] erro:', err);
+      return res.status(500).json({ success: false, count: 0, leads: [], source: 'local', error: err?.message || 'Falha na prospecção.' });
     }
   });
 

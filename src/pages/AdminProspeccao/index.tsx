@@ -178,26 +178,26 @@ export default function AdminProspeccao() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#121414] text-[#e3e2e2] font-sans">
-      <div className="mesh-bg" />
+    <div className="w-full min-h-screen bg-[#EFECE5] text-[#3f3f3f] font-sans">
+      <div className="bg-[#F4F1EA]/80 backdrop-blur-xl" />
 
-      <header className="border-b border-[#4f4632]/40 backdrop-blur-xl bg-[#121414]/70 sticky top-0 z-40">
+      <header className="border-b border-[#DAD6CD] bg-[#FFFFFF]/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center">
-              <Database className="w-3.5 h-3.5 text-[#121414]" />
+            <div className="w-7 h-7 rounded-lg bg-[#B45309] flex items-center justify-center">
+              <Database className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-bold text-sm">Prospector de Sites</span>
-            <span className="text-[10px] font-mono text-[#ffe4af] bg-[#fabd00]/10 px-2 py-0.5 rounded-full ml-2 border border-[#fabd00]/20 flex items-center gap-1">
+            <span className="font-bold text-sm text-[#3f3f3f]">Prospector de Sites</span>
+            <span className="text-[10px] font-mono text-[#B45309] bg-[#B45309]/10 px-2 py-0.5 rounded-full ml-2 border border-[#B45309]/20 flex items-center gap-1">
               <ShieldCheck className="w-3 h-3" /> ADMIN
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/admin" className="inline-flex items-center gap-1.5 text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">
+            <Link to="/admin" className="inline-flex items-center gap-1.5 text-xs text-[#B45309] hover:text-[#92400E] transition-colors">
               <ArrowLeft className="w-3 h-3" />
               Pipeline
             </Link>
-            <Link to="/app" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">Área do Cliente</Link>
+            <Link to="/app" className="text-xs text-[#6b6b6b] hover:text-[#3f3f3f] transition-colors">Área do Cliente</Link>
           </div>
         </div>
       </header>
@@ -205,15 +205,15 @@ export default function AdminProspeccao() {
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-[#ffe4af]">Painel Prospector de Sites</h1>
-            <p className="text-xs text-[#d4c5ab] mt-1">
+            <h1 className="text-xl font-bold text-[#3f3f3f]">Painel Prospector de Sites</h1>
+            <p className="text-xs text-[#6b6b6b] mt-1">
               Prospecção inteligente, redesign de sites, pipeline de vendas e contratos — dados direto da tabela {isSupabaseConfigured ? 'leads (Supabase)' : 'leads (local)'}.
             </p>
           </div>
           <button
             onClick={loadLeads}
             disabled={loadingLeads}
-            className="btn-glow h-9 px-4 rounded-lg text-xs font-bold flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="h-9 px-4 rounded-lg text-xs font-bold flex items-center gap-2 disabled:opacity-50 cursor-pointer bg-[#B45309] hover:bg-[#92400E] text-white"
           >
             {loadingLeads ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshIcon />}
             Atualizar Leads
@@ -221,27 +221,27 @@ export default function AdminProspeccao() {
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-            <p className="text-sm text-red-300">{error}</p>
+          <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 flex items-center gap-3">
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+            <p className="text-sm text-[#3f3f3f]">{error}</p>
           </div>
         )}
         {success && (
-          <div className="bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-xl p-4 flex items-center gap-3">
-            <CheckCircle2 className="w-4 h-4 text-[#4ade80] shrink-0" />
-            <p className="text-sm text-[#4ade80]">{success}</p>
+          <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 flex items-center gap-3">
+            <CheckCircle2 className="w-4 h-4 text-[#B45309] shrink-0" />
+            <p className="text-sm text-[#3f3f3f]">{success}</p>
           </div>
         )}
 
-        <nav className="flex flex-wrap items-center gap-2 border-b border-[#4f4632]/40 pb-2">
+        <nav className="flex flex-wrap items-center gap-2 border-b border-[#DAD6CD] pb-2">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 tab === t.id
-                  ? 'bg-[#fabd00]/10 border border-[#fabd00]/40 text-[#ffe4af]'
-                  : 'text-[#d4c5ab] hover:text-[#e3e2e2] border border-transparent'
+                  ? 'bg-[#B45309]/10 border border-[#B45309]/40 text-[#B45309]'
+                  : 'text-[#6b6b6b] hover:text-[#3f3f3f] border border-transparent'
               }`}
             >
               <t.icon className="w-3.5 h-3.5" />
@@ -262,19 +262,19 @@ export default function AdminProspeccao() {
         {tab === 'kanban' && (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
             {PROSPECTOR_STAGES.map((s) => (
-              <div key={s.id} className="glass-card p-3 rounded-2xl">
-                <p className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]/70 mb-3">
+              <div key={s.id} className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-3">
+                <p className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-[#6b6b6b]/70 mb-3">
                   <span style={{ color: s.dot }}>{s.label}</span>
-                  <span className="bg-white/5 border border-white/10 rounded-full px-1.5 py-0.5 text-[#e3e2e2]">{byStage[s.id].length}</span>
+                  <span className="bg-[#F4F1EA] border border-[#DAD6CD] rounded-full px-1.5 py-0.5 text-[#3f3f3f]">{byStage[s.id].length}</span>
                 </p>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
                   {byStage[s.id].length === 0 && (
-                    <p className="text-[11px] text-[#d4c5ab]/40 text-center py-4">Vazio</p>
+                    <p className="text-[11px] text-[#6b6b6b]/40 text-center py-4">Vazio</p>
                   )}
                   {byStage[s.id].map((lead) => (
-                    <div key={lead.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
-                      <p className="text-xs font-semibold text-[#e3e2e2] truncate">{lead.name}</p>
-                      <p className="text-[10px] text-[#d4c5ab] truncate">
+                    <div key={lead.id} className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-2.5">
+                      <p className="text-xs font-semibold text-[#3f3f3f] truncate">{lead.name}</p>
+                      <p className="text-[10px] text-[#6b6b6b] truncate">
                         {lead.value ? formatBRL(Number(lead.value)) : 'Sem valor'} · {lead.phone || 'sem tel.'}
                       </p>
                       <div className="mt-2 flex items-center gap-1">
@@ -283,7 +283,7 @@ export default function AdminProspeccao() {
                             onClick={() => moveStatus(lead, STAGE_ORDER[STAGE_ORDER.indexOf(lead.status) - 1])}
                             disabled={movingId === lead.id}
                             title={`Voltar para ${STAGE_LABEL[STAGE_ORDER[STAGE_ORDER.indexOf(lead.status) - 1]]}`}
-                            className="p-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#d4c5ab] disabled:opacity-50 cursor-pointer"
+                            className="p-1 rounded-md bg-[#F4F1EA] hover:bg-[#EFECE5] border border-[#DAD6CD] text-[#6b6b6b] disabled:opacity-50 cursor-pointer"
                           >
                             <ArrowLeft className="w-3 h-3" />
                           </button>
@@ -293,7 +293,7 @@ export default function AdminProspeccao() {
                             onClick={() => moveStatus(lead, STAGE_ORDER[STAGE_ORDER.indexOf(lead.status) + 1])}
                             disabled={movingId === lead.id}
                             title={`Avançar para ${STAGE_LABEL[STAGE_ORDER[STAGE_ORDER.indexOf(lead.status) + 1]]}`}
-                            className="p-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#e3e2e2] disabled:opacity-50 cursor-pointer ml-auto"
+                            className="p-1 rounded-md bg-[#F4F1EA] hover:bg-[#EFECE5] border border-[#DAD6CD] text-[#3f3f3f] disabled:opacity-50 cursor-pointer ml-auto"
                           >
                             {movingId === lead.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <MoveRight className="w-3 h-3" />}
                           </button>
@@ -304,7 +304,7 @@ export default function AdminProspeccao() {
                             target="_blank"
                             rel="noreferrer"
                             title="Abrir WhatsApp"
-                            className="p-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#4ade80]"
+                            className="p-1 rounded-md bg-[#F4F1EA] hover:bg-[#EFECE5] border border-[#DAD6CD] text-[#B45309]"
                           >
                             <MessageCircle className="w-3 h-3" />
                           </a>
@@ -315,7 +315,7 @@ export default function AdminProspeccao() {
                             setSelectedContractLead(lead.id);
                           }}
                           title="Gerar contrato"
-                          className="p-1 rounded-md bg-[#ffc107]/10 hover:bg-[#ffc107]/20 border border-[#ffc107]/30 text-[#ffc107]"
+                          className="p-1 rounded-md bg-[#B45309]/10 hover:bg-[#B45309]/15 border border-[#B45309]/25 text-[#B45309]"
                         >
                           <FileText className="w-3 h-3" />
                         </button>
@@ -333,7 +333,7 @@ export default function AdminProspeccao() {
         {tab === 'contracts' && <ContractPanel lead={leads.find((l) => l.id === selectedContractLead) || leads[0] || null} />}
       </main>
     </div>
-  );
+  )
 }
 
 function RefreshIcon() {
@@ -346,15 +346,15 @@ function formatBRL(value: number): string {
 
 function MetricCard({ icon: Icon, label, value, sub, tint }: { icon: any; label: string; value: string; sub: string; tint: string }) {
   return (
-    <div className="glass-card p-5 rounded-2xl">
+    <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-5">
       <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: `${tint}14`, border: `1px solid ${tint}33` }}>
         <Icon className="w-4 h-4" style={{ color: tint }} />
       </div>
-      <p className="text-[10px] font-mono uppercase tracking-widest text-[#d4c5ab]/70">{label}</p>
-      <p className="text-2xl font-extrabold text-[#ffe4af] mt-1">{value}</p>
-      <p className="text-[11px] text-[#d4c5ab]/60 mt-1">{sub}</p>
+      <p className="text-[10px] font-mono uppercase tracking-widest text-[#6b6b6b]/70">{label}</p>
+      <p className="text-2xl font-extrabold text-[#3f3f3f] mt-1">{value}</p>
+      <p className="text-[11px] text-[#6b6b6b]/60 mt-1">{sub}</p>
     </div>
-  );
+  )
 }
 
 function ContractsPanel({ leads }: { leads: ProspectorLead[] }) {

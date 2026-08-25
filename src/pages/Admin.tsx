@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { safeJson } from '../lib/safeFetch';
 import LeadFinder from '../components/LeadFinder';
+import ContractPanel from '../components/ContractPanel';
 import {
   Database, Plus, Trash2, Send, Phone, Mail, ArrowRight, GripVertical,
   ShieldCheck, Users, Target, CheckCircle2, Loader2, Sparkles,
@@ -33,9 +34,10 @@ export const PIPELINE_STAGES: {
   { id: 'proposta', label: 'Proposta', number: 3, accent: 'border-[#cdbdff]/40', dot: '#cdbdff' },
   { id: 'negociacao', label: 'Negociação', number: 4, accent: 'border-[#ff8a5c]/40', dot: '#ff8a5c' },
   { id: 'fechamento', label: 'Fechamento', number: 5, accent: 'border-[#4ade80]/40', dot: '#4ade80' },
+  { id: 'fechado', label: 'Fechado', number: 6, accent: 'border-[#B45309]', dot: '#B45309' },
 ];
 
-export type PipelineStageId = 'prospeccao' | 'qualificacao' | 'proposta' | 'negociacao' | 'fechamento';
+export type PipelineStageId = 'prospeccao' | 'qualificacao' | 'proposta' | 'negociacao' | 'fechamento' | 'fechado';
 
 const STORAGE_KEY = 'foco_admin_pipeline';
 
@@ -60,6 +62,7 @@ const STAGE_LABEL: Record<PipelineStageId, string> = {
   proposta: 'Proposta',
   negociacao: 'Negociação',
   fechamento: 'Fechamento',
+  fechado: 'Fechado',
 };
 
 export default function Admin() {
@@ -70,6 +73,8 @@ export default function Admin() {
   const [dragOverStage, setDragOverStage] = useState<PipelineStageId | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', notes: '', value: '' });
+  const [showContractPanel, setShowContractPanel] = useState(false);
+  const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [batchWorking, setBatchWorking] = useState(false);
@@ -183,8 +188,13 @@ export default function Admin() {
   const moveLead = (id: string, status: PipelineStageId) => {
     setDragOverStage(null);
     setLeads((prev) => {
-      const next = prev.map((l) => (l.id === id ? { ...l, status } : l));
+      const nextStatus = status === 'fechamento' ? 'fechado' : status;
+      const next = prev.map((l) => (l.id === id ? { ...l, status: nextStatus } : l));
       persist(next);
+      if (nextStatus === 'fechado') {
+        setSelectedContractId(id);
+        setShowContractPanel(true);
+      }
       return next;
     });
   };
@@ -321,29 +331,29 @@ export default function Admin() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#121414] text-[#e3e2e2] font-sans">
-      <div className="mesh-bg" />
+    <div className="w-full min-h-screen bg-[#EFECE5] text-[#3f3f3f] font-sans">
+      <div className="bg-[#F4F1EA]/80 backdrop-blur-xl" />
 
-      <header className="border-b border-[#4f4632]/40 backdrop-blur-xl bg-[#121414]/70 sticky top-0 z-40">
+      <header className="border-b border-[#DAD6CD] bg-[#FFFFFF]/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#fabd00] to-[#5203d5] flex items-center justify-center">
-              <Database className="w-3.5 h-3.5 text-[#121414]" />
+            <div className="w-7 h-7 rounded-lg bg-[#B45309] flex items-center justify-center">
+              <Database className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-[family-name:var(--font-display)] font-bold text-sm">Painel Administrativo</span>
-            <span className="text-[10px] font-mono text-[#ffe4af] bg-[#fabd00]/10 px-2 py-0.5 rounded-full ml-2 border border-[#fabd00]/20 flex items-center gap-1">
+            <span className="font-bold text-sm text-[#3f3f3f]">Painel Administrativo</span>
+            <span className="text-[10px] font-mono text-[#B45309] bg-[#B45309]/10 px-2 py-0.5 rounded-full ml-2 border border-[#B45309]/20 flex items-center gap-1">
               <ShieldCheck className="w-3 h-3" /> ADMIN
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/admin/prospeccao" className="inline-flex items-center gap-1.5 text-xs text-[#fabd00] hover:text-[#ffe4af] transition-colors">
+            <Link to="/admin/prospeccao" className="inline-flex items-center gap-1.5 text-xs text-[#B45309] hover:text-[#92400E] transition-colors">
               <Sparkles className="w-3.5 h-3.5" />
               Prospecção Redesign
             </Link>
-            <Link to="/app" className="text-xs text-[#d4c5ab] hover:text-[#e3e2e2] transition-colors">Área do Cliente</Link>
+            <Link to="/app" className="text-xs text-[#6b6b6b] hover:text-[#3f3f3f] transition-colors">Área do Cliente</Link>
             <button
               onClick={() => signOut()}
-              className="text-xs text-[#d4c5ab] hover:text-red-400 transition-colors cursor-pointer"
+              className="text-xs text-[#6b6b6b] hover:text-red-500 transition-colors cursor-pointer"
             >
               Sair
             </button>
@@ -354,14 +364,14 @@ export default function Admin() {
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#ffe4af]">Pipeline de Vendas</h1>
-            <p className="text-sm text-[#d4c5ab] mt-1">
+            <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#3f3f3f]">Pipeline de Vendas</h1>
+            <p className="text-sm text-[#6b6b6b] mt-1">
               Kanban estilo RD Station / HubSpot — arraste os cards entre as etapas.
             </p>
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="btn-glow h-11 px-6 rounded-xl text-sm flex items-center gap-2 cursor-pointer"
+            className="h-11 px-6 rounded-xl text-sm flex items-center gap-2 cursor-pointer bg-[#B45309] hover:bg-[#92400E] text-white"
           >
             <Plus className="w-4 h-4" />
             Nova Prospecção
@@ -378,28 +388,28 @@ export default function Admin() {
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {PIPELINE_STAGES.map((s) => (
-            <div key={s.id} className="glass-card p-4">
-              <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#d4c5ab]/70">
+            <div key={s.id} className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4">
+              <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#6b6b6b]/70">
                 {s.number}. {s.label}
               </p>
-              <p className="font-[family-name:var(--font-display)] text-2xl font-bold" style={{ color: s.dot }}>
+              <p className="font-[family-name:var(--font-display)] text-2xl font-bold text-[#3f3f3f]">
                 {byStage(s.id).length}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="glass-card p-4 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-[#d4c5ab]">
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-4 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-[#6b6b6b]">
             <Users className="w-3.5 h-3.5 inline mr-1.5" />
             {leads.length} leads no pipeline
           </p>
-          <p className="text-xs text-[#4ade80] font-mono">
+          <p className="text-xs text-[#B45309] font-mono">
             Valor em Fechamento: <strong>R$ {totalValue.toLocaleString('pt-BR')}</strong>
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-start">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 items-start">
           {PIPELINE_STAGES.map((stage) => (
             <div
               key={stage.id}
@@ -412,22 +422,22 @@ export default function Admin() {
                 e.preventDefault();
                 if (dragId) moveLead(dragId, stage.id);
               }}
-              className={`rounded-2xl border bg-white/[0.02] p-3 min-h-[320px] transition-all ${
-                dragOverStage === stage.id ? 'border-[#fabd00]/60 bg-[#fabd00]/[0.04]' : `border-[#4f4632]/50 ${stage.accent}`
+              className={`rounded-xl border bg-[#FFFFFF] p-3 min-h-[320px] transition-all ${
+                dragOverStage === stage.id ? 'border-[#B45309] bg-[#B45309]/[0.04]' : 'border-[#DAD6CD]'
               }`}
             >
               <div className="flex items-center justify-between mb-3 px-1">
-                <span className="text-xs font-semibold flex items-center gap-2">
+                <span className="text-xs font-semibold flex items-center gap-2 text-[#3f3f3f]">
                   <span className="w-2 h-2 rounded-full" style={{ background: stage.dot }} />
                   {stage.number}. {stage.label}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-[#d4c5ab]/60">{byStage(stage.id).length}</span>
+                  <span className="text-[10px] font-mono text-[#6b6b6b]/60">{byStage(stage.id).length}</span>
                   {stage.id === 'prospeccao' && (
                     <button
                       onClick={sendBatch}
                       disabled={batchWorking || sendingId !== null}
-                      className="flex items-center gap-1 text-[10px] text-[#4ade80] border border-[#4ade80]/30 rounded-md px-2 py-1 hover:bg-[#4ade80]/10 disabled:opacity-50 cursor-pointer"
+                      className="flex items-center gap-1 text-[10px] text-[#B45309] border border-[#B45309]/30 rounded-md px-2 py-1 hover:bg-[#B45309]/10 disabled:opacity-50 cursor-pointer"
                       title="Envia abordagem persuasiva por WhatsApp e e-mail em lotes de 5 (limite Resend)"
                     >
                       {batchWorking ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
@@ -437,7 +447,7 @@ export default function Admin() {
                 </div>
               </div>
               {batchFeedback && stage.id === 'prospeccao' && (
-                <p className="text-[10px] font-mono text-[#4ade80]/90 mb-2 flex items-center gap-1.5">
+                <p className="text-[10px] font-mono text-[#B45309]/90 mb-2 flex items-center gap-1.5">
                   <Loader2 className="w-3 h-3 animate-spin" /> {batchFeedback}
                 </p>
               )}
@@ -449,42 +459,42 @@ export default function Admin() {
                     draggable
                     onDragStart={() => setDragId(lead.id)}
                     onDragEnd={() => setDragId(null)}
-                    className="glass-card rounded-xl p-3 cursor-grab active:cursor-grabbing card-hover group"
+                    className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-3 cursor-grab active:cursor-grabbing card-hover group"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-[#e3e2e2] leading-snug">{lead.name}</p>
-                      <GripVertical className="w-3.5 h-3.5 text-[#d4c5ab]/40 shrink-0" />
+                      <p className="text-sm font-semibold text-[#3f3f3f] leading-snug">{lead.name}</p>
+                      <GripVertical className="w-3.5 h-3.5 text-[#6b6b6b]/40 shrink-0" />
                     </div>
                     {lead.source && (
-                      <span className="text-[10px] font-mono text-[#fabd00]/80">{lead.source}</span>
+                      <span className="text-[10px] font-mono text-[#B45309]/80">{lead.source}</span>
                     )}
                     {lead.notes && (
-                      <p className="text-[11px] text-[#d4c5ab]/70 mt-1.5 line-clamp-2">{lead.notes}</p>
+                      <p className="text-[11px] text-[#6b6b6b]/70 mt-1.5 line-clamp-2">{lead.notes}</p>
                     )}
                     <div className="flex items-center gap-2 mt-2.5">
                       {lead.phone && (
-                        <a href={`https://wa.me/${lead.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-[#4ade80]/80 hover:text-[#4ade80]" title="Abrir WhatsApp">
+                        <a href={`https://wa.me/${lead.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-[#B45309]/80 hover:text-[#B45309]" title="Abrir WhatsApp">
                           <Phone className="w-3.5 h-3.5" />
                         </a>
                       )}
                       {lead.email && (
-                        <a href={`mailto:${lead.email}`} className="text-[#60a5fa]/80 hover:text-[#60a5fa]" title="Enviar e-mail">
+                        <a href={`mailto:${lead.email}`} className="text-[#0e7490]/80 hover:text-[#0e7490]" title="Enviar e-mail">
                           <Mail className="w-3.5 h-3.5" />
                         </a>
                       )}
                       {lead.value ? (
-                        <span className="ml-auto font-mono text-[11px] text-[#ffe4af]">
+                        <span className="ml-auto font-mono text-[11px] text-[#3f3f3f]">
                           R$ {lead.value.toLocaleString('pt-BR')}
                         </span>
                       ) : (
                         <span className="ml-auto" />
                       )}
                     </div>
-                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#DAD6CD] opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => sendApproach(lead)}
                         disabled={sendingId === lead.id}
-                        className="flex items-center gap-1 text-[10px] text-[#fabd00] hover:underline cursor-pointer disabled:opacity-50"
+                        className="flex items-center gap-1 text-[10px] text-[#B45309] hover:underline cursor-pointer disabled:opacity-50"
                         title="Enviar abordagem (WhatsApp/e-mail)"
                       >
                         {sendingId === lead.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
@@ -492,15 +502,15 @@ export default function Admin() {
                       </button>
                       <button
                         onClick={() => removeLead(lead.id)}
-                        className="flex items-center gap-1 text-[10px] text-red-400/80 hover:text-red-400 cursor-pointer"
+                        className="flex items-center gap-1 text-[10px] text-red-500/80 hover:text-red-500 cursor-pointer"
                       >
                         <Trash2 className="w-3 h-3" />
                         Remover
                       </button>
-                      {stage.id !== 'fechamento' && (
+                      {stage.id !== 'fechamento' && stage.id !== 'fechado' && (
                         <button
                           onClick={() => moveLead(lead.id, PIPELINE_STAGES[stage.number].id as PipelineStageId)}
-                          className="ml-auto text-[10px] text-[#d4c5ab]/60 hover:text-[#ffe4af] cursor-pointer"
+                          className="ml-auto text-[10px] text-[#6b6b6b]/60 hover:text-[#3f3f3f] cursor-pointer"
                           title={`Mover para ${PIPELINE_STAGES[stage.number].label}`}
                         >
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -510,7 +520,7 @@ export default function Admin() {
                   </div>
                 ))}
                 {byStage(stage.id).length === 0 && (
-                  <div className="rounded-xl border border-dashed border-[#4f4632]/40 p-4 text-center text-[11px] text-[#d4c5ab]/40">
+                  <div className="rounded-xl border border-dashed border-[#DAD6CD] p-4 text-center text-[11px] text-[#6b6b6b]/40">
                     Solte leads aqui
                   </div>
                 )}
@@ -519,82 +529,82 @@ export default function Admin() {
           ))}
         </div>
 
-        <div className="glass-card p-5 flex items-start gap-3">
-          <Target className="w-4 h-4 text-[#cdbdff] shrink-0 mt-0.5" />
-          <p className="text-xs text-[#d4c5ab] leading-relaxed">
-            <strong className="text-[#e3e2e2]">Fluxo de conversão:</strong> o Agente Luciano captura leads (empresas com ou sem site),
+        <div className="rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] p-5 flex items-start gap-3">
+          <Target className="w-4 h-4 text-[#B45309] shrink-0 mt-0.5" />
+          <p className="text-xs text-[#6b6b6b] leading-relaxed">
+            <strong className="text-[#3f3f3f]">Fluxo de conversão:</strong> o Agente Luciano captura leads (empresas com ou sem site),
             insere na etapa <strong>1. Prospecção</strong> e você conduz até <strong>5. Fechamento</strong>. O botão "Enviar"
             dispara a abordagem via WhatsApp/e-mail (limite de 5 prospecções/dia na política atual).
           </p>
         </div>
 
         <div className="flex items-center gap-2 justify-center pb-6">
-          <CheckCircle2 className="w-4 h-4 text-[#4ade80]" />
-          <span className="text-xs text-[#d4c5ab]/60">Sincronizado com o CRM (tabela leads do Supabase)</span>
+          <CheckCircle2 className="w-4 h-4 text-[#B45309]" />
+          <span className="text-xs text-[#6b6b6b]/60">Sincronizado com o CRM (tabela leads do Supabase)</span>
         </div>
       </main>
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <form onSubmit={addLead} className="glassmorphism p-6 w-full max-w-md rounded-2xl space-y-4">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-[#ffe4af]">Nova Prospecção</h2>
+          <form onSubmit={addLead} className="rounded-2xl border border-[#DAD6CD] bg-[#FFFFFF] p-6 w-full max-w-md space-y-4">
+            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-[#3f3f3f]">Nova Prospecção</h2>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#d4c5ab] ml-1">Nome da empresa/contato *</label>
+              <label className="text-xs text-[#6b6b6b] ml-1">Nome da empresa/contato *</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Ex.: Loja Bella Moda"
-                className="input-mystic w-full h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
+                className="w-full h-10 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-sm text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#d4c5ab] ml-1">WhatsApp</label>
+                <label className="text-xs text-[#6b6b6b] ml-1">WhatsApp</label>
                 <input
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder="5511999999999"
-                  className="input-mystic w-full h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
+                  className="w-full h-10 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-sm text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[#d4c5ab] ml-1">Valor (R$)</label>
+                <label className="text-xs text-[#6b6b6b] ml-1">Valor (R$)</label>
                 <input
                   value={form.value}
                   onChange={(e) => setForm({ ...form, value: e.target.value })}
                   placeholder="Ex.: 1500"
-                  className="input-mystic w-full h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
+                  className="w-full h-10 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-sm text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#d4c5ab] ml-1">E-mail</label>
+              <label className="text-xs text-[#6b6b6b] ml-1">E-mail</label>
               <input
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="contato@empresa.com.br"
-                className="input-mystic w-full h-10 px-3 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40"
+                className="w-full h-10 rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 text-sm text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 focus:outline-none focus:border-[#B45309]"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#d4c5ab] ml-1">Observações</label>
+              <label className="text-xs text-[#6b6b6b] ml-1">Observações</label>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 rows={2}
                 placeholder="Contexto, interesse, próximo passo..."
-                className="input-mystic w-full px-3 py-2 text-sm text-[#e3e2e2] placeholder:text-[#d4c5ab]/40 resize-none"
+                className="w-full rounded-lg border border-[#DAD6CD] bg-[#F4F1EA] px-3 py-2 text-sm text-[#3f3f3f] placeholder:text-[#6b6b6b]/40 resize-none focus:outline-none focus:border-[#B45309]"
               />
             </div>
             <div className="flex gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="h-10 px-4 rounded-lg border border-[#4f4632]/60 text-sm text-[#d4c5ab] hover:border-[#fabd00]/50 transition-all cursor-pointer"
+                className="h-10 px-4 rounded-lg border border-[#DAD6CD] text-sm text-[#6b6b6b] hover:border-[#B45309]/50 transition-all cursor-pointer"
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn-glow h-10 px-6 rounded-lg text-sm flex-1 cursor-pointer">
+              <button type="submit" className="h-10 px-6 rounded-lg bg-[#B45309] hover:bg-[#92400E] text-sm font-semibold text-white flex-1 cursor-pointer">
                 Adicionar ao Pipeline
               </button>
             </div>
@@ -603,16 +613,30 @@ export default function Admin() {
       )}
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glassmorphism px-5 py-3 rounded-xl text-sm text-[#e3e2e2] max-w-md text-center">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-xl border border-[#DAD6CD] bg-[#FFFFFF] px-5 py-3 text-sm text-[#3f3f3f] max-w-md text-center">
           {toast}
         </div>
       )}
 
+      {showContractPanel && selectedContractId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-4xl">
+            <ContractPanel
+              lead={leads.find((l) => l.id === selectedContractId) || null}
+              onBack={() => {
+                setShowContractPanel(false);
+                setSelectedContractId(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="text-center pb-8">
-        <Link to="/" className="text-xs text-[#d4c5ab]/50 hover:text-[#fabd00] transition-colors">
+        <Link to="/" className="text-xs text-[#6b6b6b]/50 hover:text-[#B45309] transition-colors">
           Voltar para o site
         </Link>
       </div>
     </div>
-  );
+  )
 }
