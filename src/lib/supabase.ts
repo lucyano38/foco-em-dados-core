@@ -1,7 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-// URL oficial e correta do Supabase fornecida por você (hardcoded para
-// sobrepor qualquer env errada na Vercel, ex.: appcuidador-23628).
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
   process.env.VITE_SUPABASE_URL ||
@@ -14,32 +12,47 @@ const supabaseAnonKey =
 export const SUPABASE_URL = supabaseUrl
 export const SUPABASE_PUBLISHABLE_KEY = supabaseAnonKey
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+export function isSupabaseConfigured(): boolean {
+  return Boolean(supabaseUrl && supabaseAnonKey)
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-  },
-})
+let client: SupabaseClient | null = null
 
-// Autenticação OAuth (Google e GitHub).
-// redirectTo vai direto para /dashboard — o supabase-js troca o código PKCE
-// na própria página via detectSessionInUrl.
+export function getSupabaseClient(): SupabaseClient | null {
+  if (!isSupabaseConfigured()) {
+    return null
+  }
+  if (!client) {
+    client = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+      },
+    })
+  }
+  return client
+}
+
+export const supabase = getSupabaseClient()
+
 export const signInWithProvider = async (provider: 'google' | 'github') => {
+  const currentClient = getSupabaseClient()
+  if (!currentClient) {
+    throw new Error('Supabase não configurado.')
+  }
+
   const options: any = {
     redirectTo: `${window.location.origin}/`,
   }
-  // queryParams são específicos do Google; GitHub ignora, mas evitamos enviar
   if (provider === 'google') {
     options.queryParams = {
       access_type: 'offline',
       prompt: 'consent',
     }
   }
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await currentClient.auth.signInWithOAuth({
     provider,
     options,
   })
