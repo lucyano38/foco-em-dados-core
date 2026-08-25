@@ -11,7 +11,7 @@ export default function Header() {
   const [authOk, setAuthOk] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured()) return;
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (!code) return;
