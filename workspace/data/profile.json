@@ -1,0 +1,43 @@
+{
+  "dataset_name": "crm_leads",
+  "source_files": [
+    "crm/leads.json",
+    "data/prospector-leads.json"
+  ],
+  "record_count": 6,
+  "columns": [
+    "id",
+    "nome",
+    "nicho",
+    "cidade",
+    "status",
+    "valor",
+    "mrr_manutencao",
+    "url_preview",
+    "observacoes",
+    "created_at",
+    "updated_at"
+  ],
+  "statuses": [
+    "novo",
+    "publicado",
+    "redesenhado",
+    "respondeu"
+  ],
+  "nichos": [
+    "Arquitetura & Design",
+    "Automotivo & Serviços",
+    "Direito Tributário & Civil",
+    "Odontologia & Estética",
+    "Restaurante & Gastronomia",
+    "Saúde & Bem-estar"
+  ],
+  "cities": [
+    "Barueri / SP",
+    "Campinas / SP",
+    "Curitiba / PR",
+    "Florianópolis / SC",
+    "Gramado / RS",
+    "São Paulo / SP"
+  ]
+}

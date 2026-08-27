@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-08-27T17:48:42.166871",
+  "dataset_name": "crm_leads",
+  "total_leads": 6,
+  "status_distribution": {
+    "publicado": 2,
+    "redesenhado": 2,
+    "respondeu": 1,
+    "novo": 1
+  },
+  "nicho_distribution": {
+    "Odontologia & Estética": 1,
+    "Direito Tributário & Civil": 1,
+    "Arquitetura & Design": 1,
+    "Automotivo & Serviços": 1,
+    "Restaurante & Gastronomia": 1,
+    "Saúde & Bem-estar": 1
+  },
+  "cidade_distribution": {
+    "Barueri / SP": 1,
+    "São Paulo / SP": 1,
+    "Campinas / SP": 1,
+    "Curitiba / PR": 1,
+    "Gramado / RS": 1,
+    "Florianópolis / SC": 1
+  },
+  "valor_total": 6350.0,
+  "mrr_total": 0.0
+}
