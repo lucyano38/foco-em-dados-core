@@ -92,7 +92,7 @@ export default function AdminProspeccao() {
   }, []);
 
   const loadLeads = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured()) return;
     setLoadingLeads(true);
     setError(null);
     try {
@@ -115,7 +115,7 @@ export default function AdminProspeccao() {
   }, [isAdmin, loadLeads]);
 
   const moveStatus = async (lead: ProspectorLead, next: ProspectorStatus) => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured()) return;
     setMovingId(lead.id);
     setError(null);
     setSuccess(null);

@@ -89,7 +89,7 @@ export default function Admin() {
   };
 
   const syncToSupabase = async (next: PipelineLead[]) => {
-    if (!isSupabaseConfigured || !user) return;
+    if (!isSupabaseConfigured() || !user) return;
     try {
       for (const lead of next) {
         const { error } = await supabase

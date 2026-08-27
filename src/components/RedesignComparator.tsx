@@ -96,7 +96,7 @@ export default function RedesignComparator() {
     try {
       let list: RedesignRow[] = [];
 
-      if (isSupabaseConfigured) {
+      if (isSupabaseConfigured()) {
         const { data, error } = await supabase
           .from('leads')
           .select('*')

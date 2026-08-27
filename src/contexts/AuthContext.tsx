@@ -271,7 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadUser])
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       throw new Error('Autenticação indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
     const { error } = await supabase.auth.signInWithPassword({
@@ -282,7 +282,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       throw new Error('Login com Google indisponível: configure VITE_SUPABASE_ANON_KEY.')
     }
     // Redireciona direto para /dashboard — o supabase-js troca o código PKCE
@@ -296,7 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGithub = async () => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       throw new Error('Login com GitHub indisponível: configure VITE_SUPABASE_ANON_KEY.')
     }
     try {
@@ -312,7 +312,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     name: string
   ): Promise<{ autoLoggedIn: boolean }> => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       throw new Error('Cadastro indisponível: configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.')
     }
     const { data, error } = await supabase.auth.signUp({

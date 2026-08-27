@@ -142,8 +142,10 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen bg-[#0B1220] text-slate-100 font-sans">
       <div className="mesh-bg" />
-
-      <main>
+      <Header />
+      <AnimatedBackground />
+      <ErrorBoundary fallback={<div className="min-h-screen bg-[#0B1220] text-[#e3e2e2] font-sans antialiased flex items-center justify-center p-6"><div className="max-w-xl w-full rounded-2xl border border-white/10 bg-white/5 p-6 text-center"><p className="text-sm font-semibold text-red-300">Algo inesperado aconteceu ao carregar esta página.</p><p className="mt-2 text-xs text-[#d4c5ab]">Tente recarregar ou voltar para a home.</p><button type="button" onClick={() => window.location.replace('/')} className="mt-4 h-10 px-4 rounded-lg bg-[#ffc107] hover:bg-[#ffca28] text-[#121414] text-xs font-bold">Voltar para home</button></div></div>}>
+        <main>
         {/* Hero */}
         <section className="relative min-h-[92vh] flex items-center justify-center pt-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0B1220]/70 via-[#0B1220]/60 to-[#0B1220]"></div>
@@ -645,6 +647,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      </ErrorBoundary>
     </div>
   )
 }
