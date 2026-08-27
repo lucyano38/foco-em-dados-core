@@ -9,7 +9,7 @@
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/(?!assets/|_vercel/|favicon.ico|robots.txt|sitemap.xml|ads.txt)(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
